@@ -1,8 +1,13 @@
 
 *.root
-#align*
+align*
 hot*
 scope
 tele
 
+*.txt
+
 *.pdf
+scopes
+data/*
+*.backup

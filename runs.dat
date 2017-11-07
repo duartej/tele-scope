@@ -4178,7 +4178,7 @@ run 28808 # eff 99.95  Q0 20.81  ry 7.88
 geo geo_2017_04a.dat
 GeV 4.8
 
-modgain /home/pitzl/psi/dtb/tst400/D4139-trim35-tb21-gaincal.dat
+modgain D4139-trim35-tb21-gaincal.dat
 
 refchip 502
 refgain /home/pitzl/psi/dtb/tst400/c502-tb21-trim32-gaincal.dat
@@ -5070,7 +5070,7 @@ turn 0
 run 31094 # 200 k # loose sync
 run 31095 # 980 k # loose sync
 
-modgain /home/pitzl/eudaq/tele-scope/gaincal/D4139-tb21-trim35-gaincal.dat
+modgain D4139-tb21-trim35-gaincal.dat
 
 #-------------------------------------------------------------------------------
 # Mon 2.10.2017
@@ -5207,7 +5207,7 @@ run 31182 # 1200k
 
 GeV 5.6
 chip 332
-gain /home/pitzl/psi/r4s/B/r332-scancal-tb21-1030.dat
+gain /eos/user/d/duarte/TestBeamDESY2017/ROC4SENS_data/gainfiles/r332-scancal-tb21-1030.dat
 geo geo_2017_10a.dat # 0 154  306  397  549  703
 tilt 8
 run 31210 # 698  40 k
@@ -5228,3 +5228,101 @@ run 31215  # 702  2000k
 
 tilt 0
 run 31226  # 705  40k
+run 31227   # 706 400k
+run 31228  # 707  600k
+run 31229  # 708  600k
+tilt 12
+run 31230  # 709  50k
+run 31231  # 710 1300k
+run 31234  # 712 700k
+
+chip 352
+gain /eos/user/d/duarte/TestBeamDESY2017/ROC4SENS_data/gainfiles/r352-scancal-tb21-1101.dat
+tilt 12
+run 31237  # 715 50k
+
+run 31239  # 717 1404k
+run 31240  # 718 800k
+
+gain /eos/user/d/duarte/TestBeamDESY2017/ROC4SENS_data/gainfiles/r352-scancal-tb21-1102.dat
+geo geo_2017_11a.dat # 0 154  306  386  538  692
+tilt 0
+run 31245  # 723 50k
+tilt 3
+run 31246  # 724 XXk
+tilt 0
+run 31247   # 725 500k
+tilt 6
+run 31248   # 726 XXk
+tilt 9
+run 31249   # 727 XXk
+tilt 10
+run 31250   # 728 XXk
+tilt 11
+run 31251   # 729 XXk
+tilt 10.3 # 12
+run 31252   # 730 XXk
+tilt 13
+run 31253   # 731 XXk
+tilt 14
+run 31254   # 732 XXk
+tilt 15
+run 31255   # 733 XXk
+tilt 16
+run 31256   # 734 XXk
+tilt 17
+run 31257   # 735 XXk
+tilt 18
+run 31258   # 736 XXk
+tilt 19
+run 31259   # 737 XXk
+
+tilt 0
+run 31261   # 738 500k
+
+tilt 20
+run 31262   # 739 XXk
+tilt 21
+run 31263   # 740 XXk
+tilt 22
+run 31264   # 741 XXk
+tilt 23
+run 31265   # 742 XXk
+tilt 24
+run 31266   # 743 XXk
+tilt 25
+run 31267   # 744 XXk
+tilt 26
+run 31268   # 745 XXk
+tilt 0
+run 31269   # 746 999k
+
+geo geo_2017_12a.dat # 0 154  306 443 594 748
+tilt 26
+run 31270  # 747 500k 
+tilt 28.5
+run 31271   # 748 XXk
+tilt 33.5
+run 31272   # 749 XXk
+tilt 38.5
+run 31273   # 750 XXk
+tilt 43.5
+run 31274   # 751 XXk
+tilt 48.5
+run 31275   # 752 XXk
+tilt 53.5
+run 31276   # 753 XXk
+tilt 58.5
+run 31277   # 754 XXk
+tilt 63.5
+run 31278   # 755 XXk
+tilt 68.5
+run 31279   # 756 XXk
+tilt 78.5
+run 31280   # 757 XXk
+tilt 73.5
+run 31281   # 758 XXk
+tilt 78.5
+run 31282   # 759 XXk
+tilt 78.5
+run 31283   # 760 XXk

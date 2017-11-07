@@ -879,6 +879,7 @@ int main( int argc, char* argv[] )
   if( run >= 31163 ) ke = 0.035; // chip 117  1006.dat
   if( run >= 31173 ) ke = 0.037; // chip 117  1008.dat
   if( run >= 31210 ) ke = 0.068; // chip 332  3D 230 um at 17.2
+  if( run >= 31237 ) ke = 0.050; // chip 352  3D 230 um at 17.2
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -3353,6 +3354,9 @@ int main( int argc, char* argv[] )
 	  x8 = upsignx*x7 + DUTalignx; // shift to mid
 	  y8 = upsigny*y7 + DUTaligny;
 
+          x4 = x8;
+          y4 = y8;
+
 	} // six match
 
       } // driplets
@@ -3505,7 +3509,7 @@ int main( int argc, char* argv[] )
 	  eta = uta;
 
 	bool lq = 1; // Landau peak
-	if( ( Q0 < 8 || Q0 > 16 ) ) lq = 0; // r102
+	if( ( Q0 < 11 || Q0 > 22 ) ) lq = 0; // r102
 
 	// DUT - triplet:
 
@@ -4245,8 +4249,8 @@ int main( int argc, char* argv[] )
   } // iter
 
   // write new DUT alignment:
-  /*
-  ofstream DUTalignFile( DUTalignFileName.str() );
+  
+  /*ofstream DUTalignFile( DUTalignFileName.str() );
 
   DUTalignFile << "# DUT alignment for run " << run << endl;
   ++DUTaligniteration;
@@ -4258,7 +4262,7 @@ int main( int argc, char* argv[] )
   DUTalignFile << "turn " << DUTturn << endl;
   DUTalignFile << "dz " << DUTz - zz[2] << endl;
 
-  DUTalignFile.close();
+  DUTalignFile.close();*/
 
   cout << endl << "wrote DUT alignment iteration " << DUTaligniteration
        << " to " << DUTalignFileName.str() << endl
@@ -4269,7 +4273,6 @@ int main( int argc, char* argv[] )
        << "  turn   " << DUTturn << endl
        << "  dz     " << DUTz - zz[2] << endl
     ;
-  */
 
   cout << endl
        << "DUT efficiency " << 100*effvst4.GetMean(2) << "%"
