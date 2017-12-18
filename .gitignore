@@ -1,4 +1,3 @@
-
 *.root
 align*
 hot*
@@ -11,3 +10,9 @@ tele
 scopes
 data/*
 *.backup
+
+*.swp
+ROOT
+*.pyc
+
+

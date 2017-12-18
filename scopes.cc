@@ -606,7 +606,7 @@ int main( int argc, char* argv[] )
   const double wt = atan(1.0) / 45.0; // pi/180 deg
 
   double qwid = 1.2; // [ke] for Moyal in 150 um
-  if( chip0 >= 300 ) qwid = 1.6; // 230 um 3D
+  if( chip0 >= 300 ) qwid = 1.6; // 230 um 3D --> Expected 17.940 ke (78 e/h per um)
 
   bool rot90 = 0; // straight
   if( chip0 == 106 ) rot90 = 1;
@@ -745,6 +745,61 @@ int main( int argc, char* argv[] )
 
   double xminCu = -6.5;
   double xmaxCu =  6.5;
+  
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // hot pixels for DUT:
+  // The map of pixels ids (col*number_of_pixels_at_y+row)
+  std::set<int> hotsetDUT;
+
+  std::ostringstream hotDUTFileName; // output string stream
+  hotDUTFileName << "hotDUT_" << run << ".dat";
+  std::ifstream ihotDUTFile( hotDUTFileName.str() );
+  if( ihotDUTFile.bad() || ! ihotDUTFile.is_open() ) 
+  {
+      std::cout << "no " << hotDUTFileName.str() 
+          << " (created by first iteration of scopes) " << std::endl;
+      if(DUTaligniteration  == 0)
+      {
+          std::cout << "Therefore, creating it NOW!" << std::endl;
+      }    
+  }
+  else 
+  {
+      std::cout << "read DUT hot pixel list from " << hotDUTFileName.str() << std::endl;
+      std::string hash( "#" );
+      std::string pix( "pix" );
+      int ipl = 0;      
+      while( ! ihotFile.eof() ) 
+      {
+          std::string line("");
+          getline( ihotFile, line );
+          if( line.empty() )
+          {
+              continue;
+          }
+          std::stringstream tokenizer( line );
+          std::string tag("");
+          // leading white space is suppressed
+          tokenizer >> tag; 
+          if( tag.substr(0,1) == hash ) 
+          {
+              // comments start with #
+              continue;
+          }
+          tokenizer >> ipl;
+          if( tag == pix ) 
+          {
+              int ix=-1;
+              int iy=-1;
+              tokenizer >> ix;
+              tokenizer >> iy;
+              int ipx = ix*ny[iDUT]+iy;
+              hotsetDUT.insert(ipx);
+          }
+      } // while getline
+      ihotDUTFile.close();
+      std::cout << "DUT hot pixels: " << hotsetDUT.size() << std::endl;
+  } // hotFile
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // MOD:
@@ -1966,6 +2021,9 @@ int main( int argc, char* argv[] )
 
   cout << endl;
 
+  // The pixel map to take into account hot pixels
+  std::map<int,int> pxmap;
+
   FileReader * reader;
   if(      run <    100 )
     reader = new FileReader( runnum.c_str(), "data/run0000$2R$X" );
@@ -2319,7 +2377,7 @@ int main( int argc, char* argv[] )
 
       prevdtbtime = dtbtime;
       ++nresync;
-      if( ldbt )
+      //if( ldbt )  // --> comment if you want to check synchronization between systems
 	cout << "  resync " << nresync << endl;
       if( filled == F )
 	getline( evFile, DUTev ); // hits
@@ -2371,10 +2429,28 @@ int main( int argc, char* argv[] )
 	hcol[iDUT].Fill( col+0.5 );
 	hrow[iDUT].Fill( row+0.5 );
 
+        // Hot pixels at DUT if first iteration
+        int ipxDUT = col*ny[iDUT]+row;
+        if( DUTaligniteration == 0 )
+        {
+            if( pxmap.count(ipxDUT) )
+            {
+                ++pxmap[ipxDUT];
+            }
+            else
+            {
+                pxmap.insert({ipxDUT,1});
+            }
+        }
+        else if(hotsetDUT.count(ipxDUT))
+        {
+            // skip hot pixel, just after at least one iteration
+            continue;
+        }
+
 	pixel px { col, row, ph, ph, ipx, 0 };
 	vpx.push_back(px);
 	++ipx;
-
       } // roi px
 
       // columns-wise common mode correction:
@@ -2434,7 +2510,7 @@ int main( int argc, char* argv[] )
 
 	//if( dph > 16 ) { // 31166 cmsdycq 5.8, edge 1.25 ke
 	//if( dph > 12 ) { // 31166 cmsdycq 5.7, edge 1.0 ke
-	if( dph > 10 ) { // 31166 cmsdycq 5.7, edge 1.0 ke
+	if( dph > 20 ) { // 31166 cmsdycq 5.7, edge 1.0 ke
 
 	//if( q > 0.8 ) { // 31166 cmsdycq 5.85
 	//if( q > 0.9 ) { // 31166 cmsdycq 5.74
@@ -2687,7 +2763,8 @@ int main( int argc, char* argv[] )
       // dri vs dri: isolation at MOD
 
       double dddmin = 99.9;
-
+      // [JDC] Check if there is any other track matching with this
+      // hit (see dddmin)
       for( unsigned int jj = 0; jj < driplets.size(); ++jj ) {
 
 	if( jj == jB ) continue;
@@ -3384,10 +3461,24 @@ int main( int argc, char* argv[] )
 	bool isoc = 1;
 	for( vector<cluster>::iterator c2 = cl0[iDUT].begin(); c2 != cl0[iDUT].end(); ++c2 ) {
 	  if( c2 == c ) continue;
-	  if( fabs( c2->col - ccol ) < 8 ) isoc = 0;
-	  if( fabs( c2->row - crow ) < 8 ) isoc = 0;
+          if( chip0 > 300 )
+          {
+              // [JDC] Just request isolated cluster (no any other cluster nearest than 
+              // 8 columns AND rows: the cluster defines a shadow cross of 8-columns/rows
+              if( fabs(c2->col-ccol)<8 && fabs(c2->row-crow)<8)
+              {
+                  isoc=0;
+              }
+          }
+          else
+          {
+              // [JDC] More restrictive condition: not isolated if another cluster is 
+              // found EITHER inside 8 columns OR rows
+              if( fabs( c2->col - ccol ) < 8 ) isoc = 0;
+              if( fabs( c2->row - crow ) < 8 ) isoc = 0;
+          }
 	}
-
+        
 	double Q0 = c->charge * norm; // cluster charge normalized to vertical incidence
 	double Qx = exp(-Q0/qwid);
 
@@ -4250,7 +4341,7 @@ int main( int argc, char* argv[] )
 
   // write new DUT alignment:
   
-  /*ofstream DUTalignFile( DUTalignFileName.str() );
+  ofstream DUTalignFile( DUTalignFileName.str() );
 
   DUTalignFile << "# DUT alignment for run " << run << endl;
   ++DUTaligniteration;
@@ -4262,7 +4353,7 @@ int main( int argc, char* argv[] )
   DUTalignFile << "turn " << DUTturn << endl;
   DUTalignFile << "dz " << DUTz - zz[2] << endl;
 
-  DUTalignFile.close();*/
+  DUTalignFile.close();
 
   cout << endl << "wrote DUT alignment iteration " << DUTaligniteration
        << " to " << DUTalignFileName.str() << endl
@@ -4277,13 +4368,53 @@ int main( int argc, char* argv[] )
   cout << endl
        << "DUT efficiency " << 100*effvst4.GetMean(2) << "%"
        << endl;
-
-  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // done
-
+        
   cout << endl << histoFile->GetName() << endl;
 
   cout << endl;
+
+  
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // DUT hot pixels writting file
+  if( DUTaligniteration == 1 )
+  {
+      std::cout << std::endl << "DUT hot pixel list for run " << run << std::endl;
+      std::ofstream hotDUTFile( hotDUTFileName.str() );
+      hotDUTFile << "# DUT hot pixel list for run " << run << endl;
+      int nmax = 0;
+      int ntot = 0;
+      int nhot = 0;
+      for(auto & id_pix: pxmap)
+      {
+          int nhit = id_pix.second;
+          ntot += nhit;
+          if(nhit > nmax) 
+          {
+              nmax = nhit;
+          }
+          if(nhit > iev/128) 
+          {
+              // It is considered a hot pixel if there is a hit
+              // at least (Number of events/128 ) events
+              ++nhot;
+              int ipx = id_pix.first;
+              int ix = ipx/ny[iDUT];
+              int iy = ipx%ny[iDUT];
+              hotDUTFile << "pix " << std::setw(4) << ix << std::setw(5) << iy << std::endl;
+          }
+      }
+      std::cout << "  DUT " 
+          << ": active " << pxmap.size()
+          << ", sum " << ntot
+          << ", max " << nmax
+          << ", hot " << nhot
+          << std::endl;
+      std::cout << "DUT hot pixel list written to " << hotDUTFileName.str() << std::endl;
+      hotDUTFile.close();
+  }
+  
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // done
 
   return 0;
 }
