@@ -1093,12 +1093,12 @@ int main( int argc, char* argv[] )
     getline( Astream, sl ); // read one line for sync
     getline( Bstream, sl );
   }
-  /*
-  if( modrun >= 250 ) { // Feb 2019
+
+  if( modrun >= 252 && modrun <= 256 ) { // Feb 2019
     getline( Astream, sl ); // read one line for sync
     getline( Bstream, sl );
   }
-  */
+
   int iMOD = 7;
 
   int MODaligniteration = 0;
@@ -2601,7 +2601,7 @@ int main( int argc, char* argv[] )
 	  << " " << plane.Type() // NI or BDAQ53
 	  << " " << plane.Sensor() // MIMOSA26 or RD53A
 	  << " frames " << plane.NumFrames() // 2 for NI or 32 for BDAQ53
-	  << " pivot " << plane.PivotPixel() // 4166 or 0
+	  << " pivot " << plane.PivotPixel()
 	  << " total " << plane.TotalPixels()
 	  << " hits " << plane.HitPixels()
 	  ;

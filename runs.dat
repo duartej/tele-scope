@@ -1303,10 +1303,11 @@ modrun 246
 run 35427 # 497k  
 
 # 200V, 326 uA
-modrun 248  # 46% yield
+
+modrun 248  # 46% yield: modlky triangular
 run 35429	500
 
-GeV 5.6
+GeV 5.6 over night
 # 200V, 326 uA
 modrun 249
 run 35430
@@ -1317,3 +1318,26 @@ modrun 250
 run 35431
 
 GeV 5.2
+# MOD trigger delay 0
+# bias 250 V, 372 uA
+modrun 252
+run 35432 # 500k
+
+modrun 253
+run 35433 # 680k
+
+# bias 200 V, 328 uA
+modrun 254
+run 35434 # 100k
+
+# MOD trigger delay 4 ns, like yesterday
+
+# bias 250 V, 374 uA
+modrun 256
+run 35436
+
+# power cycle Windows
+
+# bias 250 V, 374 uA
+modrun 257
+run 35437
