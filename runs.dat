@@ -1,0 +1,1319 @@
+
+# runs list for scope DUT analysis
+# format:
+# tagname value (rest of the line is ignored)
+# known tags up to the run under study are parsed
+# (entries below the run under study are ignored)
+
+#-------------------------------------------------------------------------------
+# Sat 23.6.2018
+# RD53 501 on MPI HLL 25x100x100
+# fhlrcdatura:/data/data/CMSRD53A_2018
+
+# eudaq for RD53A on uh2ulnmpixelb
+
+geo geo_2018_06r.dat #  0 152  304  560  713  865  25x100
+
+chip 501
+
+# straight
+rot90 0
+fifty 0
+modrun 0
+
+tilt 0.5
+turn 0.5
+GeV 6
+run 33095  360 k
+
+GeV 5.6
+# 0.5 mm down
+turn  45
+run 33100  250
+
+# rotate 90 deg
+# same geo
+rot90 1
+turn 0.5
+run 33103  290
+run 33104  489
+
+turn 14
+run 33107  490
+run 33108 1232
+
+#-------------------------------------------------------------------------------
+# Mon 25.6.2018
+# continue 501
+# search for 2-row clusters, resolution
+
+run 33180  90
+
+run 33181  90
+
+run 33187  40
+
+run 33188  40
+
+run 33190  91
+
+turn 18
+run 33196 202  dxc 10.60
+
+# KRUM_CURR_LIN 10 instead of 50 = more pixels, Landau tail in ToT overflow
+run 33200 202  dxc 9.93
+
+turn 18
+run 33208 160
+
+turn 20
+run 33209 160
+
+turn 22
+run 33211 160
+
+turn 24
+run 33212 160  nrow 1.809
+
+turn 14
+# threshold 350-300
+run 33213  40  flooded by noise
+
+# threshold 385-300
+run 33214 999  nrow 1.479  dxc 10.15  ntri 3.401
+
+#-------------------------------------------------------------------------------
+# Tue 26.6.2018 continue RD53A 501
+# sync section col 0..127
+
+run 33251  60  decoder crash
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Lin section
+GeV 6
+turn 8
+#OneFrame 0
+run 33270  90  
+
+#OneFrame 1
+run 33272  90  
+
+turn 13
+run 33273 267  
+
+turn 14
+run 33274 162.7  
+
+turn 14
+run 33276 22M  scope53 -l 22285100 33276  RD53A crash early
+
+#-------------------------------------------------------------------------------
+# Wed 27.6.2018 continue RD53A 501
+# Lin section
+# try lower threshold (with noise)
+# Vthreshold_LIN 360
+turn 14.4
+run  33286  60    very noisy, amost flat BCID ditribution, correlation on the online monitor
+
+# thr 340-300 with some masking
+run 33296  40.8
+
+# thr 335-300 with some masking
+run 33297  70.8
+
+# thr 335-300 with some masking
+run 33299 236.1  dxc 8.84
+
+turn 13.9
+run 33301 374.5  dxc 8.73
+
+turn 12.9
+run 33302 160.5  dxc 9.32
+
+turn 13.9
+run 33303 2301  dxc 
+
+modrun 12
+run 33307  30826  mod run 12  stable  eff 99.994
+# 18h = 64'800 s
+# sixdxvst5 drifting 8 um
+
+#-------------------------------------------------------------------------------
+# Thu 28.6.2018 continue RD53A 501
+# Lin section
+
+# close telescope
+
+geo geo_2018_06s.dat #  0 152  304  435  588  740  25x100
+
+modrun 0
+
+turn -16
+run 33312  172  dxc 
+
+turn -14.4
+run 33313  272  dxc 
+
+# KRUM_CURR 10 = more smaller ToT
+run 33314 1700  dxc 5.83  nrow 2.104
+
+turn -13.9
+run 33315  250  dxc 5.74  nrow 2.098
+
+turn -13.3
+run 33316  250  dxc 5.64  nrow 2.084
+
+turn -12.9
+run 33317  250  dxc 5.64  nrow 2.070
+
+turn -12.4
+run 33318  250  dxc 5.73  nrow 2.053
+
+# crossed finger trigger scints 2+4=6
+
+# few um telescope movement, tele align per run
+
+# sixdxc 9.27 um => six at DUT 4.63 um
+
+turn -11.9
+run 33321  250  dxc 5.53  dxcq 5.48  nrow 2.047
+
+turn -11.5
+run 33322  250  dxc 5.63  nrow 2.033
+
+turn -10.9
+run 33323  250  dxc 5.60  nrow 2.021
+
+turn -9.9
+run 33324  250  dxc 5.65  nrow 1.999
+
+turn -8.9
+run 33325  250  dxc 5.87  nrow 1.981
+
+turn -14.9
+run 33326  250  dxc 5.83  nrow 2.116
+
+turn -15.9
+run 33327  250  dxc 6.04  nrow 2.152
+
+turn -16.9
+run 33328  250  dxc 6.22  nrow 2.184
+
+turn -12.4
+modrun 14
+run 33333 16431 dxc 5.67
+# stable 51'600s
+
+# "scope processing  33333.5164000  taken 16734.2"
+# "terminate called after throwing an instance of 'std::bad_alloc'"
+# fix run14A.out at 5164194
+
+# MOD modlkvst5 loosing sync 6940 s (2.21M, top B)
+
+# "B truncated at line 2185693 ev 213"  2185691 213 133 95
+# last link 2185686
+# try two ev less: yes
+# try one ev less: no
+# try one ev more: no
+# try two ev more: no
+# try 3rd ev more: no
+
+# MOD modlkvst5 loosing sync 16'730 s (5.163M, bot A)
+# last link 5164194
+# run14A.out 4 missing triggers added: OK
+
+# dutdxvst5 drift 0.012 mm, fixed
+
+# DUT efficiency 99.9964% from 7.76139e+06 events
+
+#-------------------------------------------------------------------------------
+# Fri 29.6.2018
+# install RD53A 504 = 50x50x150 bias dot wiggle, straight
+# Lin section
+geo geo_2018_06t.dat #  0 152  304  435  588  740  50x50
+
+# bias 120
+# thr 335-300 trimmed, masked 44
+
+chip 504
+
+rot90 0
+fifty 1
+modrun 0
+
+GeV 6
+
+turn -17.6
+run 33348  250  dxc 9.13
+
+turn -18.6
+run 33349  251  dxc 9.82
+
+# compare chip 160 = 50x50 p-stop bias dot wiggle on straight cut PCB, run 31491
+
+turn -19.6
+run 33351  250  dxc  10.7  ncol 1.883
+
+turn -20.6
+run 33352  251
+
+turn -16.6
+run 33353  251  dxc 8.54
+
+turn -15.6
+run 33354  274  dxc 8.13  sixdxc 9.31
+
+turn -14.6
+run 33355  251  dxc 7.79
+
+turn -13.6
+run 33356  251  dxc 7.72
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Diff section of 504
+# 265-399
+# Thr 0
+
+run 33406  286
+
+# VFF_DIFF 250
+
+run 33410  
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# back to Lin 124..264
+
+turn -12.7
+run 33412  251 dxc 7.81  
+
+turn -11.7
+run 33414  250  dxc 7.86 
+
+# hadd scope504.root scopeRD33348.root scopeRD33349.root scopeRD33351.root scopeRD33352.root scopeRD33353.root scopeRD33354.root scopeRD33355.root scopeRD33356.root scopeRD33412.root scopeRD33414.root
+
+turn -13.6
+modrun 15
+run 33416 15307  module run 15  rd53 stops 21'840 s
+scope53 -l 6859200 33416  eff 99.08
+
+#-------------------------------------------------------------------------------
+# Sat 30.6.2018
+# continue RD53A 504 = 50x50x150 straight p-stop bias dot wiggle
+# Lin section
+# same geo geo_2018_06t.dat #  0 152  304  435  588  740  50x50
+
+GeV 4.8
+turn -0.5
+# thr 350-300 (no masking)
+
+modrun 0
+run 33418  5307
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+GeV 6
+turn -17.6
+
+# thr 335-300
+
+# KRUM_CURR_LIN = 50
+run 33470  250  dxc 6.94  dutq 11.1
+
+# KRUM_CURR_LIN = 40
+run 33471  250  dxc 6.86  dutq 13.2
+
+# KRUM_CURR_LIN = 30
+run 33472  250  dxc 6.74  dutq 16.2  ncol 1.779
+
+# KRUM_CURR_LIN = 20
+run 33473  256  dxc 6.74  dutq 20.6
+
+# KRUM_CURR_LIN = 60
+run 33474  250  dxc 6.98  dutq  9.6
+
+# sixdxc 9.38 => 4.69 track
+
+# KRUM_CURR_LIN = 30
+
+turn -16.7
+run 33475  250  dxc 6.65  dutq 16.1  ncol 1.741
+
+turn -15.7
+run 33476  250  dxc 6.73  dutq 16.1
+
+turn -16.6
+
+# thr 345-300
+run 33477  256  dxc 7.17  ncol 1.662
+
+# thr 355-300
+run 33478  311  dxc 7.87  ncol 1.603
+
+# thr 365-300
+run 33479  259  dxc 8.68  ncol 1.549
+
+# thr 350-300
+run 33480  250  dxc 7.53  ncol 1.634
+
+# thr 340-300
+run 33481  250  dxc 6.90  ncol 1.701
+
+# thr 360-300
+run 33482  250  dxc 8.29  ncol 1.575
+
+# thr 335-300
+modrun 16
+run 33483 20650 mod 16  dxc 6.91  dxcq 6.60  ncol 1.
+# RD43 stops 26'160 s  eff 99.96
+# scope53 -l 9000200 33483
+
+#-------------------------------------------------------------------------------
+# Sun 1.7.2018
+# continue RD53A 504 = 50x50x150 p-stop bias dot wiggle straight
+# Lin section
+
+GeV 4 for 1.6 kHz, ntri 11
+turn -0.5
+modrun 18
+run 33485  9003 mod 18 eff 98.5 bias dot
+
+# KRUM_CURR_LIN = 50 for nice Landau
+modrun 19
+run 33486 15999 mod 19  eff 98.4 bias dot
+
+#-------------------------------------------------------------------------------
+# Oct
+#-------------------------------------------------------------------------------
+# Tue 16.10.2018
+# more RD53A with 150 um UHH Hamamatsu sensors
+
+# active area: 20 x 9.6 mm (Mimosa: 21.2 x 10.6)
+# 50x50: mount horizontal, apply 18.4 deg turn angle
+# 25x100: mount vertical, apply 9.5 deg turn angle
+
+# topics:
+# efficiency: all sections
+# threshold scan: cluster size and resolution at optimal angle
+# resolution vs turn angle at lowest threshold for 50x50
+# timewalk: use clock-synchronized trigger gate
+# cross talk: analysis topic
+
+# always:
+# run with telescope and phase I pixel reference module
+
+chip 524 = FTH150P RD53A 50x50 P1 default design
+
+# bias -120 V
+# linear section, thr 360
+
+geo geo_2018_10a.dat #  0 153  304  469  621  775  50x50
+
+rot90 0
+fifty 1
+modrun 0
+
+GeV 5.2
+turn -2.5
+run 34050  176k
+
+run 34053  440k
+
+# Vthreshold_LIN 334
+# KrumCurr_Lin 32
+
+run 34059  360k
+              
+turn -18.4 deg
+run 34060  250k
+              
+# with module from cmspixel-daq
+
+modrun 24  900 Hz  sync
+run 34065  560k  sx 8.3  eff 
+
+GeV 5.6 for the night
+modrun 26
+run 34067 Mod lost sync at 10'400 s  RD53 lost sync at 4780 s  99.988  dxcq 8.0
+
+#-------------------------------------------------------------------------------
+# Wed 17.10.2018
+# continue 525 Lin
+
+turn -17.5
+
+# Krum_Curr_Lin 28
+modrun 27
+run 34068  630.4  dxc 8.0
+
+# Krum_Curr_Lin 24
+modrun 28
+run 34069  sx 7.65
+
+# Krum_Curr_Lin 20
+GeV 4.2
+modrun 29
+run 34070  sx 8.7
+
+# shift x
+modrun 30
+run 34078  
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 524 Diff section
+
+# VFF_DIFF 80
+run 34087  200 no sync
+
+# VFF_DIFF 60
+run 34088  200k no sync
+run 34089  sx 10.0
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 524 Lin+Diff sections
+
+# Krum_Curr_Lin 28
+
+run 34090  
+
+GeV 5.2
+
+turn -17.5
+
+# dz 70 mm, spacing 150, tele 5.7 um (sixdxc/2 6.16)
+
+modrun 31  in sync!             linq->GetMean()
+run 34107  dx 8.3  ncol 1.8975  linq 15.42  difq 19.25
+
+turn -16.5
+modrun 32  in sync!
+run 34108  dxL 8.1  dxD 8.6  ncol 1.852  linq 15.29  difq 19.02
+
+turn -15.5
+modrun 33  started late: no sync
+run 34109  dx 7.9  ncol 1.803 +- 0.0009  linq 15.09  difq 18.70
+
+turn -14.5
+modrun 34  sync
+run 34110  dxL 7.8  dxD 8.25  ncol 1.758  linq 14.95  difq 18.42
+
+turn -13.5
+modrun 35
+run 34111  579  dxL 8.56  dxD 8.72  ncol 1.712  linq 14.84  difq 18.12
+
+turn -12.5
+modrun 36
+run 34112  500  dx 8.5  ncol 1.669  linq 14.69  difq 17.87
+
+turn -11.5
+modrun 37
+run 34113  500  dx 8.6  ncol 1.627  linq 14.54  difq 17.62
+
+turn -10.5
+modrun 38
+run 34114  500  dx 9.0  ncol 1.5835  linq 14.39  difq 17.37
+
+turn -9.5
+no module
+run 34115  500  dx 9.5  ncol 1.54045  linq 14.29  difq 17.12
+
+turn -8.5
+modrun 39
+run 34116  500  dx 10.0  1.498  linq 14.18  difq 16.90
+
+turn -7.5
+modrun 40
+run 34117  500  dx 10.1  ncol 1.458  linq 14.06  difq 16.67
+
+turn -6.5
+modrun 41
+run 34118  500  dx 11.4  ncol 1.417  linq 13.95  difq 16.45
+
+turn -5.5
+modrun 42
+run 34119  500  ncol 1.380  linq 13.86  difq 16.21+-0.015
+
+# shift x 2 mm
+
+turn -4.5
+modrun 45
+run 34122  500  linq 13.79  difq 16.02
+
+turn -3.5
+modrun 46
+run 34123  500  linq 13.69  difq 15.82
+
+turn -2.5
+modrun 47
+run 34124  500  linq 13.62  difq 15.65
+
+turn -1.5
+modrun 48
+run 34125  500  linq 13.54  difq 15.50
+
+turn -0.5
+modrun 50
+run 34127  500  99.62  linq 13.51  difq 15.42
+
+turn 0.5
+modrun 51
+run 34128  500  linq 13.50  difq 15.40
+
+turn 1.5
+modrun 52
+run 34129  500  dx 14.4  erf 15.8  linq 13.55  difq 15.42
+
+turn 2.5
+modrun 53
+run 34130  500  dx 14.0  erf 15.5  linq 13.55  difq 15.50
+
+turn 3.5
+modrun 54
+run 34131  500  dx 14.3  erf 17.5  linq 13.64  difq 15.68
+
+turn 4.5
+modrun 55
+run 34132  500  linq 13.66  difq 15.81
+
+turn 5.5
+modrun 56
+run 34133  500  linq 13.76  difq 16.00
+
+turn -15
+# over night: 524 Lin+Dif
+modrun 58
+run 34135  53.5M  Mod lost sync 620s
+# scope53 -l 53520200  34135
+# dxL 7.81  dxD 8.29
+
+# turn scan: mean charge per pixel vs angle: minimum at optimum?
+
+#-------------------------------------------------------------------------------
+# Thu 18.10.2018
+
+turn -18.5
+run 34136  500  dx 8.8  linq 15.62  difq 19.56
+
+turn -19.5
+run 34137  540  dx 9.3  linq 15.71  difq 19.92
+
+turn -20.5
+run 34138  500  dx 9.7  linq 15.97  difq 20.19
+
+turn -21.5
+run 34139  500  dx 10.0  linq 16.11  difq 20.46
+
+turn -22.5
+run 34140  500  dx 10.2  linq 16.33  difq 20.82
+
+turn -23.5
+run 34141  500  dx 10.2  linq 16.54  difq 21.12
+
+turn -24.5
+run 34142  500  dx 10.2  linq 16.73  difq 21.50
+
+turn -25.5
+modrun 59
+run 34143  500  dx 10.0  linq 16.97  difq 21.85
+
+turn -26.5
+modrun 60
+run 34144  590  dx 9.9  linq 17.18  difq 22.19
+
+turn -27.5
+modrun 63
+run 34147  586  dx 9.7  linq 17.41  difq 22.52
+
+turn -28.5
+modrun 64
+run 34148  500  linq 17.63  difq 22.93
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 531 FDD 50x50 bias dot floating
+# Lin+Diff 
+
+chip 531
+
+# same geo_2018_10a.dat
+
+GeV 5.2
+
+turn   0.5
+modrun 65
+run   34160  644  99.2
+
+modrun 66
+run 34162  1219  Mod lost sync at 250s
+
+modrun 67
+run 34163  1002  99.2
+
+modrun 69
+run 34165   481  Mod no sync
+
+modrun 70
+run 34166        Mod lost sync 140s
+
+# over night: 531 Lin+Dif
+modrun 73
+run 34170  5.74M  Mod lost sync 640s
+
+#-------------------------------------------------------------------------------
+# Fri 19.10.2018 continue 531 Lin+Dif
+
+# bias dot grounded
+
+modrun 74
+run 34172  
+
+# deep diffused is murks
+# diffusion masks bias dot
+
+#-------------------------------------------------------------------------------
+# Fri 19.10.2018
+
+chip 520 = FTH150P RD53A 50x50 P3 bias dot straight
+
+# same geo_2018_10a.dat
+
+# bias dot floating
+
+# --- open telescope ---
+
+modrun 76
+run 34180  490  99.8  Mod 44%
+
+# Mod delay changed
+
+modrun 79
+run 34183  490  99.8  Mod 63%
+
+# --- telescope closed: geo_2018_10a
+
+modrun 87
+run 34192  490  99.8  Mod 63%
+
+modrun 88
+run 34193  490  99.7  Mod 63%
+
+modrun 89
+run 34194  490  99.8  Mod 63%
+
+modrun 90
+run 34195  490  99.8  Mod 63%
+
+modrun 91
+run 34196  490  lost sync at 210s
+
+modrun 92
+run 34197  490  99.8  Mod 63%
+
+modrun 93
+run 34198  490  99.8  Mod 63%
+
+modrun 94
+run 34199  240
+
+modrun 95
+run 34200  490 Mod lost sync 300s
+
+modrun 96
+run 34201  490  99.8  Mod 63%
+
+modrun 97
+run 34202  490  18.2 RD53 lost 110s
+
+# hadd scopeRD34192-01.root scopeRD34192.root scopeRD34193.root scopeRD34194.root scopeRD34195.root scopeRD34197.root scopeRD34198.root scopeRD34201.root
+
+# bias grid grounded
+
+modrun 99
+run 34204  490  98.4  Mod 63%  bias dot deficit
+
+modrun 100
+run 34205  490  no sync
+
+modrun 101
+run 34206  490  99.8  Mod 63%
+
+modrun 102
+run 34207  490  99.8  Mod 63%
+
+modrun 104
+run 34209  490  99.8  Mod 63%
+
+modrun 106
+run 34211  490  98.4
+
+modrun 107
+run 34212  490  98.4  Mod lost sync at 333 s
+
+modrun 108
+run 34213  490  98.4
+
+modrun 109
+run 34214  491  
+
+# hadd scopeRD34204-13.root scopeRD34204.root scopeRD34206.root scopeRD34207.root scopeRD34209.root scopeRD34211.root scopeRD34212.root scopeRD34213.root
+
+#for resolution:
+turn -14
+# adjust 2 mm in x
+# KRUM_CURR_LIN    : 28
+# VFF_DIFF         : 60
+
+# over night:
+modrun 111 # COPY from cmspixel-daq
+run 34217  22.8M  20 GB RD53ADecoder: inconsistencies in data format
+# dxL 8.19
+# dxD 8.49
+
+#-------------------------------------------------------------------------------
+# Sat 20.10.2018
+
+chip 550 = FDD150P RD53A 100x25 P1 default design
+
+# bias -200 V
+
+fifty 0
+
+geo geo_2018_10b.dat #  0 153  304  469  621  775  25x100
+
+turn 0.5  for crosstalk:
+
+modrun 113
+run 34228  490  99.98  nrow 2.4 enhanced by FDD and coupling
+
+modrun 114
+run 34229  490  99.985
+
+# hadd scopeRD34228-9.root scopeRD34228.root scopeRD34229.root
+
+# linnpxvsxmym->Clone("dutnpxmap")
+# dutnpxmap->Add(difnpxvsxmym)
+# dutnpxmap->GetZaxis()->SetTitle("DUT <cluster size> [pixels]")
+# dutnpxmap->Draw("colz")
+
+turn -29
+modrun 116
+run 34231  490  Mod looses sync at 20 s
+
+modrun 117
+run 34232  490  99.965  Mod looses sync at 530 s
+
+turn -78
+modrun 119
+run 34234  490  
+
+modrun 121
+run 34236  490  
+
+modrun 122
+run 34237  530  
+
+modrun 123
+run 34238  490  
+
+turn -83.25
+
+modrun 124
+run 34239  490  ncol 17
+
+modrun 125
+run 34240  490  
+
+modrun 126
+run 34241  491  
+
+modrun 127
+run 34242  490  
+
+modrun 128
+run 34243  490  
+
+#-------------------------------------------------------------------------------
+# Dec 2018: irradiated RD53A
+#-------------------------------------------------------------------------------
+# Tue 4.12.2018
+
+chip 509 = FTH150P RD53A 100x25 default  5E15 n_eq at CERN PS
+
+fifty 0
+
+geo geo_2018_12a.dat = 0  152  305  DUT  474  621  MOD  778 for 100x25
+
+# MOD downstream = behind DUT cold box material: Cu and Fe
+
+turn 0
+
+GeV 5.2
+
+# HV 800, IB 238 uA
+
+#KRUM_CURR_LIN 32
+
+modrun 133
+run 35006  813.6
+
+modrun 134
+run 35007  130  DUT & MOD corr  modlk 22%
+
+#KRUM_CURR_LIN 28
+modrun 136
+run 35009  138
+
+#KRUM_CURR_LIN 24
+modrun 137
+run 35010  130  
+
+#KRUM_CURR_LIN 20
+modrun 138
+run 35012  1.2M 
+
+# 700, IB 196.6 uA
+modrun 139
+run 35013  1.11M
+
+# 600, IB 166 uA
+modrun 140
+run 35014  1.000M
+
+# 500, IB 143.1 uA
+modrun 143
+run 35017  1.04M
+
+run 400, ib 123.5 uA
+modrun 144
+run 35018  1.00M
+
+# 350, IB 113.4 uA
+modrun 145
+run 35019  1.01M
+
+# 800V
+modrun 146
+run 35020  45.0M
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Wed 5.12.2018
+# continue 509 = FTH150P RD53A 100x25 default  5E15 n_eq at CERN PS
+# Lin section
+# vertical
+
+# module to the front: scope53m
+# paddle scint: 24x12 mm
+# collimator with PB insert 15x15
+
+# 800 V, 256 uA
+modrun 157  modlk 66%
+run 35034  1.0M  99.90  ntri 4.2
+
+
+#600 V, 176 muA
+modrun 158  out of sync
+run 35035  1.0M  -
+
+#500 V, 148 muA
+modrun 159
+run 35036  1.0M  98.94
+
+#400 V, 127 muA
+modrun 160
+run 35037  1.0M  98.82
+
+#350 V, 116 muA
+modrun 161
+run 35038  1.0M  98.48
+
+#300 V, 105 muA
+modrun 162
+run 35039  1.0M  97.94
+
+#250 V, 95 uA
+modrun 163 out of sync
+run 35040  1.0M  -
+
+#200 V, 83 uA
+modrun 164
+run 35041  1.0M  95.61  even-odd col
+
+#150 V, 70 uA
+modrun 165
+run 35042  1.0M  91.38
+
+#100 V, 56.5 uA
+modrun 166  lost sync 430s
+run 35043  1.0M  80.91
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Thu 6.12.2018
+# continue 509 = FTH150P RD53A 100x25 default  5E15 n_eq at CERN PS
+# Lin + DIF sections
+# vertical
+
+modrun 168
+run 35063
+
+# DIF too noisy
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# LIN only
+
+turn -34 = atan(100/150)  negative is correct: dutdxvstx0, 1
+
+geo geo_2018_12b.dat = MOD  0  152  305  DUT  585  734  892 for 100x25
+
+# paddle scint: 24x12 mm
+
+# bias 800
+
+# masking: hotDUT_35071.dat from .x hot.C+("map0")
+
+modrun 170
+run 35068  ntri 4.9
+
+# collimator without Pb insert
+
+modrun 173
+run 35071  994  99.62  ntri 7.7  modlk 56%
+
+# bias 700
+modrun 175
+run 35073  1489.042
+
+# 600V
+modrun 176, 1078579
+run 35074  1078.579  99.535
+
+# DUT  y 19,0 -> 18,5 for more overlap
+
+# 500 V
+modrun 177  loose sync 660 s
+run 35076  99.50
+
+# 400 V
+modrun 178
+run 35077  99.31
+
+# 350 V
+modrun 179
+run 35078  99.14
+
+# 300 V
+modrun 180
+run 35079  98.76
+
+# 250 V
+modrun 181
+run 35080  97.85
+
+# 200 V
+modrun 182
+run 35081  95.84  even-odd averaged out by turn
+
+# 150 V
+modrun 183
+run 35082  91.07
+
+# 100 V
+modrun 187  loose sync at 460 s
+run 35086  77.2
+
+# 800 V  modlkvsev
+modrun 188 1079556  erase 160026, 160027, 160030, 160071, 988257
+run 35088  1079551  99.64  ntri 7.7
+
+modrun 189 1028270  erase 261565, 261566, 261567, 695106, 695107
+run 35089  1028265  99.65
+
+modrun 190 1001092  erase 349508, 349509, 349510, 368134, 368135, 368136, 368137
+run 35090  1001085  
+
+# hadd scopeRD35071-90.root scopeRD35071.root scopeRD35088.root scopeRD35089.root scopeRD35090.root
+
+# over night run: 110 GB erased
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Fri 7.12.2018
+
+# run without RD53A (Ali tuning)
+
+geo geo_2018_12c.dat = MOD 0 152 305 DUT 460 608 762
+
+modrun 193
+run 35097  160
+
+turn 0
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 509 Lin section vertical
+
+# bias 800
+
+GeV 5.2
+
+modrun 198
+run 35110  171
+
+# 2nd scint stacked: finger+paddle = 9x12
+
+# optimize position overlap
+
+modrun 200
+run 35113   91
+
+modrun 201  erase 647101, 666415, 666416
+run 35114  999
+
+modrun 202  996575
+run 35115  996.575
+
+modrun 203  1002497  erase 8256, 26615, 378117, 391548
+run 35116  1002.495
+
+modrun 204  1002827  erase 752902, 752903
+run 35117  1002.825
+# hadd scopeRD35114-17.root scopeRD35114.root scopeRD35115.root scopeRD35116.root scopeRD35117.root
+
+# 5.6 GeV, 1.0 kHz
+modrun 205  250994
+run 35118  250.994
+
+# over night:
+GeV 6.0  0.7 kHz  ntri 4.1
+modrun 206  25954503
+# scope53m -f 4503000 -l 4999000 35119
+# erase 102938, 102939, 104442
+# 1989940, 1989941
+# 2809929, 2809934, 2812752, 2812819
+# 3240945, 3240946
+# 3636179, 3636180
+# 3880959, 3880960 or 3882005 3882007
+# 3885739, 3885740
+# 3893210
+# 4052699
+# 4462093
+# 4507648
+# 4860261
+# 5248297
+# 6867116, 6867117
+# 7293219
+# 8707704
+# 15744763
+# 15746319, 15746320
+# 16973810
+# 16980182
+# 18659742
+# 19067482, 19067483
+# 19072201
+# 19114694
+# lots of erased lines: look at line number, not event number!
+# 19127491
+# 19155508, 19155515, 19155517
+# 19158094
+# 19165910
+# 19720593
+# 19917038(0.52)
+# 20744032(0.35)
+# 23099523
+# 25145175
+# 25573473
+# erased 48
+run 35119  25954.454  46 GB
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Sat 8.12.2018
+# RD53A 509i Lin vertical bias scan
+
+GeV 5.2  1.25 kHz							
+
+# 700V, 117 uA
+modrun 207  1000113
+run 35120  1000.113  99.40
+
+# 600, 102 uA
+modrun 208 999799
+run 35121  999.799  99.35
+
+# 500, 89 uA
+modrun 209  1000053, erase 834148
+run 35122  1000.052  99.25
+
+# 400, 79 uA
+modrun 210  1001347
+run 35123  1001.347  99.05
+
+# 350, 74 uA
+modrun 211  999974
+run 35124  999.974  98.76
+
+# 300, 68 uA
+modrun 212  1001696
+run 35125  1001.696  98.18
+
+# 250, 62 uA
+modrun 213  1000283
+run 35126  1000.283  97.14
+
+# 200, 55 uA
+modrun 214  1000659
+run 35127  1000.659  95.06
+
+# 200, 55 uA
+modrun 215  1001851
+run 35128  1001.851  95.04
+
+# 200, 55 uA
+modrun 216  1001123
+run 35129  1001.123  94.94
+
+# 200, 54 uA
+modrun 217  999309
+run 35130  999.309  94.93
+# hadd scopeRD35127-30.root scopeRD35127.root scopeRD35128.root scopeRD35129.root scopeRD35130.root
+
+# 150, 47 uA
+modrun 218  1000691
+run 35131  1000.691  90.165
+
+# 100, 39 uA
+modrun 219  1000975
+run 35132  1000.975  77.50
+
+# lunch
+# 800, 134 uA
+modrun 220  4566206  erase 1499129, 1501838, 4145123
+run 35133  4566.203  99.60
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 509i Sync vertical (+1st Lin column)
+
+# 800 V, 134 uA
+modrun 221  1001783  erase 309568, 663752, 676511, 676512, 758473
+run 35150  1001.778  
+
+# 700  115 uA
+modrun 223  1003171
+run 35154  1003.173  copied
+
+# 600  101 uA
+modrun 224  999854
+run 35155   999.855 processed
+
+# 500  93 uA
+modrun 225  1019340
+run 35156  1019.341  copied
+
+# 400  83 uA
+modrun 226  1008573
+run 35157  1008.575  copied
+							
+# 6 GeV for the night							
+800 V  138 uA
+modrun 227 42538720
+run 35158 42.5M  copied
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Sun 9.12.2018
+# 509i Syn continue vertical bias scan
+
+# 5.2 GeV							
+
+# 350  72 uA
+modrun 228  1001287
+run run 35159  1001.289  copied
+
+# 300  66 uA
+modrun 229  1187276
+run 35160  1187.277  copied
+
+# 250  60 uA
+modrun 230  1001535
+run 35161  1001.537  copied
+
+# 200  54 uA
+modrun 231  1002086
+run 35162  1002.088  88.6
+
+# 150  46 uA
+modrun 232  1000761
+run 35163  1000.761  copied
+
+# 100  38 uA
+modrun 233  1001940
+run 35164  1001.941  
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 509i Syn
+turn -34
+geo geo_2018_12d.dat = 0 152 305 524 672 826
+
+# 800 V, 136 uA
+modrun 234  1561404  in sync
+run 35168  1561.406  92.7
+
+# pulsing every 160 us (from 80us)
+modrun 239  252235
+run 35177  252.235  95.7
+
+# pulsing every 400 us (from 80us)
+modrun 240  931942  erase 311444, 311455
+run 35178  931.941  93.2
+
+# pulsing every 240 us (from 80us)
+modrun 241  1001230
+run 35179  1001.230  96.8
+
+# pulsing every 320 us (from 80us)
+modrun 242  1034446
+run 35180  1034.446  95.6
+
+# az_setup delay to 240 us  autozero
+modrun 243  3000911  erase 1610802, 1610803
+run 35181  3000.909  96.80
+# EURunsplitter.exe -d ../tele-scope/data -o 35181 -n 351810 -e 1000000
+# hadd scopeRD35179-81.root scopeRD35179.root scopeRD35181.root
+
+#-------------------------------------------------------------------------------
+# 2019
+#-------------------------------------------------------------------------------
+# Mon 11.2.2019
+
+chip 1470 = FBK planar 50x50 100 um activbe thickness 5E15 neq/cm2 at Ka
+
+fifty 1
+
+# straight, Lin section
+
+geo geo_2019_02d.dat #  0 153  305  474  621  775  50x50
+
+GeV 5.2
+
+# bias 100
+
+modrun 244
+run 35424
+
+# adjust x
+
+modrun 245
+run 35426 # 406k
+
+# bias 150
+
+modrun 246
+run 35427 # 497k  
+
+# 200V, 326 uA
+modrun 248  # 46% yield
+run 35429	500
+
+GeV 5.6
+# 200V, 326 uA
+modrun 249
+run 35430
+
+# MOD trigger delay 4 ns to 20 ns
+
+modrun 250
+run 35431
+
+GeV 5.2

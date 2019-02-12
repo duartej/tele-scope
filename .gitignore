@@ -1,0 +1,15 @@
+
+*.root
+hot*
+al*
+*.pdf
+*.sh
+*.C
+*.py
+*.dat
+
+# ignore executables:
+evmod
+tele
+scope53
+scope53m
