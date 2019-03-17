@@ -1123,7 +1123,7 @@ run 35119  25954.454  46 GB
 # Sat 8.12.2018
 # RD53A 509i Lin vertical bias scan
 
-GeV 5.2  1.25 kHz							
+GeV 5.2  1.25 kHz              
 
 # 700V, 117 uA
 modrun 207  1000113
@@ -1205,8 +1205,8 @@ run 35156  1019.341  copied
 # 400  83 uA
 modrun 226  1008573
 run 35157  1008.575  copied
-							
-# 6 GeV for the night							
+              
+# 6 GeV for the night              
 800 V  138 uA
 modrun 227 42538720
 run 35158 42.5M  copied
@@ -1215,7 +1215,7 @@ run 35158 42.5M  copied
 # Sun 9.12.2018
 # 509i Syn continue vertical bias scan
 
-# 5.2 GeV							
+# 5.2 GeV              
 
 # 350  72 uA
 modrun 228  1001287
@@ -1277,13 +1277,18 @@ run 35181  3000.909  96.80
 #-------------------------------------------------------------------------------
 # Mon 11.2.2019
 
-chip 1470 = FBK planar 50x50 100 um activbe thickness 5E15 neq/cm2 at Ka
+chip 1470 = FBK planar 50x50 default 100 um active thickness 5E15 neq/cm2 at Ka
 
 fifty 1
 
 # straight, Lin section
 
 geo geo_2019_02d.dat #  0 153  305  474  621  775  50x50
+
+# vertical
+
+tilt 1
+turn 1
 
 GeV 5.2
 
@@ -1305,7 +1310,7 @@ run 35427 # 497k
 # 200V, 326 uA
 
 modrun 248  # 46% yield: modlky triangular
-run 35429	500
+run 35429  500
 
 GeV 5.6 over night
 # 200V, 326 uA
@@ -1341,3 +1346,563 @@ run 35436
 # bias 250 V, 374 uA
 modrun 257
 run 35437
+
+#bias 300 V, 422 uA
+modrun 258
+run 35438  1200
+
+#bias 300 V, 422 uA
+modrun 259
+run 35439  302
+
+#bias 150 V, 274 uA
+modrun 261
+run 35441  540
+
+#bias 100 V, 207 uA
+modrun 262
+run 35442
+
+# bias 50 V, 129 uA
+modrun 263
+run 35443  301k
+
+geo geo_2019_02e.dat = 0  153  305  573  720  874
+
+# bias 300 V, 413 uA
+turn -28
+modrun 265
+run 35445 # 662k  99.3%
+
+turn -30
+modrun 266
+run 35446 # 
+
+turn -25
+modrun 267
+run 35447  545k
+
+turn -20
+modrun 268
+run 35448  520k
+
+# adjust x from +3.5 to +2.0 mm                
+
+turn -15
+modrun 270
+run 35450  512k
+
+# adjust x from +2 to +1 mm                
+                
+turn -10
+modrun 272
+run 35452  754k
+                
+# adjust x from +1 to +4 mm                
+
+turn -30
+modrun 275
+run 35454  13450k
+
+Put the HV shield to the low voltage 0 = No resistor on HV return
+
+turn 1
+geo_2019_02f = 0  153  305  538  685  839
+
+# bias 100V, 237 uA
+modrun 278
+run 35457  250k
+
+# bias 150V, 305 uA
+modrun 279, eff 96.3%
+run 35458  300k
+
+# bias 200 V, 354 uA
+modrun 280, eff 98.5%
+run 35459  500k
+
+# bias 250 V, 406 uA
+modrun 281, eff 99.1%
+run 35460  510k
+
+# bias 270 V, 430 uA
+modrun 282
+run 35461  500k
+
+# bias 300 V, 467 uA
+modrun 283
+run 35462  506k
+
+# bias 350 V, 540 uA (coward?) (desperate?)
+modrun 284
+run 35463  500
+
+# bias 350 V, 543 uA
+modrun 285
+run 35464  1156k
+
+# LIN Vthreshold 350 = 1.2 ke, 1% noise
+
+# 2x100 kOhm back in
+
+# bias 100 V, 202 uA
+modrun 286
+run 35465
+
+# bias 150 V, 266 uA
+modrun 287
+run 35466  502k
+
+# bias 200 V, 320 uA
+modrun 288
+run 35467  504k
+
+# bias 250 V, 362 uA
+modrun 289
+run 35468  569
+
+# bias 300 V, 407 uA
+modrun 290
+run 35469  512k
+
+# bias 50 V, 128 uA
+modrun 291
+run 35470
+
+# bias 350 V, 463 uA
+modrun 292
+run 35471  563
+              
+Put the HV shield to the low voltage 0
+
+# bias 300 V, 454 uA
+modrun 293
+run 35472  565
+              
+# open telescope for turn              
+geo geo_2019_02e.dat = 0  153  305  573  720  874
+
+# bias 300 V, 456 uA
+
+turn -28
+modrun 295
+run 35474
+
+modrun 296
+run 35475  1157
+
+turn -30
+modrun 297
+run 35476  1022
+
+turn -26
+modrun 298
+run 35477  829
+
+turn -24
+modrun 299
+run 35478  509
+
+turn -20
+modrun 300
+run 35479  503
+
+adjust x from +4.0 to +2.0 mm              
+
+turn -16
+modrun 302
+run 35481  517
+
+turn -12
+modrun 303
+run 35482  503
+
+adjust x from +2.0 to +1.0 mm              
+
+turn -8
+modrun 305
+run 35484  530
+
+adjust x from +1.0 to +4.0 mm              
+
+turn -30
+modrun 306
+run 35485  27371 over night
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Thu 14.2.2019
+
+chip 1472 = FBK planar 50x50 bias dot 100 um active thickness 5E15 neq/cm2 at Ka
+
+fifty 1
+
+# straight, Lin section
+
+turn 1
+geo_2019_02f = 0  153  305  538  685  839
+
+modrun 308
+run 35487
+
+# bias dots floating
+modrun 309
+run 35488
+
+# Guard ring s1=ON, s2=OFF
+modrun 310
+run 35489  504
+
+# Guard ring sw1=OFF, sw2=ON
+modrun 312
+run 35491
+
+#bias 250 V, 43 uA    35492  602  modrun 313, eff  96.87
+#bias 300 V, 45 uA    35493  509  modrun 314, eff 97.14
+#bias 350 V, 48 uA    35494  510  modrun 315, eff 97.46
+#bias 370 V, 49 uA    35495  507  modrun 316, eff 97.54
+#bias 400 V, 50 uA    35496  506  modrun 317, eff 97.68
+#bias 400 V, 50 uA    35497  1557  modrun 318, eff 97.60%
+#bias 150 V, 37 uA    35498  609  modrun 319, eff 95.9%
+#bias 100 V, 32 uA    35499  500~  modrun 320, no disk space on pixelb
+
+#bias 100 V, 32 uA    0  35504  504      modrun 325, eff 93.85
+
+geo geo_2019_02e.dat = 0  153  305  573  720  874
+
+#adjust x from -1.0 to +4.0 mm              
+#bias 400 V, 49 uA    -30  35505  550      modrun 326  eff 99.75
+#bias 400 V, 49 uA    -26  35506  1017      modrun 327  eff 99.67
+#bias 400 V, 49 uA    -20  35507  507      modrun 328  eff 99.45 (skip 2)
+#adjust x from +4.0mm to +2.0mm              
+#bias 400 V, 48 uA    -12  35508  511      modrun 329  98.8 skip 2
+#adjust x from +2.0mm to +4.0mm              
+#bias 400 V, 49 uA    -30  35509  541      modrun 330 skip 1
+#bias 400 V, 48 uA    -30  35510  23152      modrun 331
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Fri 15.2.2019
+
+chip 512 = FTH150P RD53A 100x25 P2 = p-stop with bias dot
+
+# Lin section
+
+fifty 0
+
+turn 1
+geo geo_2019_02g.dat = 0  153  305  538  685  839 # 100x25
+5.2 GeV
+bias dot floating
+
+# 200 kOhm on bias
+
+# Vthreshold 350
+
+# 400 V, 79 uA
+modrun 360
+run 35543
+
+# Vthreshold 345
+modrun 361
+run 35548  490
+
+# 500 V, 93 uA
+modrun 362  skip 2
+run 35549  362
+
+# 600 V, 109 uA
+modrun 363
+run 35550  364
+
+# 700 V, 128 uA
+modrun 364  skip 4  lost sync 73k
+run 35551  360
+
+# 300 V, 61 uA
+modrun 366  skip 2
+run 35553  345  COPY
+
+# problems in DESY II, dinner, TCP errors, reboot rcdatura              
+# 800 V, 151 uA
+modrun 368  skip 1
+run 35555  360  COPY
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Sat 16.2.2019
+
+turn -34
+
+geo geo_2019_02h.dat = 0  153  305  573  720  874
+
+# move in x by 7 mm
+
+# 300 V, 60 uA
+modrun 374  skip 0
+run  35562  361  COPY
+
+# 400 V, 74 uA
+modrun 375  skip 0
+run 35563  361  COPY
+
+# 500 V, 90 uA
+modrun 376  skip 2
+run 35564  360  COPY
+
+# 600 V, 106 uA
+modrun 377  skip 0
+run 35565  370
+
+# 700 V, 126 uA
+modrun 378  skip 
+run 35566  360  COPY
+
+# 800 V,  uA  360
+modrun 379  skip 0
+run 35567  360k  99.7
+
+# Grounded bias dot
+modrun 380  skip 0
+run 35568  360k  99.7
+
+modrun 381  skip 0
+run 35569  414k  9  COPY
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Grounded bias dot, vertical incidence
+
+turn 1
+geo geo_2019_02g.dat = 0  153  305  538  685  839 # 100x25
+
+modrun 384  skip 
+run 35572  
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# threshold scan against noise
+
+turn -33
+#x from -1 to +6 mm
+
+geo geo_2019_02h.dat = 0  153  305  573  720  874
+
+# 800 V, 152 uA
+
+# Vthreshold 347  S/N = dutpxbc->GetBinContent(20) / dutpxbc->GetBinContent(29) - 1
+
+modrun 386  skip 0 
+run 35574  360  99.50
+
+modrun 387  skip 0
+run 35575  360  99.5
+
+modrun 388  skip 0 
+run 35576  360
+
+modrun 389  skip 0
+run 35577  360
+
+modrun 390  skip 0
+run 35578  360  COPY
+
+# Vthreshold 349
+modrun 391  skip 0
+run 35579  360  99.34
+
+# Vthreshold 351
+modrun 392  skip 0
+run 35580  360  99.17
+
+# Vthreshold 353
+modrun 393  skip 0
+run 35581  360  99.05
+
+# Vthreshold 355
+modrun 394  skip 0
+run 35582  360  98.72
+
+# Vthreshold 357
+modrun 395  skip 0
+run 35583  360  98.41
+
+#Vthreshold 359
+modrun 396  skip 0,
+run 35584	360
+
+#Vthreshold 351
+#700 V, 130 uA
+modrun 397  skip 0,
+run 35585	390
+
+#600 V, 109 uA
+modrun 398  skip 0,
+run 35586	360
+
+#500 V, 92 uA
+modrun 399  skip 0,
+run 35587	360
+
+#400 V, 76 uA
+modrun 400  skip 0,
+run 35588	360
+
+#300 V, 61 uA
+modrun 401  skip 0,
+run 35589	360
+
+# 800 V over night
+modrun 402  TLU 41'460'016
+run 35590  41461.428  COPY
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Sun 17.2.2019
+# turn scan: when does the bias dot disappear?
+
+turn -7.4  x 0
+modrun 403  skip 0
+run 35591  94.8
+
+turn -12.3  x 2
+modrun 404  skip 0
+run 35592  96.4
+
+turn -17.1  x 4
+modrun 405  skip 0
+run 35593  97.4
+
+turn -22.1  x 6
+modrun 406  skip 0
+run 35594  98.3
+
+turn -27.0  x 6
+modrun 407  skip 0
+run 35595  98.8
+
+turn -2.0  x -1
+modrun 408  skip 0
+run 35596  93.7
+
+#-------------------------------------------------------------------------------
+# Sat 16.3.2019
+
+chip 511 = FDB150P D53A 50x50 P3 p-stop bias dot with 1.5E16 CERN PS p/cm2
+
+# Lin section, thr 1.4 ke
+
+# bias dot grounded
+
+fifty 1
+
+turn 1
+tilt 3
+
+# module 4139 in front: scope53m
+
+geo geo_2019_03b.dat = 0  153  305  538  690  844 # 50x50
+
+GeV 5.2
+
+# 200 kOhm on bias
+
+# 800 V, 279 uA, still dropping
+
+modrun 411
+run 35630  96.3 bias dot
+
+# adjust x, y
+
+modrun 412
+run 35631  96.3
+
+# bias dot floating
+
+modrun 413
+run 35633  96.7
+
+turn -30
+
+geo geo_2019_03c.dat = 0  153  305  576  729  883 # 50x50
+
+# vbias still 800V, 232uA
+# move x +4mm
+modrun 416
+run 35636  530  99.53
+
+# vbias 700V, 188uA
+# move x to +5mm
+modrun 418
+run 35638  562  99.14
+
+# vbias 600V, ileak 152uA
+modrun 419
+run 35639  523k
+
+# vbias 500V, ileak 123uA
+modrun 420
+run 35640  586
+
+# vbias 400V, ileak 95uA
+modrun 421
+run 35641  505
+
+# vbias 300V, ileak 70uA
+modrun 422
+run 35642  525  64.8
+
+# for the night: 5.6 GeV: 433 Hz							
+# vbias 800V, ileak 231uA
+GeV 5.6
+modrun 423  4'964'583
+run 35643  4957.152  
+# Mimosa: lost 7430 events
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Sun 17.3.2019
+# continue 511i
+
+# beam but no rate: target wire broken?
+# machine changed target from #5/#2 to #6/#3 at -16/+14 mm
+							
+# 50x50 turn scan at 800 V for resolution
+turn -30
+modrun 426  skip 0
+run 35646  500
+
+turn -28
+modrun 427  skip 0
+run 35647  500
+
+turn -26
+modrun 428
+run 35648
+
+turn -24
+modrun 429
+run 35649
+
+turn -22
+modrun 430
+run 35650  99.35
+
+turn -20
+modrun 431
+run 35651  99.26
+
+turn -18
+modrun 432
+run 35652  99.09  
+
+# shift 1 mm x
+turn -16
+modrun 433  skip 0
+run 35653  500
+
+turn -14
+run 35654  500
+modrun 434  skip 0
+
+turn -12
+modrun 434  skip 0
+run 35655  500
+
+# shift 1 mm x
+turn -10
+modrun 434  skip
+run 35656

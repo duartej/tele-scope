@@ -7,6 +7,8 @@ al*
 *.C
 *.py
 *.dat
+*.out
+*.raw
 
 # ignore executables:
 evmod

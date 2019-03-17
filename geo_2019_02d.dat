@@ -1,5 +1,5 @@
 
-# telescope geometry for Datura with RD53 50x50 in Nov 2018
+# telescope geometry for Datura with RD53 50x50 in Feb 2019
 
 plane 0  # DUT
 type RD53A50x50

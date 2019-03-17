@@ -320,7 +320,7 @@ int main( int argc, char* argv[] )
 
   string geoFileName( "geo.dat" );
   double pbeam = 4.8;
-  double DUTtilt0 = 0.0;
+  double DUTtilt0 = 0.5;
   double DUTturn0 = 0.5; // small turn will not be aligned
   double DUTtilt = DUTtilt0; // [deg]
   double DUTturn = DUTturn0; // [deg]
@@ -348,6 +348,7 @@ int main( int argc, char* argv[] )
     string GeV( "GeV" );
     string CHIP( "chip" );
     string TURN( "turn" );
+    string TILT( "tilt" );
     string FIFTY( "fifty" );
     string ROT90( "rot90" );
     bool found = 0;
@@ -381,6 +382,11 @@ int main( int argc, char* argv[] )
 
       if( tag == TURN ) {
 	tokenizer >> DUTturn0;
+	continue;
+      }
+
+      if( tag == TILT ) {
+	tokenizer >> DUTtilt0;
 	continue;
       }
 
@@ -418,6 +424,7 @@ int main( int argc, char* argv[] )
 	<< "  beam " << pbeam << " GeV" << endl
 	<< "  geo file " << geoFileName << endl
 	<< "  nominal DUT turn " << DUTturn0 << " deg" << endl
+	<< "  nominal DUT tilt " << DUTtilt0 << " deg" << endl
 	<< "  DUT chip " << chip0 << endl
 	<< "  fifty " << fifty << endl
 	<< "  rot90 " << rot90 << endl
@@ -882,6 +889,16 @@ int main( int argc, char* argv[] )
     qR = 20;
   }
 
+  if( run >= 35424 ) { // 1470  100 um irrad 5E15 neq/cm2 Ka
+    qL =  3;
+    qR = 10;
+  }
+
+  if( run >= 35630 ) { // 511i
+    qL =  4;
+    qR = 13;
+  }
+
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // DUT dead pixels:
 
@@ -1099,12 +1116,68 @@ int main( int argc, char* argv[] )
     getline( Bstream, sl );
   }
 
+  if( modrun >= 258 && modrun <= 264 ) { // Feb 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+
+  if( modrun >= 266 && modrun <= 267 ) { // Feb 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+
+  if( modrun >= 269 && modrun <= 274 ) { // Feb 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+
+  if( modrun >= 278 && modrun <= 288 ) { // Feb 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+
+  if( modrun == 362 ) { // Feb 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+
+  if( modrun == 363 ) { // Feb 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+
+  if( modrun == 364 ) { // Feb 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+
+  if( modrun >= 414 && modrun <= 423 ) { // Mar 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+
   int iMOD = 7;
 
   int MODaligniteration = 0;
-  double MODalignx = -2.5;
-  double MODaligny = -0.4;
-  double MODrot = 0.007;
+  double MODalignx = 0;
+  double MODaligny = 0;
+  double MODrot = 0;
   double MODtilt =  19.2; // [deg]
   double MODturn = -27.0; // [deg]
   double MODz = -45 + zz[1];
@@ -1430,9 +1503,6 @@ int main( int argc, char* argv[] )
   TH1I moddxcHisto( "moddxc",
 		    "MOD - triplet x;MOD cluster - triplet #Deltax [mm];MOD clusters",
 		    200, -0.5, 0.5 );
-  TH1I moddxcqHisto( "moddxcq",
-		     "MOD - triplet x Landau peak;MOD cluster - triplet #Deltax [mm];Landau peak MOD clusters",
-		     500, -0.5, 0.5 );
   TProfile moddxvsx( "moddxvsx",
 		     "MOD #Deltax vs x;x track [mm];<cluster - triplet #Deltax> [mm]",
 		     216, -32.4, 32.4, -2.5, 2.5 );
@@ -1606,16 +1676,19 @@ int main( int argc, char* argv[] )
 		    500, -0.5, 0.5 );
   TH1I lindxcHisto( "lindxc",
 		    "Lin - track dx;Lin cluster - track #Deltax [mm];Lin clusters",
-		    200, -0.2, 0.2 );
+		    200, -0.5, 0.5 );
   TH1I difdxcHisto( "difdxc",
 		    "Dif - track dx;Dif cluster - track #Deltax [mm];Dif clusters",
-		    200, -0.2, 0.2 );
+		    200, -0.5, 0.5 );
   TH1I dutdxc1Histo( "dutdxc1",
 		     "DUT - track dx;DUT cluster - track #Deltax [mm];DUT 1-px clusters",
-		     200, -0.2, 0.2 );
+		     200, -0.5, 0.5 );
   TH1I dutdxc2Histo( "dutdxc2",
 		     "DUT - track dx;DUT cluster - track #Deltax [mm];DUT 2-px clusters",
-		     200, -0.2, 0.2 );
+		     200, -0.5, 0.5 );
+  TH1I dutdxcqHisto( "dutdxcq",
+		     "DUT - track dx Landau peak;DUT cluster - track #Deltax [mm];Landau peak DUT clusters",
+		     500, -0.5, 0.5 );
 
   double limx = 0.1;
   if( fabs(DUTturn) > 44 )
@@ -1658,9 +1731,6 @@ int main( int argc, char* argv[] )
   TProfile dutmadxvsq( "dutmadxvsq",
 		       "DUT MAD(#Deltax) vs Q;cluster signal [ToT];MAD(#Deltax) [mm]",
 		       80, 0, 80, 0, limx );
-  TH1I dutdxcqHisto( "dutdxcq",
-		     "DUT - track dx Landau peak;DUT cluster - track #Deltax [mm];Landau peak DUT clusters",
-		     500, -0.2, 0.2 );
 
   TH2I * dutyyHisto = new
     TH2I( "dutyy", "tracks vs DUT in y;track y [mm];DUT cluster y [mm];track-cluster pairs",
@@ -3638,6 +3708,9 @@ int main( int argc, char* argv[] )
 	  else if( c->nrow == 2 )
 	    dutdxc2Histo.Fill( dutdx );
 
+	  if( Q0 > qL && Q0 < qR )
+	    dutdxcqHisto.Fill( dutdx );
+
 	  dutdxvsx.Fill( x4, dutdx ); // for turn
 	  dutdxvsy.Fill( y4, dutdx ); // for rot
 	  dutdxvstx.Fill( sxA, dutdx );
@@ -3653,8 +3726,6 @@ int main( int argc, char* argv[] )
 	  dutmadxvsxm.Fill( xmod*1E3, fabs(dutdx) );
 	  dutmadxvstx.Fill( sxA, fabs(dutdx) );
 	  dutmadxvsq.Fill( Q0, fabs(dutdx) );
-	  if( Q0 > qL && Q0 < qR )
-	    dutdxcqHisto.Fill( dutdx );
 
 	} // cut y
 
@@ -3799,6 +3870,8 @@ int main( int argc, char* argv[] )
 	    linnrowvsxm.Fill( xmod*1E3, c->nrow );
 	    linnrowvsxm5.Fill( xmod5*1E3, c->nrow );
 	    if( !fifty && !rot90 && xmod > 0.010 && xmod < 0.090 )
+	      linnrowvsym.Fill( ymod*1E3, c->nrow );
+	    if( fifty )
 	      linnrowvsym.Fill( ymod*1E3, c->nrow );
 
 	    linqvsxmym->Fill( xmod*1E3, ymod*1E3, Q );
@@ -4253,6 +4326,24 @@ int main( int argc, char* argv[] )
 	  if( y4 >  4.7 ) fidy = 0;
 	  if( y4 < -4.7 ) fidy = 0;
 	}
+	if( chip0 == 1472 ) { // straight Lin
+	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 < -3.5 ) fidx = 0;
+	  if( y4 >  4.7 ) fidy = 0;
+	  if( y4 < -4.7 ) fidy = 0;
+	}
+	if( chip0 == 512 ) { // straight Lin
+	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 < -3.5 ) fidx = 0;
+	  if( y4 >  4.7 ) fidy = 0;
+	  if( y4 < -4.7 ) fidy = 0;
+	}
+	if( chip0 == 511 ) { // straight Lin
+	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 < -3.5 ) fidx = 0;
+	  if( y4 >  4.7 ) fidy = 0;
+	  if( y4 < -4.7 ) fidy = 0;
+	}
 
 	// from track x, y (at DUT) to sensor col, row:
 
@@ -4574,7 +4665,7 @@ int main( int argc, char* argv[] )
 
 	TF1 * fdyvsx = moddyvsx.GetFunction( "pol1" );
 	cout << endl << moddyvsx.GetTitle()
-	     << ": extra rot " << fdyvsx->GetParameter(1) << endl;
+	     << ": extra rot " << fdyvsx->GetParameter(1)*1E3 << " mrad" << endl;
 	MODrot += fdyvsx->GetParameter(1);
 	//delete fdyvsx;
 
@@ -4679,132 +4770,120 @@ int main( int argc, char* argv[] )
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // DUT alignment:
 
-  cout << endl
-       << "DUT efficiency " << 100*effvst5.GetMean(2) << "%"
-       << " from " << effvst5.GetEntries() << " events"
-       << endl;
+  if( DUTaligniteration == 0 ) {
 
-  if( dutdxaHisto.GetEntries() > 999 ) {
+    if( dutdxaHisto.GetEntries() > 999 ) {
 
-    double newDUTalignx = DUTalignx0;
-    double newDUTaligny = DUTaligny0;
+      if( dutdxaHisto.GetMaximum() > dutsxaHisto.GetMaximum() ) {
 
-    if( dutdxaHisto.GetMaximum() > dutsxaHisto.GetMaximum() ) {
+	cout << endl << dutdxaHisto.GetTitle()
+	     << " bin " << dutdxaHisto.GetBinWidth(1)
+	     << " peak " << dutdxaHisto.GetMaximum()
+	     << " at " << dutdxaHisto.GetBinCenter( dutdxaHisto.GetMaximumBin() )
+	     << endl;
+	DUTalignx0 = dutdxaHisto.GetBinCenter( dutdxaHisto.GetMaximumBin() );
+      }
+      else {
+	cout << endl << dutsxaHisto.GetTitle()
+	     << " bin " << dutsxaHisto.GetBinWidth(1)
+	     << " peak " << dutsxaHisto.GetMaximum()
+	     << " at " << dutsxaHisto.GetBinCenter( dutsxaHisto.GetMaximumBin() )
+	     << endl;
+	DUTalignx0 = dutsxaHisto.GetBinCenter( dutsxaHisto.GetMaximumBin() );
+      }
 
-      cout << endl << dutdxaHisto.GetTitle()
-	   << " bin " << dutdxaHisto.GetBinWidth(1)
-	   << endl;
-      TF1 * fgp0 = new TF1( "fgp0", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", -1, 1 );
-      double xpk = dutdxaHisto.GetBinCenter( dutdxaHisto.GetMaximumBin() );
-      fgp0->SetParameter( 0, dutdxaHisto.GetMaximum() ); // amplitude
-      fgp0->SetParameter( 1, xpk );
-      fgp0->SetParameter( 2, dutdxaHisto.GetBinWidth(1) ); // sigma
-      fgp0->SetParameter( 3, dutdxaHisto.GetBinContent( dutdxaHisto.FindBin(xpk-1) ) ); // BG
-      dutdxaHisto.Fit( "fgp0", "q", "", xpk-1, xpk+1 );
-      cout << "Fit Gauss + BG:"
-	   << endl << "  A " << fgp0->GetParameter(0)
-	   << endl << "mid " << fgp0->GetParameter(1)
-	   << endl << "sig " << fgp0->GetParameter(2)
-	   << endl << " BG " << fgp0->GetParameter(3)
-	   << endl;
-      newDUTalignx = fgp0->GetParameter(1);
-      //delete fgp0;
-    }
-    else {
-      cout << endl << dutsxaHisto.GetTitle()
-	   << " bin " << dutsxaHisto.GetBinWidth(1)
-	   << endl;
-      TF1 * fgp0 = new TF1( "fgp0", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", -1, 1 );
-      double xpk = dutsxaHisto.GetBinCenter( dutsxaHisto.GetMaximumBin() );
-      fgp0->SetParameter( 0, dutsxaHisto.GetMaximum() ); // amplitude
-      fgp0->SetParameter( 1, xpk );
-      fgp0->SetParameter( 2, dutsxaHisto.GetBinWidth(1) ); // sigma
-      fgp0->SetParameter( 3, dutsxaHisto.GetBinContent( dutsxaHisto.FindBin(xpk-1) ) ); // BG
-      dutsxaHisto.Fit( "fgp0", "q", "", xpk-1, xpk+1  );
-      cout << "Fit Gauss + BG:"
-	   << endl << "  A " << fgp0->GetParameter(0)
-	   << endl << "mid " << fgp0->GetParameter(1)
-	   << endl << "sig " << fgp0->GetParameter(2)
-	   << endl << " BG " << fgp0->GetParameter(3)
-	   << endl;
-      newDUTalignx = fgp0->GetParameter(1);
-      //delete fgp0;
-    }
+      // y:
 
-    // y:
+      if( dutdyaHisto.GetMaximum() > dutsyaHisto.GetMaximum() ) {
+	cout << endl << dutdyaHisto.GetTitle()
+	     << " bin " << dutdyaHisto.GetBinWidth(1)
+	     << " peak " << dutdyaHisto.GetMaximum()
+	     << " at " << dutdyaHisto.GetBinCenter( dutdyaHisto.GetMaximumBin() )
+	     << endl;
+	DUTaligny0 = dutdyaHisto.GetBinCenter( dutdyaHisto.GetMaximumBin() );
+      }
+      else {
+	cout << endl << dutsyaHisto.GetTitle()
+	     << " bin " << dutsyaHisto.GetBinWidth(1)
+	     << " peak " << dutsyaHisto.GetMaximum()
+	     << " at " << dutsyaHisto.GetBinCenter( dutsyaHisto.GetMaximumBin() )
+	     << endl;
+	DUTaligny0 = dutsyaHisto.GetBinCenter( dutsyaHisto.GetMaximumBin() );
+      }
 
-    if( dutdyaHisto.GetMaximum() > dutsyaHisto.GetMaximum() ) {
-      cout << endl << dutdyaHisto.GetTitle()
-	   << " bin " << dutdyaHisto.GetBinWidth(1)
-	   << endl;
-      TF1 * fgp0 = new TF1( "fgp0", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", -1, 1 );
-      double xpk = dutdyaHisto.GetBinCenter( dutdyaHisto.GetMaximumBin() );
-      fgp0->SetParameter( 0, dutdyaHisto.GetMaximum() ); // amplitude
-      fgp0->SetParameter( 1, xpk );
-      fgp0->SetParameter( 2, dutdyaHisto.GetBinWidth(1) ); // sigma
-      fgp0->SetParameter( 3, dutdyaHisto.GetBinContent( dutdyaHisto.FindBin(xpk-1) ) ); // BG
-      dutdyaHisto.Fit( "fgp0", "q", "", xpk-1, xpk+1 );
-      cout << "Fit Gauss + BG:"
-	   << endl << "  A " << fgp0->GetParameter(0)
-	   << endl << "mid " << fgp0->GetParameter(1)
-	   << endl << "sig " << fgp0->GetParameter(2)
-	   << endl << " BG " << fgp0->GetParameter(3)
-	   << endl;
-      newDUTaligny = fgp0->GetParameter(1);
-      //delete fgp0;
-    }
-    else {
-      cout << endl << dutsyaHisto.GetTitle()
-	   << " bin " << dutsyaHisto.GetBinWidth(1)
-	   << endl;
-      TF1 * fgp0 = new TF1( "fgp0", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", -1, 1 );
-      double xpk = dutsyaHisto.GetBinCenter( dutsyaHisto.GetMaximumBin() );
-      fgp0->SetParameter( 0, dutsyaHisto.GetMaximum() ); // amplitude
-      fgp0->SetParameter( 1, xpk );
-      fgp0->SetParameter( 2, dutsyaHisto.GetBinWidth(1) ); // sigma
-      fgp0->SetParameter( 3, dutsyaHisto.GetBinContent( dutsyaHisto.FindBin(xpk-1) ) ); // BG
-      dutsyaHisto.Fit( "fgp0", "q", "", xpk-1, xpk+1 );
-      cout << "Fit Gauss + BG:"
-	   << endl << "  A " << fgp0->GetParameter(0)
-	   << endl << "mid " << fgp0->GetParameter(1)
-	   << endl << "sig " << fgp0->GetParameter(2)
-	   << endl << " BG " << fgp0->GetParameter(3)
-	   << endl;
-      newDUTaligny = fgp0->GetParameter(1);
-      //delete fgp0;
-    }
+    } // stat
+    else
+      cout << "not enough for coarse alignment" << endl;
 
-    // finer alignment:
+  } // iteration 0
+
+  // finer alignment:
+
+  if( DUTaligniteration > 0 ) {
 
     cout << endl;
 
-    if( DUTaligniteration > 0 && fabs( newDUTalignx - DUTalignx0 ) < 0.1 ) {
+    if( dutdxHisto.GetEntries() > 999 ) {
 
-      if( dutdxHisto.GetEntries() > 999 ) {
+      cout << "finer x " << dutdxHisto.GetTitle()
+	   << " bin " << dutdxHisto.GetBinWidth(1)
+	   << endl;
+      TF1 * fgp0 = new TF1( "fgp0", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", -1, 1 );
+      fgp0->SetParameter( 0, dutdxHisto.GetMaximum() ); // amplitude
+      fgp0->SetParameter( 1, dutdxHisto.GetBinCenter( dutdxHisto.GetMaximumBin() ) );
+      fgp0->SetParameter( 2, 8*dutdxHisto.GetBinWidth(1) ); // sigma
+      fgp0->SetParameter( 3, dutdxHisto.GetBinContent(1) ); // BG
+      dutdxHisto.Fit( "fgp0", "q" );
+      cout << "Fit Gauss + BG:"
+	   << endl << "  A " << fgp0->GetParameter(0)
+	   << endl << "mid " << fgp0->GetParameter(1)
+	   << endl << "sig " << fgp0->GetParameter(2)
+	   << endl << " BG " << fgp0->GetParameter(3)
+	   << endl;
+      DUTalignx0 += fgp0->GetParameter(1);
 
-	cout << "finer x " << dutdxHisto.GetTitle()
-	     << " bin " << dutdxHisto.GetBinWidth(1)
-	     << endl;
-	TF1 * fgp0 = new TF1( "fgp0", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", -1, 1 );
-	fgp0->SetParameter( 0, dutdxHisto.GetMaximum() ); // amplitude
-	fgp0->SetParameter( 1, dutdxHisto.GetBinCenter( dutdxHisto.GetMaximumBin() ) );
-	fgp0->SetParameter( 2, 8*dutdxHisto.GetBinWidth(1) ); // sigma
-	fgp0->SetParameter( 3, dutdxHisto.GetBinContent(1) ); // BG
-	dutdxHisto.Fit( "fgp0", "q" );
-	cout << "Fit Gauss + BG:"
-	     << endl << "  A " << fgp0->GetParameter(0)
-	     << endl << "mid " << fgp0->GetParameter(1)
-	     << endl << "sig " << fgp0->GetParameter(2)
-	     << endl << " BG " << fgp0->GetParameter(3)
-	     << endl;
-	newDUTalignx = DUTalignx0 + fgp0->GetParameter(1);
-	//delete fgp0;
+    }
+    else
+      cout << "not enough for fine x alignment" << endl;
 
-      }
+    // y:
 
-      // dxvsy => rot
+    cout << endl;
 
-      if( ( rot90 || fifty ) && dutdxvsy.GetEntries() > 999 ) {
+    if( dutdyHisto.GetEntries() > 999 ) {
+
+      cout << "finer y " << dutdyHisto.GetTitle()
+	   << " bin " << dutdyHisto.GetBinWidth(1)
+	   << endl;
+      TF1 * fgp0 = new TF1( "fgp0", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", -1, 1 );
+      fgp0->SetParameter( 0, dutdyHisto.GetMaximum() ); // amplitude
+      fgp0->SetParameter( 1, dutdyHisto.GetBinCenter( dutdyHisto.GetMaximumBin() ) );
+      fgp0->SetParameter( 2, 5*dutdyHisto.GetBinWidth(1) ); // sigma
+      fgp0->SetParameter( 3, dutdyHisto.GetBinContent(1) ); // BG
+      dutdyHisto.Fit( "fgp0", "q" );
+      cout << "Fit Gauss + BG:"
+	   << endl << "  A " << fgp0->GetParameter(0)
+	   << endl << "mid " << fgp0->GetParameter(1)
+	   << endl << "sig " << fgp0->GetParameter(2)
+	   << endl << " BG " << fgp0->GetParameter(3)
+	   << endl;
+      DUTaligny0 += fgp0->GetParameter(1);
+
+    }
+    else
+      cout << "not enough for fine y alignment" << endl;
+
+  } // iteration > 0
+
+  // angles from projections:
+
+  if( DUTaligniteration > 1 ) {
+
+    // dxvsy => rot
+
+    if( ( rot90 || fifty ) ) {
+
+      if( dutdxvsy.GetEntries() > 999 ) {
 
 	double x0 = -midx[iDUT]+0.2; // fit range
 	for( int ix = 1; ix < dutdxvsy.GetNbinsX(); ++ix ) {
@@ -4826,114 +4905,19 @@ int main( int argc, char* argv[] )
 	     << "fit " << dutdxvsy.GetTitle()
 	     << " from " << x0
 	     << " to " << x9
-	     << ": extra rot " << fdxvsy->GetParameter(1) << endl;
+	     << ": extra rot " << fdxvsy->GetParameter(1)*1E3 << " mrad" << endl;
 	DUTrot += fdxvsy->GetParameter(1);
 
       }
+      else
+	cout << "not enough for rot in dutdxvsy" << endl;
+    }
 
-      // dxvsx => turn:
-
-      if( DUTaligniteration > 1 &&
-	  dutdxvsx.GetEntries() > 999 &&
-	  fabs( DUTturn ) > 0.3 // [deg]
-	  ) {
-
-	double x0 = -midx[iDUT]+0.2; // fit range
-	for( int ix = 1; ix < dutdxvsx.GetNbinsX(); ++ix ) {
-	  if( dutdxvsx.GetBinEntries( ix ) > 11 ) {
-	    x0 = dutdxvsx.GetBinLowEdge(ix) + 2*dutdxvsx.GetBinWidth(ix);
-	    break;
-	  }
-	}
-	double x9 = midx[iDUT]-0.2; // [mm] full range
-	for( int ix = dutdxvsx.GetNbinsX(); ix > 0; --ix ) {
-	  if( dutdxvsx.GetBinEntries( ix ) > 11 ) {
-	    x9 = dutdxvsx.GetBinLowEdge(ix)-dutdxvsx.GetBinWidth(ix);
-	    break;
-	  }
-	}
-	dutdxvsx.Fit( "pol1", "q", "", x0, x9 );
-	TF1 * fdxvsx = dutdxvsx.GetFunction( "pol1" );
-	cout << endl
-	     << "fit " << dutdxvsx.GetTitle()
-	     << " from " << x0
-	     << " to " << x9
-	     << ": slope " << fdxvsx->GetParameter(1)
-	     << ", extra turn " << fdxvsx->GetParameter(1)/wt/so
-	     << " deg"
-	     << endl;
-	DUTturn += fdxvsx->GetParameter(1)/wt/so; // [deg] min 0.6 deg
-
-      } // turn x
-
-      // dxvstx => dz:
-
-      if( ( rot90 || fifty ) && dutdxvstx.GetEntries() > 999 ) {
-
-	double x0 = -0.002;
-	for( int ix = 1; ix < dutdxvstx.GetNbinsX(); ++ix ){
-	  if( dutdxvstx.GetBinEntries( ix ) > 11 ) {
-	    x0 = dutdxvstx.GetBinLowEdge(ix);
-	    break;
-	  }
-	}
-
-	double x9 = 0.002;
-	for( int ix = dutdxvstx.GetNbinsX(); ix > 0; --ix ){
-	  if( dutdxvstx.GetBinEntries( ix ) > 11 ) {
-	    x9 = dutdxvstx.GetBinLowEdge(ix)+dutdxvstx.GetBinWidth(ix);
-	    break;
-	  }
-	}
-
-	dutdxvstx.Fit( "pol1", "q", "", x0, x9 );
-
-	TF1 * fdxvstx = dutdxvstx.GetFunction( "pol1" );
-	cout << endl << dutdxvstx.GetTitle()
-	     << ": z shift " << fdxvstx->GetParameter(1)
-	     << " mm"
-	     << endl;
-	DUTz += fdxvstx->GetParameter(1);
-
-      }
-
-    } // x
-    else
-      cout << "alignx changed by " << newDUTalignx - DUTalignx0 << " mm"
-	   << ", need more iteration"
-	   << endl;
-
-    // y:
-
-    cout << endl;
-
-    if( DUTaligniteration > 0 && fabs( newDUTaligny - DUTaligny0 ) < 0.1 ) {
-
-      if( dutdyHisto.GetEntries() > 999 ) {
-
-	cout << "finer y " << dutdyHisto.GetTitle()
-	     << " bin " << dutdyHisto.GetBinWidth(1)
-	     << endl;
-	TF1 * fgp0 = new TF1( "fgp0", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", -1, 1 );
-	fgp0->SetParameter( 0, dutdyHisto.GetMaximum() ); // amplitude
-	fgp0->SetParameter( 1, dutdyHisto.GetBinCenter( dutdyHisto.GetMaximumBin() ) );
-	fgp0->SetParameter( 2, 5*dutdyHisto.GetBinWidth(1) ); // sigma
-	fgp0->SetParameter( 3, dutdyHisto.GetBinContent(1) ); // BG
-	dutdyHisto.Fit( "fgp0", "q" );
-	cout << "Fit Gauss + BG:"
-	     << endl << "  A " << fgp0->GetParameter(0)
-	     << endl << "mid " << fgp0->GetParameter(1)
-	     << endl << "sig " << fgp0->GetParameter(2)
-	     << endl << " BG " << fgp0->GetParameter(3)
-	     << endl;
-	newDUTaligny = DUTaligny0 + fgp0->GetParameter(1);
-	//delete fgp0;
-
-      }
+    else { // !rot90 && !fifty
 
       // dyvsx => rot
 
-      if( !rot90 && !fifty && dutdyvsx.GetEntries() > 999 ) {
+      if( dutdyvsx.GetEntries() > 999 ) {
 
 	double x0 = -midx[iDUT]+0.2; // fit range
 	for( int ix = 1; ix < dutdyvsx.GetNbinsX(); ++ix ) {
@@ -4958,16 +4942,54 @@ int main( int argc, char* argv[] )
 	     << "fit " << dutdyvsx.GetTitle()
 	     << " from " << x0
 	     << " to " << x9
-	     << ": extra rot " << fdyvsx->GetParameter(1) << endl;
+	     << ": extra rot " << fdyvsx->GetParameter(1)*1E3 << " mrad" << endl;
 	DUTrot -= fdyvsx->GetParameter(1);
 
       }
+      else
+	cout << "not enough for rot in dutdyvsx" << endl;
 
-      // dyvsy => tilt:
+    }
 
-      if( dutdyvsy.GetEntries() > 999 &&
-	  fabs( DUTtilt ) > 0.3 // [deg]
-	  ) {
+    // dxvsx => turn:
+
+    if( dutdxvsx.GetEntries() > 999 && fabs( DUTturn ) > 0.3 ) { // [deg]
+
+      double x0 = -midx[iDUT]+0.2; // fit range
+      for( int ix = 1; ix < dutdxvsx.GetNbinsX(); ++ix ) {
+	if( dutdxvsx.GetBinEntries( ix ) > 11 ) {
+	  x0 = dutdxvsx.GetBinLowEdge(ix) + 2*dutdxvsx.GetBinWidth(ix);
+	  break;
+	}
+      }
+      double x9 = midx[iDUT]-0.2; // [mm] full range
+      for( int ix = dutdxvsx.GetNbinsX(); ix > 0; --ix ) {
+	if( dutdxvsx.GetBinEntries( ix ) > 11 ) {
+	  x9 = dutdxvsx.GetBinLowEdge(ix)-dutdxvsx.GetBinWidth(ix);
+	  break;
+	}
+      }
+      dutdxvsx.Fit( "pol1", "q", "", x0, x9 );
+      TF1 * fdxvsx = dutdxvsx.GetFunction( "pol1" );
+      cout << endl
+	   << "fit " << dutdxvsx.GetTitle()
+	   << " from " << x0
+	   << " to " << x9
+	   << ": slope " << fdxvsx->GetParameter(1)
+	   << ", extra turn " << fdxvsx->GetParameter(1)/wt/so
+	   << " deg"
+	   << endl;
+      DUTturn += fdxvsx->GetParameter(1)/wt/so; // [deg] min 0.6 deg
+
+    } // turn x
+    else
+      cout << "not enough for turn in dutdxvsx" << endl;
+
+    // dyvsy => tilt:
+
+    if( fabs( DUTtilt ) > 0.3 ) { // [deg]
+
+      if( dutdyvsy.GetEntries() > 999 ) {
 
 	double x0 = -midy[iDUT]+0.2; // fit range
 	for( int ix = 1; ix < dutdyvsy.GetNbinsX(); ++ix ){
@@ -5000,10 +5022,52 @@ int main( int argc, char* argv[] )
 	DUTtilt += fdyvsy->GetParameter(1)/wt/sa; // sa might be neg
 
       }
+      else
+	cout << "not enough for tilt in dutdyvsy" << endl;
+
+    } // tilt
+
+    if( ( rot90 || fifty ) ) {
+
+      // dxvstx => dz:
+
+      if( dutdxvstx.GetEntries() > 999 ) {
+
+	double x0 = -0.002;
+	for( int ix = 1; ix < dutdxvstx.GetNbinsX(); ++ix ){
+	  if( dutdxvstx.GetBinEntries( ix ) > 11 ) {
+	    x0 = dutdxvstx.GetBinLowEdge(ix);
+	    break;
+	  }
+	}
+
+	double x9 = 0.002;
+	for( int ix = dutdxvstx.GetNbinsX(); ix > 0; --ix ){
+	  if( dutdxvstx.GetBinEntries( ix ) > 11 ) {
+	    x9 = dutdxvstx.GetBinLowEdge(ix)+dutdxvstx.GetBinWidth(ix);
+	    break;
+	  }
+	}
+
+	dutdxvstx.Fit( "pol1", "q", "", x0, x9 );
+
+	TF1 * fdxvstx = dutdxvstx.GetFunction( "pol1" );
+	cout << endl << dutdxvstx.GetTitle()
+	     << ": z shift " << fdxvstx->GetParameter(1)
+	     << " mm"
+	     << endl;
+	DUTz += fdxvstx->GetParameter(1);
+
+      }
+      else
+	cout << "not enough for z in dutdxvstx" << endl;
+    }
+
+    else { // !rot90 && !fifty
 
       // dyvsty => dz:
 
-      if( !rot90 && !fifty && dutdyvsty.GetEntries() > 999 ) {
+      if( dutdyvsty.GetEntries() > 999 ) {
 
 	double x0 = -0.002;
 	for( int ix = 1; ix < dutdyvsty.GetNbinsX(); ++ix ){
@@ -5031,57 +5095,57 @@ int main( int argc, char* argv[] )
 	DUTz += fdyvsty->GetParameter(1);
 
       }
-
-    } // y
-    else
-      cout << "aligny changed by " << newDUTaligny - DUTaligny0 << " mm"
-	   << ", need more iteration"
-	   << endl;
-
-    // write new DUT alignment:
-
-    cout << endl
-	 << "DUT alignment iteration " << DUTaligniteration << endl
-	 << "  alignx " << newDUTalignx << endl
-	 << "  aligny " << newDUTaligny << endl
-	 << "  rot    " << DUTrot << endl
-	 << "  tilt   " << DUTtilt << endl
-	 << "  turn   " << DUTturn << endl
-	 << "  dz     " << DUTz - zz[3] << endl
-      ;
-
-    cout << "update DUT alignment file? (y/n)" << endl;
-    string ans{"n"};
-    string YES{"y"};
-
-    if( fabs(DUTturn) < 44 )
-      cin >> ans;
-
-    if( ans == YES ) {
-
-      ofstream DUTalignFile( DUTalignFileName.str() );
-
-      DUTalignFile << "# DUT alignment for run " << run << endl;
-      ++DUTaligniteration;
-      DUTalignFile << "iteration " << DUTaligniteration << endl;
-      DUTalignFile << "alignx " << newDUTalignx << endl;
-      DUTalignFile << "aligny " << newDUTaligny << endl;
-      DUTalignFile << "rot " << DUTrot << endl;
-      DUTalignFile << "tilt " << DUTtilt << endl;
-      DUTalignFile << "turn " << DUTturn << endl;
-      DUTalignFile << "dz " << DUTz - zz[3] << endl;
-
-      DUTalignFile.close();
-
-      cout << " to " << DUTalignFileName.str() << endl;
-
+      else
+	cout << "not enough for z in dutdyvsty" << endl;
     }
-    else
-      cout << "no" << endl;
 
-  } // stat
+  } // iteration > 1
+
+  cout << endl
+       << "DUT efficiency " << 100*effvst5.GetMean(2) << "%"
+       << " from " << effvst5.GetEntries() << " events"
+       << endl;
+
+  // write new DUT alignment:
+
+  cout << endl
+       << "DUT alignment iteration " << DUTaligniteration << endl
+       << "  alignx " << DUTalignx0 << endl
+       << "  aligny " << DUTaligny0 << endl
+       << "  rot    " << DUTrot << endl
+       << "  tilt   " << DUTtilt << endl
+       << "  turn   " << DUTturn << endl
+       << "  dz     " << DUTz - zz[3] << endl
+    ;
+
+  cout << "update DUT alignment file? (y/n)" << endl;
+  string ans{"n"};
+  string YES{"y"};
+
+  if( fabs(DUTturn) < 44 )
+    cin >> ans;
+
+  if( ans == YES ) {
+
+    ofstream DUTalignFile( DUTalignFileName.str() );
+
+    DUTalignFile << "# DUT alignment for run " << run << endl;
+    ++DUTaligniteration;
+    DUTalignFile << "iteration " << DUTaligniteration << endl;
+    DUTalignFile << "alignx " << DUTalignx0 << endl;
+    DUTalignFile << "aligny " << DUTaligny0 << endl;
+    DUTalignFile << "rot " << DUTrot << endl;
+    DUTalignFile << "tilt " << DUTtilt << endl;
+    DUTalignFile << "turn " << DUTturn << endl;
+    DUTalignFile << "dz " << DUTz - zz[3] << endl;
+
+    DUTalignFile.close();
+
+    cout << " to " << DUTalignFileName.str() << endl;
+
+  }
   else
-    cout << "not enough for alignment" << endl;
+    cout << "no" << endl;
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done
