@@ -439,6 +439,10 @@ int main( int argc, char* argv[] )
 
   runsFile.close();
 
+  double upsignx = 1; // w.r.t. telescope
+  double upsigny = 1;
+  if( chip0 == -182 && run >= 35689 ) upsigny = -1; // Mar 2019 HLL
+
   const double fTLU = 384E6; // 384 MHz TLU clock
   /*
     effvsxy->Draw("colz")
@@ -899,6 +903,11 @@ int main( int argc, char* argv[] )
     qR = 13;
   }
 
+  if( run >= 35665 ) { // 511i KRUM_CURR_LIN : 16
+    qL =  7;
+    qR = 20;
+  }
+
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // DUT dead pixels:
 
@@ -1165,7 +1174,21 @@ int main( int argc, char* argv[] )
     getline( Bstream, sl );
   }
 
-  if( modrun >= 414 && modrun <= 423 ) { // Mar 2019
+  if( modrun >= 414 && modrun <= 418 ) { // Mar 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+  if( modrun == 419 ) { // Mar 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+  if( modrun == 420 ) { // Mar 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+  if( modrun >= 421 && modrun <= 423 ) { // Mar 2019
     getline( Astream, sl ); // read one line for sync
     getline( Bstream, sl );
     getline( Astream, sl ); // read one line for sync
@@ -2221,6 +2244,10 @@ int main( int argc, char* argv[] )
   TProfile dutcolqvsc( "dutcolqvsc", "DUT column signal vs column;cluster column;DUT <column signal> [ToT]",
 		       40, 0.5, 40.5 );
 
+  TH1I dutpdyHisto( "dutpdy",
+		   "DUT row - track dy;DUT row - track #Deltay [mm];DUT rowq [ToT]",
+		   100, -100, 100 );
+
   TProfile dutrowqvsdy( "dutrowqvsdy",
 			"DUT row signal vs #Deltay;track-row #Deltay [#mum];DUT <row signal> [ToT]",
 			100, -62.5, 62.5 );
@@ -2340,6 +2367,12 @@ int main( int argc, char* argv[] )
   TH1I linrowmaxHisto( "linrowmax",
 			"LIN lst pixel row;LIN lst pixel row;linked 1-col clusters",
 			nbr, 0, nbr );
+  TH1I linrowmin01Histo( "linrowmin01",
+			"LIN 1st pixel row%2;LIN 1st pixel row mod 2;linked 1-col clusters",
+			2, -0.5, 1.5 );
+  TH1I linrowmax01Histo( "linrowmax01",
+			"LIN lst pixel row%2;LIN lst pixel row mod 2;linked 1-col clusters",
+			2, -0.5, 1.5 );
   TH1I linrowmin2Histo( "linrowmin2",
 			"LIN 1st pixel row;LIN 1st pixel row;linked 1-col 2-row clusters",
 			nbr, 0, nbr );
@@ -2772,8 +2805,13 @@ int main( int argc, char* argv[] )
 		px.row = 2*iy + 0; // different from R4S
 	      else
 		px.row = 2*iy + 1; // see ed53 for shallow angle
+	      if( chip0 == 182 ) { // HLL
+		if( ix%2 ) 
+		  px.row = 2*iy + 1;
+		else
+		  px.row = 2*iy + 0;
+	      }
 	    }
-
 	  } // DUT
 
 	  pb.push_back(px);
@@ -3566,8 +3604,8 @@ int main( int argc, char* argv[] )
       double x3 = cf*x2 + sf*y2; // rot
       double y3 =-sf*x2 + cf*y2;
 
-      double x4 = x3 + DUTalignx; // shift to zero
-      double y4 = y3 + DUTaligny; // invert y, shift to zero
+      double x4 = upsignx*x3 + DUTalignx; // shift to mid
+      double y4 = upsigny*y3 + DUTaligny; // shift to mid
 
       double xmod = fmod( 9.000 + x4, 0.100 ); // [0,0.100] mm
       double ymod = fmod( 9.000 + y4, 0.100 ); // [0,0.100] mm
@@ -3668,6 +3706,9 @@ int main( int argc, char* argv[] )
 	  duty = ( ccol + 0.5 - nx[iDUT]/2 ) * ptchx[iDUT]; // mm
 	}
 
+	dutxxHisto->Fill( x4, dutx );
+	dutyyHisto->Fill( y4, duty );
+
 	//if( ccol > 200 && ccol < 201 ) cout << "col " << ccol << "  " << dutx << endl;
 	//if( crow > 95.5 && crow < 96.5 ) cout << "row " << crow << "  " << duty << endl;
 
@@ -3694,8 +3735,6 @@ int main( int argc, char* argv[] )
 	if( fabs(dutdy) < fabs(dymin) ) dymin = dutdy;
 
 	if( fabs( dutdy ) < ycutDUT ) {
-
-	  dutxxHisto->Fill( x4, dutx );
 
 	  dutdxcHisto.Fill( dutdx );
 	  if( sect == 1 )
@@ -3731,7 +3770,6 @@ int main( int argc, char* argv[] )
 
 	if( fabs( dutdx ) < xcutDUT ) {
 
-	  dutyyHisto->Fill( y4, duty );
 	  dutdy0Histo.Fill( dutdy );
 	  dutdycHisto.Fill( dutdy );
 
@@ -3958,6 +3996,10 @@ int main( int argc, char* argv[] )
 	    if( irow < rowmin ) rowmin = irow;
 	    if( irow > rowmax ) rowmax = irow;
 
+	    ++colsz[icol];
+	    colq[icol] += itot;
+	    rowq[irow] += itot;
+
 	    if( px == c->vpix.begin() ) { // 1st px in readout order
 
 	      dutpxrow1Histo.Fill( irow+0.5 ); // even-odd pattern in 25x100
@@ -3987,10 +4029,6 @@ int main( int argc, char* argv[] )
 		dutpxcol11Histo.Fill( icol+0.5 );
 
 	    } // 1st px
-
-	    ++colsz[icol];
-	    colq[icol] += itot;
-	    rowq[irow] += itot;
 
 	    dutpxqHisto.Fill( itot );
 	    if( drbeam < rbeam )
@@ -4096,6 +4134,7 @@ int main( int argc, char* argv[] )
 
 	    double py = ( irow + 0.5 - ny[iDUT]/2 ) * ptchy[iDUT]; // mm
 	    double pdy = py - y4;
+	    dutpdyHisto.Fill( pdy*1E3, rowq.at(irow) );
 
 	    if( krow%2 )
 	      dutrowqvsdy1.Fill( pdy*1E3, rowq.at(irow) );
@@ -4173,6 +4212,8 @@ int main( int argc, char* argv[] )
 
 	      linrowminHisto.Fill( rowmin+0.5 );
 	      linrowmaxHisto.Fill( rowmax+0.5 );
+	      linrowmin01Histo.Fill( rowmin%2 );
+	      linrowmax01Histo.Fill( rowmax%2 );
 
 	      if( c->nrow == 2 ) {
 		linrowmin2Histo.Fill( rowmin+0.5 ); // mostly even
@@ -4248,7 +4289,7 @@ int main( int argc, char* argv[] )
 
       if( nm[20]
 	  && y4 < 4.7 && y4 > -4.7
-	  && x4 <  8  && x4 > -1.5 // fiducial
+	  && x4 <  8  && x4 > -1.5 // Lin fiducial
 	  ) {
 	dutnlkHisto.Fill( nlk );
 	dutdxminHisto.Fill( dxmin );
@@ -4341,6 +4382,28 @@ int main( int argc, char* argv[] )
 	if( chip0 == 511 ) { // straight Lin
 	  if( x4 >  3.2 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
+	  if( y4 >  4.7 ) fidy = 0;
+	  if( y4 < -4.7 ) fidy = 0;
+	}
+	if( chip0 == 511 && run >= 35677 && run <= 99999 ) { // straight Sync
+	  fidx = 1;
+	  fidy = 1;
+	  if( x4 < -9.9 ) fidx = 0;
+	  if( x4 > -3.7 ) fidx = 0;
+	  if( y4 >  4.7 ) fidy = 0;
+	  if( y4 < -4.7 ) fidy = 0;
+	}
+	if( chip0 == 182 ) { // straight Lin
+	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 < -3.5 ) fidx = 0;
+	  if( y4 >  4.7 ) fidy = 0;
+	  if( y4 < -4.7 ) fidy = 0;
+	}
+	if( chip0 == 182 && run >= 35722 && run <= 99999 ) { // straight Sync
+	  fidx = 1;
+	  fidy = 1;
+	  if( x4 < -9.9 ) fidx = 0;
+	  if( x4 > -3.7 ) fidx = 0;
 	  if( y4 >  4.7 ) fidy = 0;
 	  if( y4 < -4.7 ) fidy = 0;
 	}

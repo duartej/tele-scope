@@ -381,7 +381,7 @@ modrun 19
 run 33486 15999 mod 19  eff 98.4 bias dot
 
 #-------------------------------------------------------------------------------
-# Oct
+# Oct 2018
 #-------------------------------------------------------------------------------
 # Tue 16.10.2018
 # more RD53A with 150 um UHH Hamamatsu sensors
@@ -1780,6 +1780,8 @@ modrun 408  skip 0
 run 35596  93.7
 
 #-------------------------------------------------------------------------------
+# Mar 2019
+#-------------------------------------------------------------------------------
 # Sat 16.3.2019
 
 chip 511 = FDB150P D53A 50x50 P3 p-stop bias dot with 1.5E16 CERN PS p/cm2
@@ -1827,23 +1829,23 @@ run 35636  530  99.53
 
 # vbias 700V, 188uA
 # move x to +5mm
-modrun 418
+modrun 418  skip 2
 run 35638  562  99.14
 
 # vbias 600V, ileak 152uA
 modrun 419
-run 35639  523k
+run 35639  523k 98.35
 
 # vbias 500V, ileak 123uA
-modrun 420
-run 35640  586
+modrun 420  skip 1
+run 35640  586  96.74
 
 # vbias 400V, ileak 95uA
-modrun 421
-run 35641  505
+modrun 421  skip 2
+run 35641  505  92.88
 
 # vbias 300V, ileak 70uA
-modrun 422
+modrun 422  skip 2
 run 35642  525  64.8
 
 # for the night: 5.6 GeV: 433 Hz							
@@ -1863,7 +1865,7 @@ run 35643  4957.152
 # 50x50 turn scan at 800 V for resolution
 turn -30
 modrun 426  skip 0
-run 35646  500
+run 35646  500  99.62  ncol 1.635
 
 turn -28
 modrun 427  skip 0
@@ -1887,22 +1889,172 @@ run 35651  99.26
 
 turn -18
 modrun 432
-run 35652  99.09  
+run 35652  99.09  lncol 1.32  dxcq 16.7
 
 # shift 1 mm x
 turn -16
-modrun 433  skip 0
+modrun 433
 run 35653  500
 
 turn -14
+modrun 434
 run 35654  500
-modrun 434  skip 0
 
 turn -12
-modrun 434  skip 0
+modrun 435
 run 35655  500
 
 # shift 1 mm x
 turn -10
-modrun 434  skip
-run 35656
+modrun 436
+run 35656  98.12
+
+turn -8
+modrun 437
+run 35657  548
+
+# shift 1 mm x
+turn -6
+modrun 438
+run 35658
+
+turn -4
+modrun 439
+run 35659  
+
+# shift 2 mm x
+turn -2
+modrun 440
+run 35660
+
+turn 1
+modrun 441
+run 35661
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# search for resolution: finer ToT
+# KRUM_CURR_LIN : 29 to 25
+
+# move x to +6 mm
+turn -18
+modrun 442 empty
+run 35662  dutpxq 5.9 ToT
+
+# KRUM_CURR_LIN : 20
+# move x to +4 mm
+modrun 443 empty
+run 35663  dutpxq 6.9 ToT
+
+# KRUM_CURR_LIN : 16
+modrun 445
+run 35665  dutpxq 8.1 ToT  ncol 1.37  dxcq 16.2
+
+modrun 446
+run 35666  dutpxq 8.1 ToT
+
+# Vthreshold_LIN : 350 to 346  file size doubles
+modrun 447  empty
+run 35667  dutpxq 7.8  ncol 1.42  dxcq 16.2
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Mon 18.3.2019
+# 511i: SynC section with auto-zero trigger veto
+
+# 800 V
+modrun 451 skip
+run 35677  500
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Mon 18.3.2019
+# UZh fresh 100x25x150 Lin section
+
+chip 182
+
+geo geo_2019_03d.dat = 0  153  305  426  578  731 # 100x25
+
+turn 1
+tilt 3
+
+fifty 0
+
+modrun 461 skip 0
+run 35691  510
+
+run 35692
+modrun 462 skip 0
+
+# threshold set to 660, VthLin = 346
+modrun 464 skip 0
+run 35694  70
+
+# new masking noisy pixels file
+modrun 465 skip 0
+run 35695  501  99.93  68.0% even
+
+modrun 467 skip 0
+run 35697  514
+
+modrun 468 skip
+run 35698
+
+modrun 469 skip 0
+run 35699  519
+
+modrun 470 skip 0
+run 35700  514
+
+modrun 472 skip 0
+run 35702  578
+
+modrun 473 skip 0
+run 35703  600
+
+modrun 474 skip 0
+run 35704  521
+
+modrun 475 skip 0
+run 35705  501
+
+modrun 476 skip 0
+run 35706  515
+
+# threshold: 750 - Vthreshold_LIN: 350
+modrun 479 skip 0
+run 35709  1000  64.7% even
+
+# threshold: 850 - Vthreshold_LIN: 352
+modrun 480 skip 0
+run 35710  1000  61.6% even
+
+# threshold: 1000 - Vthreshold_LIN: 355
+modrun 481 skip 0
+run 35711  602  57.5% even
+
+# threshold: 1137 - Vthreshold_LIN: 358
+modrun 482 skip 0
+run 35712  1001
+
+# threshold: 1300 - Vthreshold_LIN: 362
+modrun 483 skip 0
+run 35713  800
+              
+# thr 750
+modrun 484 skip 0
+run 35714  2933
+              
+# threshold: 1500 - Vthreshold_LIN: 365
+modrun 485 skip 0
+run 35715  3548  53% even
+              
+# threshold: 1376 - Vthreshold_LIN: 364
+modrun 486 skip 0
+run 35716  2592
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Tue 19.3.2019
+# 182 Sync section
+
+# thr 800e
+
+modrun 487
+run 35722  97.1

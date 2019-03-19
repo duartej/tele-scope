@@ -1,6 +1,7 @@
 
 // Daniel Pitzl, DESY, Jun 2018
 // telescope analysis with RD53A
+// module at back: need driplets
 
 // make scope53
 // scope53 33095
@@ -410,7 +411,6 @@ int main( int argc, char* argv[] )
 
     if( found )
       cout 
-	<< "settings for run " << run << ":" << endl
 	<< "  beam " << pbeam << " GeV" << endl
 	<< "  geo file " << geoFileName << endl
 	<< "  nominal DUT turn " << DUTturn0 << " deg" << endl
@@ -1145,6 +1145,10 @@ int main( int argc, char* argv[] )
 
   } // planes
 
+  hmap[8] = new TH2I( Form( "map%i", 8 ),
+		      Form( "%i map;col;row;plane %i pixels", 8, 8 ),
+		      400, 0, 400, 192, 0, 192 );
+
   TH1I dutpxcol0Histo( "dutpxcol0",
 		      "DUT pixel column before threshold;DUT pixel column;pixels",
 		      400, 0, 400 );
@@ -1167,6 +1171,9 @@ int main( int argc, char* argv[] )
 		"DUT pixel signal map;column;row;<pixel signal> [ToT]",
 		400, 0, 400, 192, 0, 192, -1, 16 );
 
+  TH1I dutpxbcHisto( "dutpxbc",
+		    "DUT pixel BC;DUT pixel BC;DUT pixels without masking",
+		    32, -0.5, 31.5 );
   TH1I synpxbcHisto( "synpxbc",
 		    "Sync pixel BC;Sync pixel BC;Sync pixels",
 		    32, -0.5, 31.5 );
@@ -1453,7 +1460,7 @@ int main( int argc, char* argv[] )
 		     "telescope triplets isolation;triplet min #Delta_{xy} [mm];triplet pairs",
 		     150, 0, 15 );
 
-  // dripets - triplets:
+  // driplets - triplets:
 
   TH1I hsixdx( "sixdx", "six dx;dx [mm];triplet-driplet pairs", 200, -0.2*f, 0.2*f );
   TH1I hsixdy( "sixdy", "six dy;dy [mm];triplet-driplet pairs", 200, -0.2*f, 0.2*f );
@@ -1610,6 +1617,9 @@ int main( int argc, char* argv[] )
   TH1I dutdxc2Histo( "dutdxc2",
 		     "DUT - track dx;DUT cluster - track #Deltax [mm];DUT 2-px clusters",
 		     200, -0.2, 0.2 );
+  TH1I dutdxcqHisto( "dutdxcq",
+		     "DUT - track dx Landau peak;DUT cluster - track #Deltax [mm];Landau peak DUT clusters",
+		     500, -0.5, 0.5 );
 
   double limx = 0.1;
   if( fabs(DUTturn) > 44 )
@@ -1646,9 +1656,6 @@ int main( int argc, char* argv[] )
   TProfile dutmadxvsq( "dutmadxvsq",
 		       "DUT MAD(#Deltax) vs Q;cluster signal [ToT];MAD(#Deltax) [mm]",
 		       80, 0, 80, 0, limx );
-  TH1I dutdxcqHisto( "dutdxcq",
-		     "DUT - track dx Landau peak;DUT cluster - track #Deltax [mm];Landau peak DUT clusters",
-		     500, -0.2, 0.2 );
 
   TH2I * dutyyHisto = new
     TH2I( "dutyy", "tracks vs DUT in y;track y [mm];DUT cluster y [mm];track-cluster pairs",
@@ -2018,6 +2025,40 @@ int main( int argc, char* argv[] )
   TProfile dutcolqvsc( "dutcolqvsc", "DUT column signal vs column;cluster column;DUT <column signal> [ToT]",
 		       40, 0.5, 40.5 );
 
+  TH1I dutrowqkHisto( "dutrowqk",
+		      "signal in row with track;row signal [ToT];row with track",
+		    31, -0.5, 30.5 );
+  TH1I dutrowq1Histo( "dutrowq1",
+		      "signal in next row from track;row signal [ToT];next row from track",
+		    31, -0.5, 30.5 );
+  TH1I dutrowq9Histo( "dutrowq9",
+		      "signal in row before track;row signal [ToT];row before track",
+		    31, -0.5, 30.5 );
+
+  TH1I dutpdyHisto( "dutpdy",
+		   "DUT row - track dy;DUT row - track #Deltay [mm];DUT rowq [ToT]",
+		   100, -100, 100 );
+
+  TProfile dutrowqvsdy( "dutrowqvsdy",
+			"DUT row signal vs #Deltay;track-row #Deltay [#mum];DUT <row signal> [ToT]",
+			100, -62.5, 62.5 );
+  TProfile dutrowqvsdy0( "dutrowqvsdy0",
+			 "DUT row signal vs #Deltay even;even track-row #Deltay [#mum];DUT <row signal> [ToT]",
+			 100, -62.5, 62.5 );
+  TProfile dutrowqvsdy1( "dutrowqvsdy1",
+			 "DUT row signal vs #Deltay odd;odd track-row #Deltay [#mum];DUT <row signal> [ToT]",
+			 100, -62.5, 62.5 );
+
+  TProfile dutrowvsdy( "dutrowvsdy",
+		       "DUT row vs #Deltay;track-row #Deltay [#mum];DUT <row>",
+		       100, -62.5, 62.5 );
+  TProfile dutrowvsdy0( "dutrowvsdy0",
+			 "DUT row vs #Deltay even;even track-row #Deltay [#mum];DUT <row>",
+			 100, -62.5, 62.5 );
+  TProfile dutrowvsdy1( "dutrowvsdy1",
+			 "DUT row vs #Deltay odd;odd track-row #Deltay [#mum];DUT <row>",
+			 100, -62.5, 62.5 );
+
   TProfile2D * dutrowpqmap = new
     TProfile2D( "dutrowpqmap",
 	  "row covariance;x track at DUT [mm];y track at DUT [mm];LIN < ToT_{row-1} #upoint ToT_{row} >",
@@ -2077,6 +2118,12 @@ int main( int argc, char* argv[] )
   TH1I linrowmaxHisto( "linrowmax",
 			"LIN lst pixel row;LIN lst pixel row;linked 1-col clusters",
 			nbr, 0, nbr );
+  TH1I linrowmin01Histo( "linrowmin01",
+			"LIN 1st pixel row%2;LIN 1st pixel row mod 2;linked 1-col clusters",
+			2, -0.5, 1.5 );
+  TH1I linrowmax01Histo( "linrowmax01",
+			"LIN lst pixel row%2;LIN lst pixel row mod 2;linked 1-col clusters",
+			2, -0.5, 1.5 );
   TH1I linrowmin2Histo( "linrowmin2",
 			"LIN 1st pixel row;LIN 1st pixel row;linked 1-col 2-row clusters",
 			nbr, 0, nbr );
@@ -2409,6 +2456,11 @@ int main( int argc, char* argv[] )
 	  int ix = plane.GetX(ipix,frm); // column
 	  int iy = plane.GetY(ipix,frm); // row
 	  int tot = plane.GetPixel(ipix,frm); // ToT 0..15
+
+	  if( ipl == iDUT ) {
+	    dutpxbcHisto.Fill( frm ); // before hot pixel masking
+	    hmap[8]->Fill( ix, iy ); // before masking
+	  }
 
 	  // skip hot pixels:
 
@@ -3695,6 +3747,9 @@ int main( int argc, char* argv[] )
 	  else if( c->nrow == 2 )
 	    dutdxc2Histo.Fill( dutdx );
 
+	  if( Q0 > qL && Q0 < qR )
+	    dutdxcqHisto.Fill( dutdx );
+
 	  dutdxvsx.Fill( x4, dutdx ); // for turn
 	  dutdxvsy.Fill( y4, dutdx ); // for rot
 	  dutdxvstx.Fill( sxA, dutdx );
@@ -3706,8 +3761,6 @@ int main( int argc, char* argv[] )
 	  dutmadxvsxm.Fill( xmod*1E3, fabs(dutdx) );
 	  dutmadxvstx.Fill( sxA, fabs(dutdx) );
 	  dutmadxvsq.Fill( Q0, fabs(dutdx) );
-	  if( Q0 > qL && Q0 < qR )
-	    dutdxcqHisto.Fill( dutdx );
 
 	} // cut y
 
@@ -4007,6 +4060,38 @@ int main( int argc, char* argv[] )
 	    dutcolqvsc.Fill( icol-colmin, colq[icol] );
 	  }
 
+	  // row-charge vs distance to track:
+
+	  for( int irow = krow-2; irow <= krow+2; ++irow ) {
+
+	    if( irow <   0 ) continue;
+	    if( irow > 383 ) break;
+
+	    if( irow == krow )
+	      dutrowqkHisto.Fill( rowq.at(irow) );
+	    else if( irow == krow+1 )
+	      dutrowq1Histo.Fill( rowq.at(irow) );
+	    else if( irow == krow-1 )
+	      dutrowq9Histo.Fill( rowq.at(irow) );
+
+	    double py = ( irow + 0.5 - ny[iDUT]/2 ) * ptchy[iDUT]; // mm
+	    double pdy = py - y4;
+	    dutpdyHisto.Fill( pdy*1E3, rowq.at(irow) );
+
+	    dutrowqvsdy.Fill( pdy*1E3, rowq.at(irow) );
+	    if( krow%2 )
+	      dutrowqvsdy1.Fill( pdy*1E3, rowq.at(irow) );
+	    else
+	      dutrowqvsdy0.Fill( pdy*1E3, rowq.at(irow) );
+
+	    dutrowvsdy.Fill( pdy*1E3, ( rowq.at(irow) > 0 ? 1 : 0 ) );
+	    if( krow%2 )
+	      dutrowvsdy1.Fill( pdy*1E3, ( rowq.at(irow) > 0 ? 1 : 0 ) );
+	    else
+	      dutrowvsdy0.Fill( pdy*1E3, ( rowq.at(irow) > 0 ? 1 : 0 ) );
+
+	  }
+
 	  // correlation maps:
 
 	  if( krow > 0 ) { // p = k-1, q = k
@@ -4042,6 +4127,8 @@ int main( int argc, char* argv[] )
 
 	      linrowminHisto.Fill( rowmin+0.5 );
 	      linrowmaxHisto.Fill( rowmax+0.5 );
+	      linrowmin01Histo.Fill( rowmin%2 );
+	      linrowmax01Histo.Fill( rowmax%2 );
 
 	      if( c->nrow == 2 ) {
 		linrowmin2Histo.Fill( rowmin+0.5 );
