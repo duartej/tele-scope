@@ -1,10 +1,11 @@
 
 // Daniel Pitzl, DESY, Jun 2018
 // telescope analysis with RD53A
-// module in front: only triplets
+// module in front
+// using 6 telescope planes: better resolution at DUT when using low-material setup
 
-// make scope53
-// scope53 33095
+// make scope53m6
+// scope53m6 33095
 // needs runs.dat
 // needs geo_201x_yy.dat
 // needs align_33095.dat from tele
@@ -1490,6 +1491,57 @@ int main( int argc, char* argv[] )
 
   TH1I ntriHisto( "ntri", "triplets;triplets;events", 51, -0.5, 50.5 );
 
+  // driplets:
+
+  TH1I hdx46( "dx46", "4-6 dx;4-6 dx [mm];cluster pairs", 100, -f, f );
+  TH1I hdy46( "dy46", "4-6 dy;4-6 dy [mm];cluster pairs", 100, -f, f );
+
+  TH1I hdridx( "dridx", "driplet dx;driplet dx [mm];driplets", 100, -0.1*f, 0.1*f );
+  TH1I hdridy( "dridy", "driplet dy;driplet dy [mm];driplets", 100, -0.1*f, 0.1*f );
+
+  TH1I hdridxc( "dridxc", "driplet dx;driplet dx [mm];driplets", 100, -0.1*f, 0.1*f );
+  TH1I hdridyc( "dridyc", "driplet dy;driplet dy [mm];driplets", 100, -0.1*f, 0.1*f );
+
+  TProfile dridxvsy( "dridxvsy",
+		     "driplet dx vs y;driplet yB [mm];<driplets #Deltax> [mm]",
+		     110, -5.5, 5.5, -0.05*f, 0.05*f );
+  TProfile dridyvsx( "dridyvsx",
+		     "driplet dy vs x;driplet xB [mm];<driplets #Deltay> [mm]",
+		     110, -11, 11, -0.05*f, 0.05*f );
+
+  TProfile dridxvstx( "dridxvstx",
+		      "driplet dx vs slope x;driplet slope x [rad];<driplets #Deltax> [mm]",
+		      60, -0.003, 0.003, -0.05*f, 0.05*f );
+  TProfile dridyvsty( "dridyvsty",
+		      "driplet dy vs slope y;driplet slope y [rad];<driplets #Deltay> [mm]",
+		      60, -0.003, 0.003, -0.05*f, 0.05*f );
+  TProfile dridxvst3( "dridxvst3",
+		      "driplet dx vs time;time [s];<driplet #Deltax> [mm] / 10s",
+		      300, 0, 3000, -0.05, 0.05 );
+  TProfile dridxvst5( "dridxvst5",
+		      "driplet dx vs time;time [s];<driplet #Deltax> [mm] / min",
+		      1100, 0, 66000, -0.05, 0.05 );
+  TProfile dridyvst3( "dridyvst3",
+		      "driplet dy vs time;time [s];<driplet #Deltay> [mm] / 10s",
+		      300, 0, 3000, -0.05, 0.05 );
+  TProfile dridyvst5( "dridyvst5",
+		      "driplet dy vs time;time [h];<driplet #Deltay> [mm] / min",
+		      1100, 0, 66000, -0.05, 0.05 );
+
+  TH1I drixHisto( "drix", "driplets x;x [mm];driplets",
+		  240, -12, 12 );
+  TH1I driyHisto( "driy", "driplets x;y [mm];driplets",
+		  120, -6, 6 );
+  TH2I * drixyHisto = new
+    TH2I( "drixy", "driplets x-y;x [mm];y [mm];driplets",
+	  240, -12, 12, 120, -6, 6 );
+  TH1I dritxHisto( "dritx", "driplet slope x;slope x [rad];driplets",
+		   100, -0.005*f, 0.005*f );
+  TH1I drityHisto( "drity", "driplet slope y;slope y [rad];driplets",
+		   100, -0.005*f, 0.005*f );
+
+  TH1I ndriHisto( "ndri", "driplets;driplets;events", 51, -0.5, 50.5 );
+
   // MOD vs triplets:
 
   TH1I ttdminmod1Histo( "ttdminmod1",
@@ -1663,6 +1715,118 @@ int main( int argc, char* argv[] )
   TH1I ttdmin2Histo( "ttdmin2",
 		     "telescope triplets isolation;triplet min #Delta_{xy} [mm];triplet pairs",
 		     150, 0, 15 );
+
+  // driplets - triplets:
+
+  TH1I hsixdx( "sixdx", "six dx;dx [mm];triplet-driplet pairs", 200, -0.2*f, 0.2*f );
+  TH1I hsixdy( "sixdy", "six dy;dy [mm];triplet-driplet pairs", 200, -0.2*f, 0.2*f );
+  TH1I hsixdxc( "sixdxc", "six dx;dx [mm];triplet-driplet pairs", 200, -0.2*f, 0.2*f );
+  TH1I hsixdyc( "sixdyc", "six dy;dy [mm];triplet-driplet pairs", 200, -0.2*f, 0.2*f );
+
+  TProfile sixdxvsx( "sixdxvsx",
+		     "six #Deltax vs x;x [mm];<driplet - triplet #Deltax [mm]",
+		     220, -11, 11, -0.1, 0.1 );
+  TProfile sixmadxvsx( "sixmadxvsx",
+		       "six MAD x vs x;x [mm];driplet - triplet MAD #Deltax [mm]",
+		       220, -11, 11, 0, 0.1 );
+  TProfile sixmadxvsy( "sixmadxvsy",
+		       "six MAD x vs y;y [mm];driplet - triplet MAD #Deltax [mm]",
+		       110, -5.5, 5.5, 0, 0.1 );
+  TProfile sixmadxvstx( "sixmadxvstx",
+			"six MAD x vs x;triplet #theta_{x} [rad];driplet - triplet MAD #Deltax [mm]",
+			80, -0.002, 0.002, 0, 0.1 );
+  TProfile sixmadxvsdtx( "sixmadxvsdtx",
+			 "six MAD x vs x;driplet-triplet #Delta#theta_{x} [rad];driplet - triplet MAD #Deltax [mm]",
+			 80, -0.002, 0.002, 0, 0.1 );
+  TProfile sixdxvsy( "sixdxvsy",
+		     "six #Deltax vs y;y [mm];<driplet - triplet #Deltax> [mm]",
+		     100, -5, 5, -0.5, 0.5 );
+  TProfile sixdxvstx( "sixdxvstx",
+		      "six #Deltax vs slope x;slope x [rad];<driplet - triplet #Deltax> [mm]",
+		      100, -0.002, 0.002, -0.5, 0.5 );
+  TProfile sixdxvsdtx( "sixdxvsdtx",
+		       "six #Deltax vs #Delta slope x;#Delta slope x [rad];<driplet - triplet #Deltax> [mm]",
+		       100, -0.002, 0.002, -0.5, 0.5 );
+  TProfile sixdxvst3( "sixdxvst3",
+		      "sixplet dx vs time;time [s];<sixplet #Deltax> [mm] / 10s",
+		      300, 0, 3000, -0.05, 0.05 );
+  TProfile sixdxvst5( "sixdxvst5",
+		      "sixplet dx vs time;time [s];<sixplet #Deltax> [mm] / min",
+		      1100, 0, 66000, -0.05, 0.05 );
+
+  TProfile sixdyvsx( "sixdyvsx",
+		     "six #Deltay vs x;x [mm];<driplet - triplet #Deltay> [mm]",
+		     200, -10, 10, -0.5, 0.5 );
+  TProfile sixdyvsy( "sixdyvsy",
+		     "six #Deltay vs y;y [mm];<driplet - triplet #Deltay [mm]",
+		     110, -5.5, 5.5, -0.1, 0.1 );
+  TProfile sixdyvsty( "sixdyvsty",
+		      "six #Deltay vs slope y;slope y [rad];<driplet - triplet #Deltay> [mm]",
+		      100, -0.002, 0.002, -0.5, 0.5 );
+  TProfile sixdyvsdty( "sixdyvsdty",
+		       "six #Deltay vs #Delta slope y;#Delta slope y [rad];<driplet - triplet #Deltay> [mm]",
+		       100, -0.002, 0.002, -0.5, 0.5 );
+  TProfile sixdyvst3( "sixdyvst3",
+		      "sixplet dy vs time;time [s];<sixplet #Deltay> [mm] / 10s",
+		      300, 0, 3000, -0.05, 0.05 );
+  TProfile sixdyvst5( "sixdyvst5",
+		      "sixplet dy vs time;time [s];<sixplet #Deltay> [mm] / min",
+		      1100, 0, 66000, -0.05, 0.05 );
+  TProfile sixmadyvsx( "sixmadyvsx",
+		       "six MAD y vs x;x [mm];driplet - triplet MAD #Deltay [mm]",
+		       220, -11, 11, 0, 0.1 );
+  TProfile sixmadyvsy( "sixmadyvsy",
+		       "six MAD y vs y;y [mm];driplet - triplet MAD #Deltay [mm]",
+		       110, -5.5, 5.5, 0, 0.1 );
+  TProfile sixmadyvsty( "sixmadyvsty",
+			"six MAD y vs #theta_{y};triplet #theta_{y} [rad];driplet - triplet MAD #Deltay [mm]",
+			80, -0.002, 0.002, 0, 0.1 );
+  TProfile sixmadyvsdty( "sixmadyvsdty",
+			 "six MAD y vs #Delta#theta_{y};driplet-triplet #Delta#theta_{y} [rad];driplet - triplet MAD #Deltay [mm]",
+			 80, -0.002, 0.002, 0, 0.1 );
+
+  TProfile sixdtvsxav( "sixdtvsxav",
+		       "driplet - triplet kink_{xy} vs x;x_{avg} [mm];<sqrt(#Delta#theta_{x}^{2}+#Delta#theta_{y}^{2})> [rad]",
+		       240, -12, 12, 0, 0.1 );
+  TProfile sixdtvsyav( "sixdtvsyav",
+		       "driplet - triplet kink_{xy} vs y;y_{avg} [mm];<sqrt(#Delta#theta_{x}^{2}+#Delta#theta_{y}^{2})> [rad]",
+		       120, -6, 6, 0, 0.1 );
+  TProfile2D * sixdtvsxyav = new
+    TProfile2D( "sixdtvsxyav",
+		"driplet - triplet kink_{xy} vs x-y;x_{avg} [mm];y_{avg} [mm];<sqrt(#Delta#theta_{x}^{2}+#Delta#theta_{y}^{2})> [rad]",
+		120, -12, 12, 60, -6, 6, 0, 0.1 );
+
+  TH1I hsixdtx( "sixdtx",
+		"driplet slope x - triplet slope x;driplet slope x - triplet slope x;driplet-triplet pairs",
+		100, -0.005*f, 0.005*f );     
+  TH1I hsixdty( "sixdty",
+		"driplet slope y - triplet slope y;driplet slope y - triplet slope y;driplet-triplet pairs",
+		100, -0.005*f, 0.005*f );     
+
+  TProfile sixdtvsx( "sixdtvsx",
+		     "driplet - triplet kink_{xy} vs x;x_{mid} [mm];<sqrt(#Delta#theta_{x}^{2}+#Delta#theta_{y}^{2})> [rad]",
+		     110, -11, 11, 0, 0.1 );
+  TProfile2D * sixdtvsxy = new
+    TProfile2D( "sixdtvsxy",
+		"driplet - triplet kink_{xy} vs x-y;x_{DUT} [mm];y_{DUT} [mm];<sqrt(#Delta#theta_{x}^{2}+#Delta#theta_{y}^{2})> [rad]",
+		110, -11, 11, 55, -5.5, 5.5, 0, 0.1 );
+
+  TProfile sixdtvsxm( "sixdtvsxm",
+		      "driplet - triplet kink_{xy} vs xmod;track x mod 100 [#mum];<sqrt(#Delta#theta_{x}^{2}+#Delta#theta_{y}^{2})> [rad]",
+		      50, 0, 100, 0, 0.1 );
+  TProfile sixdtvsym( "sixdtvsym",
+		      "driplet - triplet kink_{xy} vs ymod;track y mod 100 [#mum];<sqrt(#Delta#theta_{x}^{2}+#Delta#theta_{y}^{2})> [rad]",
+		      50, 0, 100, 0, 0.1 );
+  TProfile2D * sixdtvsxmym = new // bump bonds ?
+    TProfile2D( "sixdtvsxmym",
+		"driplet - triplet kink_{xy} vs xmod ymod;track x mod 100 [#mum];track y mod 100 [#mum];<sqrt(#Delta#theta_{x}^{2}+#Delta#theta_{y}^{2})> [rad]",
+		50, 0, 100, 50, 0, 100, 0, 0.1 );
+
+  TH2I * sixxyHisto = new
+    TH2I( "sixxy", "sixplets at z DUT;x [mm];y [mm];sixplets",
+	  240, -12, 12, 120, -6, 6 );
+
+  TH1I nsixHisto( "nsix", "sixplets;sixplets;events", 51, -0.5, 50.5 );
 
   TH2I * dutxyHisto = new
     TH2I( "dutxy", "tracks at DUT;x [mm];y [mm];tracks",
@@ -2679,13 +2843,13 @@ int main( int argc, char* argv[] )
       ldbg = 1;
 
     if( iev < 10 || ldbg )
-      cout << "scope53 processing  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "scope53m6 processing  " << run << "." << iev << "  taken " << evsec << endl;
     else if( iev < 100 && iev%10 == 0 )
-      cout << "scope53 processing  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "scope53m6 processing  " << run << "." << iev << "  taken " << evsec << endl;
     else if( iev < 1000 && iev%100 == 0 )
-      cout << "scope53 processing  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "scope53m6 processing  " << run << "." << iev << "  taken " << evsec << endl;
     else if( iev%1000 == 0 )
-      cout << "scope53 processing  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "scope53m6 processing  " << run << "." << iev << "  taken " << evsec << endl;
 
     StandardEvent sevt = eudaq::PluginManager::ConvertToStandard(evt);
 
@@ -3387,6 +3551,124 @@ int main( int argc, char* argv[] )
     ntriHisto.Fill( triplets.size() );
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // make driplets 4+6-5:
+
+    vector <triplet> driplets;
+
+    //double driCut = 0.1; // [mm]
+    double driCut = 0.05; // [mm] like tele
+
+    for( vector<cluster>::iterator cA = cl[4].begin(); cA != cl[4].end(); ++cA ) {
+
+      double xA = cA->col*ptchx[4] - alignx[4];
+      double yA = cA->row*ptchy[4] - aligny[4];
+      double zA = zz[4] + alignz[4];
+      double xmid = xA - midx[4];
+      double ymid = yA - midy[4];
+      xA = xmid - ymid*rotx[4];
+      yA = ymid + xmid*roty[4];
+
+      double zC = zz[6] + alignz[6];
+      double zB = zz[5] + alignz[5];
+
+      for( vector<cluster>::iterator cC = cl[6].begin(); cC != cl[6].end(); ++cC ) {
+
+	double xC = cC->col*ptchx[6] - alignx[6];
+	double yC = cC->row*ptchy[6] - aligny[6];
+	double xmid = xC - midx[6];
+	double ymid = yC - midy[6];
+	xC = xmid - ymid*rotx[6];
+	yC = ymid + xmid*roty[6];
+
+	double dx2 = xC - xA;
+	double dy2 = yC - yA;
+	double dzCA = zC - zA; // from 4 to 6 in z
+	hdx46.Fill( dx2 );
+	hdy46.Fill( dy2 );
+
+	if( fabs( dx2 ) > 0.005 * dzCA ) continue; // angle cut *f?
+	if( fabs( dy2 ) > 0.005 * dzCA ) continue; // angle cut
+
+	double avx = 0.5 * ( xA + xC ); // mid
+	double avy = 0.5 * ( yA + yC );
+	double avz = 0.5 * ( zA + zC ); // mid z
+ 
+	double slpx = ( xC - xA ) / dzCA; // slope x
+	double slpy = ( yC - yA ) / dzCA; // slope y
+
+	// middle plane B = 5:
+
+	for( vector<cluster>::iterator cB = cl[5].begin(); cB != cl[5].end(); ++cB ) {
+
+	  double xB = cB->col*ptchx[5] - alignx[5];
+	  double yB = cB->row*ptchy[5] - aligny[5];
+	  double xmid = xB - midx[5];
+	  double ymid = yB - midy[5];
+	  xB = xmid - ymid*rotx[5];
+	  yB = ymid + xmid*roty[5];
+
+	  // interpolate track to B:
+
+	  double dz = zB - avz;
+	  double xm = avx + slpx * dz; // driplet at m
+	  double ym = avy + slpy * dz;
+
+	  double dxm = xB - xm;
+	  double dym = yB - ym;
+	  hdridx.Fill( dxm );
+	  hdridy.Fill( dym );
+
+	  if( fabs( dym ) < 0.05 ) {
+	    hdridxc.Fill( dxm );
+	    dridxvsy.Fill( yB, dxm );
+	    dridxvstx.Fill( slpx, dxm );
+	    dridxvst3.Fill( evsec, dxm );
+	    dridxvst5.Fill( evsec, dxm );
+	  }
+
+	  if( fabs( dxm ) < 0.05 ) {
+	    hdridyc.Fill( dym );
+	    dridyvsx.Fill( xB, dym );
+	    dridyvsty.Fill( slpy, dym );
+	    dridyvst3.Fill( evsec, dym );
+	    dridyvst5.Fill( evsec, dym );
+	  }
+
+	  // telescope driplet cuts:
+
+	  if( fabs(dxm) > driCut ) continue;
+	  if( fabs(dym) > driCut ) continue;
+
+	  triplet dri;
+
+	  dri.xm = avx;
+	  dri.ym = avy;
+	  dri.zm = avz;
+	  dri.sx = slpx;
+	  dri.sy = slpy;
+	  dri.lk = 0;
+	  dri.ttdmin = 99.9; // isolation [mm]
+	  dri.iA = distance( cl[4].begin(), cA );
+	  dri.iB = distance( cl[5].begin(), cB );
+	  dri.iC = distance( cl[6].begin(), cC );
+
+	  driplets.push_back(dri);
+
+	  drixHisto.Fill( avx );
+	  driyHisto.Fill( avy );
+	  drixyHisto->Fill( avx, avy );
+	  dritxHisto.Fill( slpx );
+	  drityHisto.Fill( slpy );
+
+	} // cl B
+
+      } // cl C
+
+    } // cl A
+
+    ndriHisto.Fill( driplets.size() );
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // triplets vs MOD and DUT:
 
     int nmdm = 0;
@@ -3397,6 +3679,7 @@ int main( int argc, char* argv[] )
 
     int nmtd = 0;
     int ntrilk = 0;
+    int nsix = 0;
 
     double xcutDUT = 0.150; // 100 um
     double ycutDUT = 0.100; //  25 um
@@ -3648,6 +3931,150 @@ int main( int argc, char* argv[] )
       ttdmin1Histo.Fill( ttdmin );
       ttdmin2Histo.Fill( ttdmin );
       triplets[iA].ttdmin = ttdmin;
+
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      // match triplet and driplet:
+
+      double sixcut = 0.1; // [mm]
+
+      for( unsigned int jB = 0; jB < driplets.size(); ++jB ) { // j = B = downstream
+
+	double xmB = driplets[jB].xm;
+	double ymB = driplets[jB].ym;
+	double zmB = driplets[jB].zm;
+	double sxB = driplets[jB].sx;
+	double syB = driplets[jB].sy;
+
+	// driplet at z DUT:
+	/*
+	  double zB = DUTz - zmB; // z from mid of triplet to mid
+	  double xB = xmB + sxB * zB; // triplet at mid
+	  double yB = ymB + syB * zB;
+	*/
+	// driplet at DUT:
+
+	double zd = zc + zmA - zmB; // z from mid of driplet to DUT intersect
+	double xd = xmB + sxB * zd; // driplet at DUT
+	double yd = ymB + syB * zd;
+
+	// driplet - triplet:
+
+	//double dx = xB - xA; // at DUT
+	//double dy = yB - yA;
+	double dx = xd - xc; // at DUT intersect
+	double dy = yd - yc;
+	//double dxy = sqrt( dx*dx + dy*dy );
+	double dtx = sxB - sxA;
+	double dty = syB - syA;
+	double dtxy = sqrt( dtx*dtx + dty*dty );
+
+	hsixdx.Fill( dx ); // for align fit
+	hsixdy.Fill( dy ); // for align fit
+
+	if( fabs(dy) < sixcut ) {
+
+	  hsixdxc.Fill( dx );
+
+	  sixdxvsx.Fill( x4, dx );
+	  sixmadxvsx.Fill( x4, fabs(dx) );
+	  sixdxvsy.Fill( yc, dx );
+	  sixdxvstx.Fill( sxA, dx );
+	  sixdxvsdtx.Fill( dtx, dx );
+	  sixdxvst3.Fill( evsec, dx );
+	  sixdxvst5.Fill( evsec, dx );
+	  sixmadxvsy.Fill( y4, fabs(dx) );
+	  sixmadxvstx.Fill( sxA, fabs(dx) );
+	  sixmadxvsdtx.Fill( dtx, fabs(dx) ); // U-shape
+
+	} // dy
+
+	if( fabs(dx) < sixcut ) {
+
+	  hsixdyc.Fill( dy );
+
+	  sixdyvsx.Fill( x4, dy );
+	  sixmadyvsx.Fill( x4, fabs(dy) );
+	  sixdyvsy.Fill( y4, dy );
+	  sixdyvsty.Fill( syA, dy );
+	  sixdyvsdty.Fill( dty, dy );
+	  sixdyvst3.Fill( evsec, dy );
+	  sixdyvst5.Fill( evsec, dy );
+	  sixmadyvsy.Fill( y4, fabs(dy) );
+	  sixmadyvsty.Fill( syA, fabs(dy) );
+	  sixmadyvsdty.Fill( dty, fabs(dy) ); // U-shape
+
+	} // dx
+
+	// match:
+
+	if( fabs(dx) < sixcut && fabs(dy) < sixcut ) {
+
+	  ++nsix;
+
+	  // average driplet and triplet at DUT:
+
+	  double xa = 0.5 * ( xd + xc );
+	  double ya = 0.5 * ( yd + yc );
+
+	  sixxyHisto->Fill( xa, ya );
+
+	  // compare slopes:
+
+	  hsixdtx.Fill( dtx );
+	  hsixdty.Fill( dty ); // width: 0.3 mrad
+	  sixdtvsxav.Fill( xa, dtxy );
+	  sixdtvsyav.Fill( ya, dtxy );
+	  sixdtvsxyav->Fill( xa, ya, dtxy );
+	  sixdtvsx.Fill( x4, dtxy );
+	  sixdtvsxy->Fill( x4, y4, dtxy );
+	  sixdtvsxm.Fill( xmod*1E3, dtxy );
+	  sixdtvsym.Fill( ymod*1E3, dtxy );
+	  sixdtvsxmym->Fill( xmod*1E3, ymod*1E3, dtxy ); // gStyle->SetPalette(55) 105 107
+
+	  // transform into DUT system: (passive)
+
+	  double dzc = zc + zmA - DUTz; // from DUT z0 [-8,8] mm
+
+	  double x5 = co*xa - so*dzc; // turn o
+	  double y5 = ya;
+	  double z5 = so*xa + co*dzc;
+
+	  double x6 = x5;
+	  double y6 = ca*y5 + sa*z5; // tilt a
+
+	  double x7 = cf*x6 + sf*y6; // rot
+	  double y7 =-sf*x6 + cf*y6;
+
+	  double x8 = x7 + DUTalignx; // shift to mid
+	  double y8 = y7 + DUTaligny;
+
+	  // update:
+
+	  if( chip0 == 182 ) { // fresh HLL
+
+	    x4 = x8;
+	    y4 = y8;
+
+	    xmod = fmod( 9.000 + x4, 0.100 ); // [0,0.100] mm
+	    ymod = fmod( 9.000 + y4, 0.100 ); // [0,0.100] mm
+
+	    xmod2 = fmod( 9.000 + x4, 0.200 ); // [0,0.200] mm
+	    ymod2 = fmod( 9.000 + y4, 0.200 ); // [0,0.200] mm
+
+	    xmod5 = fmod( 9.000 + x4, 0.050 ); // [0,0.050] mm
+	    ymod5 = fmod( 9.000 + y4, 0.050 ); // [0,0.050] mm
+
+	    xmod4 = fmod( 9.000 + x4, 0.400 ); // [0,0.400] mm RD53 8x8 core
+
+	    dxbeam = x4 - xbeam;
+	    dybeam = y4 - ybeam;
+	    drbeam = sqrt( dxbeam*dxbeam + dybeam*dybeam );
+
+	  }
+
+	} // six match
+
+      } // driplets
 
       dutxyHisto->Fill( x4, y4 );
 
@@ -4504,7 +4931,7 @@ int main( int argc, char* argv[] )
 
 	} // iso triplet
 
-      } // sixlk
+      } // tri-mod link
 
     } // loop triplets
 
