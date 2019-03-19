@@ -1,11 +1,11 @@
 
-// Daniel Pitzl, DESY, Jun 2018
+// Daniel Pitzl, DESY, Jun 2018, Mar 2019
 // telescope analysis with RD53A
 // module in front
 // using 6 telescope planes: better resolution at DUT when using low-material setup
 
-// make scope53m6
-// scope53m6 33095
+// make scope53m
+// scope53m 33095
 // needs runs.dat
 // needs geo_201x_yy.dat
 // needs align_33095.dat from tele
@@ -2843,13 +2843,13 @@ int main( int argc, char* argv[] )
       ldbg = 1;
 
     if( iev < 10 || ldbg )
-      cout << "scope53m6 processing  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "scope53m processing  " << run << "." << iev << "  taken " << evsec << endl;
     else if( iev < 100 && iev%10 == 0 )
-      cout << "scope53m6 processing  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "scope53m processing  " << run << "." << iev << "  taken " << evsec << endl;
     else if( iev < 1000 && iev%100 == 0 )
-      cout << "scope53m6 processing  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "scope53m processing  " << run << "." << iev << "  taken " << evsec << endl;
     else if( iev%1000 == 0 )
-      cout << "scope53m6 processing  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "scope53m processing  " << run << "." << iev << "  taken " << evsec << endl;
 
     StandardEvent sevt = eudaq::PluginManager::ConvertToStandard(evt);
 
