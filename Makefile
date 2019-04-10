@@ -13,20 +13,20 @@ CXXFLAGS = -O2 -Wall -Wextra $(ROOTCFLAGS) -I../main/include/
 
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/pitzl/GBL/V01-17-00/cpp/lib/
 
-tele: tele.cc
-	g++ tele.cc $(CXXFLAGS) -fopenmp -o tele \
+scope53m: scope53m.cc
+	g++ $(CXXFLAGS) scope53m.cc -o scope53m \
 	$(ROOTLIBS) -L../lib -lEUDAQ
-	@echo 'done: tele'
+	@echo 'done: scope53m'
 
 scope53: scope53.cc
 	g++ $(CXXFLAGS) scope53.cc -o scope53 \
 	$(ROOTLIBS) -L../lib -lEUDAQ
 	@echo 'done: scope53'
 
-scope53m: scope53m.cc
-	g++ $(CXXFLAGS) scope53m.cc -o scope53m \
+tele: tele.cc
+	g++ tele.cc $(CXXFLAGS) -fopenmp -o tele \
 	$(ROOTLIBS) -L../lib -lEUDAQ
-	@echo 'done: scope53m'
+	@echo 'done: tele'
 
 ed53: ed53.cc
 	g++ $(CXXFLAGS) ed53.cc -o ed53 \
