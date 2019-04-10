@@ -1,6 +1,6 @@
 
 *.root
-hot*
+hot*.dat
 al*
 *.pdf
 *.sh
