@@ -171,7 +171,8 @@ vector <cluster> getClusn( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
   delete[] gone;
 
   return vc; // vector of clusters
-}
+
+} // getclusn
 
 //------------------------------------------------------------------------------
 vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
@@ -279,7 +280,8 @@ vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
   delete gone;
 
   return vc; // vector of clusters
-}
+
+} // getclusq
 
 //------------------------------------------------------------------------------
 int main( int argc, char* argv[] )
@@ -308,6 +310,7 @@ int main( int argc, char* argv[] )
 
   int fev = 0; // 1st event
   int lev = 999222111; // last event
+  bool ldbmod = 0;
 
   for( int i = 1; i < argc; ++i ) {
 
@@ -316,6 +319,9 @@ int main( int argc, char* argv[] )
 
     if( !strcmp( argv[i], "-l" ) )
       lev = atoi( argv[++i] ); // last event
+
+    if( !strcmp( argv[i], "-m" ) )
+      ldbmod = 1; // debug for module sync
 
   } // argc
 
@@ -326,10 +332,8 @@ int main( int argc, char* argv[] )
 
   string geoFileName( "geo.dat" );
   double pbeam = 4.8;
-  double DUTtilt0 = 0.5;
-  double DUTturn0 = 0.5; // small turn will not be aligned
-  double DUTtilt = DUTtilt0; // [deg]
-  double DUTturn = DUTturn0; // [deg]
+  double DUTtilt = 0.5;
+  double DUTturn = 0.5; // small turn will not be aligned
   int chip0 = 501;
   int fifty = 0; // default is 100x25
   int rot90 = 0; // default is straight
@@ -387,12 +391,12 @@ int main( int argc, char* argv[] )
       }
 
       if( tag == TURN ) {
-	tokenizer >> DUTturn0;
+	tokenizer >> DUTturn;
 	continue;
       }
 
       if( tag == TILT ) {
-	tokenizer >> DUTtilt0;
+	tokenizer >> DUTtilt;
 	continue;
       }
 
@@ -429,8 +433,8 @@ int main( int argc, char* argv[] )
       cout 
 	<< "  beam " << pbeam << " GeV" << endl
 	<< "  geo file " << geoFileName << endl
-	<< "  nominal DUT turn " << DUTturn0 << " deg" << endl
-	<< "  nominal DUT tilt " << DUTtilt0 << " deg" << endl
+	<< "  nominal DUT turn " << DUTturn << " deg" << endl
+	<< "  nominal DUT tilt " << DUTtilt << " deg" << endl
 	<< "  DUT chip " << chip0 << endl
 	<< "  fifty " << fifty << endl
 	<< "  rot90 " << rot90 << endl
@@ -710,7 +714,7 @@ int main( int argc, char* argv[] )
 
   rootFileName << "scopeRD" << run << ".root";
 
-  TFile* histoFile = new TFile( rootFileName.str(  ).c_str(  ), "RECREATE" );
+  TFile histoFile( rootFileName.str(  ).c_str(  ), "RECREATE" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // telescope hot pixels:
@@ -856,11 +860,6 @@ int main( int argc, char* argv[] )
   } // alignFile
 
   iDUTalignFile.close();
-
-  if( DUTaligniteration <= 1 ) {
-    DUTtilt = DUTtilt0;
-    DUTturn = DUTturn0;
-  }
 
   double DUTalignx0 = DUTalignx; // at time 0
   double DUTaligny0 = DUTaligny;
@@ -1185,6 +1184,25 @@ int main( int argc, char* argv[] )
     getline( Bstream, sl );
   }
 
+  if( modrun == 366 ) { // Feb 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+
+  if( modrun == 368 ) { // Feb 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+
+  if( modrun == 376 ) { // Feb 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+
   if( modrun >= 414 && modrun <= 418 ) { // Mar 2019
     getline( Astream, sl ); // read one line for sync
     getline( Bstream, sl );
@@ -1199,9 +1217,17 @@ int main( int argc, char* argv[] )
     getline( Astream, sl ); // read one line for sync
     getline( Bstream, sl );
   }
-  if( modrun >= 421 && modrun <= 423 ) { // Mar 2019
+  if( modrun == 421 ) { // Mar 2019
     getline( Astream, sl ); // read one line for sync
     getline( Bstream, sl );
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+  if( modrun == 422 ) { // Mar 2019
+    getline( Astream, sl ); // read one line for sync
+    getline( Bstream, sl );
+  }
+  if( modrun == 423 ) { // Mar 2019
     getline( Astream, sl ); // read one line for sync
     getline( Bstream, sl );
   }
@@ -1308,7 +1334,7 @@ int main( int argc, char* argv[] )
   TH1I t2Histo( "t2", "event time;event time [s];events / s", 300, 0, 300 );
   TH1I t3Histo( "t3", "event time;event time [s];events / 10 s", 150, 0, 1500 );
   TH1I t4Histo( "t4", "event time;event time [s];events /10 s", 600, 0, 6000 );
-  TH1I t5Histo( "t5", "event time;event time [s];events / 100 s", 600, 0, 60000 );
+  TH1I t5Histo( "t5", "event time;event time [s];events / 60 s", 1100, 0, 66000 );
   TH1I t6Histo( "t6", "event time;event time [h];events / 3 min", 1000, 0, 50 );
 
   TH1I dtusHisto( "dtus", "time between events;time between events [us];events", 100, 0, 1000 );
@@ -1323,6 +1349,7 @@ int main( int argc, char* argv[] )
 
   TH1I hpivot[9];
   TH1I hnpx[9];
+  TH1I hnpxmsk[9];
   TH1I hnframes[9];
   TH1I hcol[9];
   TH1I hrow[9];
@@ -1359,8 +1386,11 @@ int main( int argc, char* argv[] )
 			1000, 0, 10*1000 );
 
     hnpx[ipl] = TH1I( Form( "npx%i", ipl ),
-		      Form( "%i pixel per event;pixels;plane %i events", ipl, ipl ),
+		      Form( "%i pixel per event before masking;pixels/event;plane %i events", ipl, ipl ),
 		      201, -0.5, 200.5 );
+    hnpxmsk[ipl] = TH1I( Form( "npxmsk%i", ipl ),
+			 Form( "%i pixel per event after masking;pixels/event;plane %i events", ipl, ipl ),
+			 201, -0.5, 200.5 );
 
     hnframes[ipl] = TH1I( Form( "nframes%i", ipl ),
 			  Form( "%i frames per event;frames;plane %i events", ipl, ipl ),
@@ -1399,7 +1429,7 @@ int main( int argc, char* argv[] )
 		       500, 0, 500E3 );
 
   hmap[8] = new TH2I( Form( "map%i", 8 ),
-		      Form( "%i map;col;row;plane %i pixels", 8, 8 ),
+		      Form( "%i map before masking;col;row;plane %i pixels", 8, 8 ),
 		      400, 0, 400, 192, 0, 192 );
 
   TH1I dutpxcol0Histo( "dutpxcol0",
@@ -1425,8 +1455,11 @@ int main( int argc, char* argv[] )
 		400, 0, 400, 192, 0, 192, 0, 16 );
 
   TH1I dutpxbcHisto( "dutpxbc",
-		    "DUT pixel BC;DUT pixel BC;DUT pixels without masking",
-		    32, -0.5, 31.5 );
+		     "DUT pixel BC;DUT pixel BC;DUT pixels without masking",
+		     32, -0.5, 31.5 );
+  TH1I dutpxbcmHisto( "dutpxbcm",
+		      "DUT pixel BC;DUT pixel BC;DUT pixels with masking",
+		      32, -0.5, 31.5 );
   TH1I synpxbcHisto( "synpxbc",
 		    "Sync pixel BC;Sync pixel BC;Sync pixels",
 		    32, -0.5, 31.5 );
@@ -1686,17 +1719,17 @@ int main( int argc, char* argv[] )
 		      "triplet-MOD links vs events;events;triplets with MOD links / 1000",
 		      1100, 0, 1.1E6, -0.5, 1.5 );
   TProfile modlkvsev9( "modlkvsev9",
-		      "triplet-MOD links vs events;events;triplets with MOD links / 1000",
-		      26000, 0, 26E6, -0.5, 1.5 );
+		       "triplet-MOD links vs events;events;triplets with MOD links / 1000",
+		       42000, 0, 42E6, -0.5, 1.5 );
   TProfile modlkvsev1( "modlkvsev1",
-		      "triplet-MOD links vs events;events;triplets with MOD links / 100",
-		      100, 755e3, 765E3, -0.5, 1.5 );
+		       "triplet-MOD links vs events;events;triplets with MOD links / 100",
+		       100, 89e3, 99E3, -0.5, 1.5 );
   TProfile modlkvsev2( "modlkvsev2",
-		      "triplet-MOD links vs events;events;triplets with MOD links / 100",
-		      100, 570e3, 580E3, -0.5, 1.5 );
+		       "triplet-MOD links vs events;events;triplets with MOD links / 100",
+		       100, 570e3, 580E3, -0.5, 1.5 );
 
   TH1I ntrimodHisto( "ntrimod", "triplet - MOD links;triplet - MOD links;events",
-		    11, -0.5, 10.5 );
+		     11, -0.5, 10.5 );
 
   // DUT clusters:
 
@@ -1918,7 +1951,7 @@ int main( int argc, char* argv[] )
 		      200, 0, 1000, -limx, limx );
   TProfile dutdxvst5( "dutdxvst5",
 		      "DUT #Deltax vs time;time [s];<DUT #Deltax> [mm]",
-		      1000, 0, 60000, -limx, limx );
+		      1100, 0, 66000, -limx, limx );
 
   TProfile dutmadxvsx( "dutmadxvsx",
 		       "DUT MAD(#Deltax) vs x;x track [mm];MAD(#Deltax) [mm]",
@@ -1974,7 +2007,7 @@ int main( int argc, char* argv[] )
 		      200, 0, 1000, -0.1, 0.1 );
   TProfile dutdyvst5( "dutdyvst5",
 		      "DUT #Deltay vs time;time [s];<DUT #Deltay> [mm]",
-		      1000, 0, 60000, -0.1, 0.1 );
+		      1100, 0, 66000, -0.1, 0.1 );
 
   TProfile dutmadyvsx( "dutmadyvsx",
 		       "DUT MAD(#Deltay) vs x;x track [mm];MAD(#Deltay) [mm]",
@@ -2827,12 +2860,13 @@ int main( int argc, char* argv[] )
 
   int nevA = 0;
   int nevB = 0;
+  int nmodlk = 0;
 
   int ntrck = 0;
   int ngood = 0;
 
   do {
-  
+
     evt = reader->GetDetectorEvent();
 
     uint64_t evTLU = evt.GetTimestamp(); // 384 MHz = 2.6 ns
@@ -2875,10 +2909,12 @@ int main( int argc, char* argv[] )
     else if( iev%1000 == 0 ) {
       cout << "scope53m processing  " << run << "." << iev
 	   << "  taken " << evsec
+	   << "  modlk " << nmodlk
 	   << "  eff " << ngood*1E2/max(1,ntrck)
 	   << endl;
       ngood = 0;
       ntrck = 0;
+      nmodlk = 0;
     }
 
     StandardEvent sevt = eudaq::PluginManager::ConvertToStandard(evt);
@@ -2892,7 +2928,7 @@ int main( int argc, char* argv[] )
       const eudaq::StandardPlane &plane = sevt.GetPlane(iplane);
 
       if( ldbg )
-	std::cout
+	cout
 	  << "  " << iplane
 	  << ": plane " << plane.ID() // 1
 	  << " " << plane.Type() // NI or BDAQ53
@@ -2911,10 +2947,8 @@ int main( int argc, char* argv[] )
       }
 
       hpivot[ipl].Fill( plane.PivotPixel() );
-      hnpx[ipl].Fill( plane.HitPixels() );
+      hnpx[ipl].Fill( plane.HitPixels() ); // before masking
       hnframes[ipl].Fill( plane.NumFrames() ); // 32
-      if( ipl == iDUT )
-	dutnpxvsev.Fill( iev, plane.HitPixels() );
 
       vector <pixel> pb; // for clustering
 
@@ -2925,9 +2959,9 @@ int main( int argc, char* argv[] )
 	for( size_t ipix = 0; ipix < plane.HitPixels( frm ); ++ipix ) {
 
 	  if( ldbg ) 
-	    std::cout << ": " << plane.GetX(ipix,frm)
-		      << "." << plane.GetY(ipix,frm)
-		      << "." << plane.GetPixel(ipix,frm) << " ";
+	    cout << ": " << plane.GetX(ipix,frm)
+		 << "." << plane.GetY(ipix,frm)
+		 << "." << plane.GetPixel(ipix,frm) << " ";
 
 	  int ix = plane.GetX(ipix,frm); // column
 	  int iy = plane.GetY(ipix,frm); // row
@@ -2942,6 +2976,10 @@ int main( int argc, char* argv[] )
 
 	  int ipx = ix*ny[ipl] + iy;
 	  if( hotset[ipl].count(ipx) ) continue;
+
+	  if( ipl == iDUT ) {
+	    dutpxbcmHisto.Fill( frm ); // after hot pixel masking
+	  }
 
 	  pixel px;
 	  px.col = ix; // ROC col
@@ -3006,13 +3044,14 @@ int main( int argc, char* argv[] )
 		px.row = 2*iy + 0; // different from R4S
 	      else
 		px.row = 2*iy + 1; // see ed53 for shallow angle
-	      if( chip0 == 182 || chip0 == 211 ) { // HLL
-		if( ix%2 ) 
+	      if( chip0 == 182 || chip0 == 211 || chip0 == 512 ) { // HLL
+		if( ix%2 )
 		  px.row = 2*iy + 1;
 		else
 		  px.row = 2*iy + 0;
 	      }
 	    }
+
 	  } // DUT
 
 	  pb.push_back(px);
@@ -3023,7 +3062,11 @@ int main( int argc, char* argv[] )
 
 	} // pix
 
-      if( ldbg ) std::cout << std::endl;
+      if( ldbg ) cout << endl;
+
+      hnpxmsk[ipl].Fill( pb.size() ); // after masking
+      if( ipl == iDUT )
+	dutnpxvsev.Fill( iev, pb.size() );
 
       // clustering:
 
@@ -3329,34 +3372,6 @@ int main( int argc, char* argv[] )
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // DUT align vs event:
 
-    if( run == 33373 ) { // dutdxvst5->Fit("pol9")
-
-      double p0 =   0.00460585;
-      double p1 =  6.49668e-07;
-      double p2 = -9.02168e-11;
-      double p3 = -6.19962e-15;
-      double p4 =  1.58327e-18;
-      double p5 =   -1.069e-22;
-      double p6 =  3.58945e-27;
-      double p7 = -6.56699e-32;
-      double p8 =  6.26488e-37;
-      double p9 =   -2.444e-42;
-      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
-
-      p0 =  2.98704e-05;
-      p1 = -8.07885e-07;
-      p2 =  1.76479e-10;
-      p3 = -1.63139e-14;
-      p4 =   7.7256e-19;
-      p5 = -2.01131e-23;
-      p6 =  2.87059e-28;
-      p7 =  -1.9848e-33;
-      p8 =  3.16939e-39;
-      p9 =   1.9522e-44;
-      DUTaligny = DUTaligny0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
-
-    }
-
     if( run == 33333 ) { // dutdxvst5->Fit("pol9")
 
       double p0 =  8.99112e-05;
@@ -3381,6 +3396,34 @@ int main( int argc, char* argv[] )
       p7 =  1.43968e-31;
       p8 =  -1.7298e-36;
       p9 =  8.35097e-42;
+      DUTaligny = DUTaligny0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 33373 ) { // dutdxvst5->Fit("pol9")
+
+      double p0 =   0.00460585;
+      double p1 =  6.49668e-07;
+      double p2 = -9.02168e-11;
+      double p3 = -6.19962e-15;
+      double p4 =  1.58327e-18;
+      double p5 =   -1.069e-22;
+      double p6 =  3.58945e-27;
+      double p7 = -6.56699e-32;
+      double p8 =  6.26488e-37;
+      double p9 =   -2.444e-42;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+      p0 =  2.98704e-05;
+      p1 = -8.07885e-07;
+      p2 =  1.76479e-10;
+      p3 = -1.63139e-14;
+      p4 =   7.7256e-19;
+      p5 = -2.01131e-23;
+      p6 =  2.87059e-28;
+      p7 =  -1.9848e-33;
+      p8 =  3.16939e-39;
+      p9 =   1.9522e-44;
       DUTaligny = DUTaligny0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
 
     }
@@ -3437,6 +3480,62 @@ int main( int argc, char* argv[] )
       p7 = -6.00906e-31;
       p8 =  9.73253e-36;
       p9 = -6.34917e-41;
+      DUTaligny = DUTaligny0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 35590 ) { // dutdxvst5->Fit("pol9")
+
+      double p0 =   -0.0065022;
+      double p1 =  5.39455e-07;
+      double p2 = -1.35292e-11;
+      double p3 =  1.49578e-14;
+      double p4 = -1.75745e-18;
+      double p5 =  9.13022e-23;
+      double p6 = -2.57646e-27;
+      double p7 =  4.09995e-32;
+      double p8 = -3.46008e-37;
+      double p9 =  1.20437e-42;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+      p0 =  -0.00111423;
+      p1 = -2.47965e-07;
+      p2 = -1.27336e-11;
+      p3 = -2.08114e-15;
+      p4 =  3.72269e-19;
+      p5 =  -2.1894e-23;
+      p6 =  6.55495e-28;
+      p7 =  -1.0745e-32;
+      p8 =  9.17607e-38;
+      p9 = -3.19272e-43;
+      DUTaligny = DUTaligny0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 35670 ) { // dutdxvst5->Fit("pol9")
+
+      double p0 =  0.000361424;
+      double p1 = -2.02731e-06;
+      double p2 =  7.27207e-10;
+      double p3 = -3.04223e-13;
+      double p4 =   6.4932e-17;
+      double p5 = -7.13696e-21;
+      double p6 =  4.33966e-25;
+      double p7 = -1.47014e-29;
+      double p8 =  2.57816e-34;
+      double p9 = -1.80007e-39;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+      p0 = -0.000258553;
+      p1 =  1.22008e-06;
+      p2 = -3.45351e-10;
+      p3 =  1.41691e-13;
+      p4 = -3.55133e-17;
+      p5 =  4.60807e-21;
+      p6 = -3.29672e-25;
+      p7 =  1.32183e-29;
+      p8 = -2.79026e-34;
+      p9 =  2.41744e-39;
       DUTaligny = DUTaligny0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
 
     }
@@ -3705,6 +3804,23 @@ int main( int argc, char* argv[] )
 
     ndriHisto.Fill( driplets.size() );
 
+    // debug for Mod sync:
+
+    if( ldbmod )
+      cout << iev << endl;
+
+    for( vector<cluster>::iterator c = cl[iMOD].begin(); c != cl[iMOD].end(); ++c ) {
+
+      double ccol = c->col;
+      double crow = c->row;
+      double modx = ( ccol + 0.5 - nx[iMOD]/2 ) * ptchx[iMOD]; // -33..33 mm
+      double mody = ( crow + 0.5 - ny[iMOD]/2 ) * ptchy[iMOD]; // -8..8 mm
+
+      if( ldbmod )
+	cout << "         " << modx << "  " << mody << endl;
+
+    }
+
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // triplets vs MOD and DUT:
 
@@ -3800,8 +3916,11 @@ int main( int argc, char* argv[] )
       double xmodm = fmod( 36.000 + x4m, 0.3 ); // [0,0.3] mm, 2 pixel wide
       double ymodm = fmod(  9.000 + y4m, 0.2 ); // [0,0.2] mm
 
+      if( ldbmod )
+	cout << "                                   " << x4m << "  " << y4m;
+
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      // triplets vs MOD clusters:
+      // triplet vs MOD clusters:
 
       bool ltrimod = 0;
 
@@ -3859,11 +3978,6 @@ int main( int argc, char* argv[] )
 	  modq0Histo.Fill( q0 );
 	  modnpxvsxmym->Fill( xmodm*1E3, ymodm*1E3, c->size );
 
-	}
-
-	if( fabs( moddx ) < xcutMOD &&
-	    fabs( moddy ) < ycutMOD ) {
-
 	  modlkxBHisto.Fill( xB );
 	  modlkyBHisto.Fill( yB );
 	  modlkxHisto.Fill( x4m );
@@ -3878,7 +3992,11 @@ int main( int argc, char* argv[] )
 	  triplets[iA].lk = 1;
 	  nmdm = 1; // we have a MOD-triplet match in this event
 	  ++ntrimod;
+	  ++nmodlk;
 	  ltrimod = 1;
+
+	  if( ldbmod )
+	    cout << " match";
 
 	  for( vector<pixel>::iterator px = c->vpix.begin(); px != c->vpix.end(); ++px ) {
 	    tripxfrmlkHisto.Fill( px->frm ); // 0 or 1
@@ -3888,6 +4006,9 @@ int main( int argc, char* argv[] )
 	} // MOD link x and y
 
       } // MOD
+
+      if( ldbmod )
+	cout << endl;
 
       double zA = DUTz - zmA; // z DUT from mid of triplet
       //double xA = xmA + sxA * zA; // triplet impact point on DUT
@@ -4090,7 +4211,7 @@ int main( int argc, char* argv[] )
 	  if( chip0 == 182 || chip0 == 211 || // fresh: no box
 	      chip0 == 501 || chip0 == 504 ||
 	      chip0 == 520 || chip0 == 524 ||
-	      chip0 == 531 || chip0 == 550 ) {
+	      chip0 == 531 || chip0 == 543 || chip0 == 550 ) {
 
 	    x4 = x8;
 	    y4 = y8;
@@ -4796,147 +4917,122 @@ int main( int argc, char* argv[] )
 
 	bool fidx = 1;
 	bool fidy = 1;
+
+	if( y4 >  4.7 ) fidy = 0;
+	if( y4 < -4.7 ) fidy = 0;
+
 	if( chip0 == 501 ) { // rot90 Lin
 	  if( x4 >  4.7 ) fidx = 0;
 	  if( x4 < -4.7 ) fidx = 0;
+	  fidy = 1;
 	  if( y4 >  3.5 ) fidy = 0;
 	  if( y4 < -2.1 ) fidy = 0; // packman cutout
 	}
 	if( chip0 == 504 ) { // straight Lin
 	  if( x4 >  3.2 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 509 ) { // straight Lin
 	  if( x4 >  3.2 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 509 && run >= 35150 && run <= 99999 ) { // straight Syn
 	  fidx = 1;
-	  fidy = 1;
 	  if( x4 < -9.9 ) fidx = 0;
 	  if( x4 > -3.7 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 524 && run < 34090 ) { // straight Lin
 	  if( x4 >  3.2 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 524 ) { // straight Lin+Diff
 	  if( x4 >  9.9 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 531 ) { // straight Lin+Diff
 	  if( x4 >  9.9 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 520 ) { // straight Lin+Diff
 	  if( x4 >  9.9 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 550 ) { // straight Lin+Diff
 	  if( x4 >  9.9 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 1470 ) { // straight Lin
 	  if( x4 >  3.2 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 1472 ) { // straight Lin
 	  if( x4 >  3.2 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 512 ) { // straight Lin
 	  if( x4 >  3.2 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 511 ) { // straight Lin
 	  if( x4 >  3.2 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 511 && run >= 35677 && run <= 99999 ) { // straight Sync
 	  fidx = 1;
-	  fidy = 1;
 	  if( x4 < -9.9 ) fidx = 0;
 	  if( x4 > -3.7 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 182 ) { // straight Lin
 	  if( x4 >  3.2 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 182 && run >= 35722 && run <= 99999 ) { // straight Sync
 	  fidx = 1;
-	  fidy = 1;
 	  if( x4 < -9.9 ) fidx = 0;
 	  if( x4 > -3.7 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 211 && run >= 35800 && run <= 99999 ) { // straight Sync
 	  fidx = 1;
-	  fidy = 1;
 	  if( x4 < -9.9 ) fidx = 0;
 	  if( x4 > -3.7 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 511 && run >= 35808 && run <= 99999 ) { // straight Sync
 	  fidx = 1;
-	  fidy = 1;
 	  if( x4 < -9.9 ) fidx = 0;
 	  if( x4 > -3.7 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 521 && run >= 35827 && run <= 99999 ) { // straight Sync
 	  fidx = 1;
-	  fidy = 1;
 	  if( x4 < -9.9 ) fidx = 0;
 	  if( x4 > -3.7 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 521 && run >= 35873 && run <= 99999 ) { // straight Lin
 	  fidx = 1;
-	  fidy = 1;
 	  if( x4 >  3.2 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
 	}
 	if( chip0 == 521 && run >= 35917 && run <= 99999 ) { // straight Sync
 	  fidx = 1;
-	  fidy = 1;
 	  if( x4 < -9.9 ) fidx = 0;
 	  if( x4 > -3.7 ) fidx = 0;
-	  if( y4 >  4.7 ) fidy = 0;
-	  if( y4 < -4.7 ) fidy = 0;
+	}
+	if( chip0 == 334 && run >= 35965 && run <= 99999 ) { // straight Lin
+	  fidx = 1;
+	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 < -3.5 ) fidx = 0;
+	}
+	if( chip0 == 543 ) { // straight Lin
+	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 < -3.5 ) fidx = 0;
+	}
+	if( chip0 == 512 && run >= 36124 && run <= 99999 ) { // Sync
+	  fidx = 1;
+	  if( x4 < -9.9 ) fidx = 0;
+	  if( x4 > -3.7 ) fidx = 0;
+	}
+	if( chip0 == 515 || chip0 == 516 ) { // straight Lin
+	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 < -3.5 ) fidx = 0;
 	}
 
 	// from track x, y (at DUT) to sensor col, row:
@@ -5062,13 +5158,13 @@ int main( int argc, char* argv[] )
   delete reader;
 
   cout << "done after " << iev << " events" << endl;
-  histoFile->Write();
-  histoFile->Close();
+  histoFile.Write();
+  //histoFile->Close();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // MOD alignment:
 
-  if( moddxaHisto.GetEntries() > 9999 ) {
+  if( ldbmod == 0 && moddxaHisto.GetEntries() > 9999 ) {
 
     double newMODalignx = MODalignx;
     double newMODaligny = MODaligny;
@@ -5697,7 +5793,8 @@ int main( int argc, char* argv[] )
 
   cout << endl
        << "DUT efficiency " << 100*effvst5.GetMean(2) << "%"
-       << " from " << effvst5.GetEntries() << " events"
+       << " from " << effvst5.GetEntries() << " in-time tracks"
+       << " from " << iev << " events"
        << endl;
 
   // write new DUT alignment:
@@ -5716,14 +5813,15 @@ int main( int argc, char* argv[] )
   string ans{"n"};
   string YES{"y"};
 
-  if( fabs(DUTturn) < 44 )
+  if( ldbmod == 0 && fabs(DUTturn) < 66 )
     cin >> ans;
 
   if( ans == YES ) {
 
     ofstream DUTalignFile( DUTalignFileName.str() );
 
-    DUTalignFile << "# DUT alignment for run " << run << endl;
+    DUTalignFile << "# DUT alignment for run " << run
+		 << " using " << iev << " events" << endl;
     ++DUTaligniteration;
     DUTalignFile << "iteration " << DUTaligniteration << endl;
     DUTalignFile << "alignx " << DUTalignx0 << endl;
@@ -5744,7 +5842,7 @@ int main( int argc, char* argv[] )
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done
 
-  cout << endl << histoFile->GetName() << endl;
+  cout << endl << histoFile.GetName() << endl;
 
   cout << endl;
 

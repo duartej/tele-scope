@@ -824,11 +824,31 @@ modrun 128
 run 34243  490  
 
 #-------------------------------------------------------------------------------
+# Autumn 2018: irradiated RD53A at CERN PS
+#
+# Set 1: 509, 518, 507, 508 and 506 got 2.5E15 on Lin
+# 506 glue failure dead
+# 507 FDB p-stop 100x25 bias dot: not measured
+# 508 dead
+# 509 FTH p-stop 100x25 default: measured Dec 2018
+# 518 glue failure dead
+#
+# Set 2: 510, 512 and 516 got 3E15 on Lin
+# 510 dead
+# 512 FTH p-stop 100x25 bias dot: measured Feb 2019
+# 516 dead
+#
+# Set 3: 505, 511 and 515 got 6.6E15 on Lin
+# 505 broken corner
+# 511 FDB p-stop 50x50 bias dot: measured Mar 2019
+# 515 FDB p-stop 50x50 bias dot: not measured
+
+#-------------------------------------------------------------------------------
 # Dec 2018: irradiated RD53A
 #-------------------------------------------------------------------------------
 # Tue 4.12.2018
 
-chip 509 = FTH150P RD53A 100x25 default  5E15 n_eq at CERN PS
+chip 509 = FTH150P RD53A 100x25 default  2.6E15 n_eq at CERN PS on Lin
 
 fifty 0
 
@@ -957,7 +977,7 @@ geo geo_2018_12b.dat = MOD  0  152  305  DUT  585  734  892 for 100x25
 
 # paddle scint: 24x12 mm
 
-# bias 800
+# bias 800  243 uA
 
 # masking: hotDUT_35071.dat from .x hot.C+("map0")
 
@@ -969,45 +989,45 @@ run 35068  ntri 4.9
 modrun 173
 run 35071  994  99.62  ntri 7.7  modlk 56%
 
-# bias 700
+# bias 700  200 uA
 modrun 175
 run 35073  1489.042  99.60
 
-# 600V
+# 600V  169 uA
 modrun 176, 1078579
 run 35074  1078.579  99.535
 
 # DUT  y 19,0 -> 18,5 for more overlap
 
-# 500 V
+# 500 V  145 uA
 modrun 177  loose sync 660 s
 run 35076  99.50
 
-# 400 V
+# 400 V  125 uA
 modrun 178
 run 35077  99.31
 
-# 350 V
+# 350 V  115 uA
 modrun 179
 run 35078  99.14
 
-# 300 V
+# 300 V  105 uA
 modrun 180
 run 35079  98.76
 
-# 250 V
+# 250 V  94 uA
 modrun 181
 run 35080  97.85
 
-# 200 V
+# 200 V  83 uA
 modrun 182
 run 35081  95.84  even-odd averaged out by turn
 
-# 150 V
+# 150 V  71 uA
 modrun 183
 run 35082  91.07
 
-# 100 V
+# 100 V  52 uA
 modrun 187  loose sync at 460 s
 run 35086  77.2
 
@@ -1069,11 +1089,11 @@ modrun 204  1002827  erase 752902, 752903
 run 35117  1002.825
 # hadd scopeRD35114-17.root scopeRD35114.root scopeRD35115.root scopeRD35116.root scopeRD35117.root
 
-# 5.6 GeV, 1.0 kHz
+GeV 5.6  1.0 kHz
 modrun 205  250994
 run 35118  250.994
 
-# over night:
+# over night: 509i
 GeV 6.0  0.7 kHz  ntri 4.1
 modrun 206  25954503
 # scope53m -f 4503000 -l 4999000 35119
@@ -1124,6 +1144,11 @@ GeV 5.2  1.25 kHz
 # 700V, 117 uA
 modrun 207  1000113
 run 35120  1000.113  99.40
+
+# .x hot.C+("map8",100000)  91
+# .x hot.C+("map8", 10000) 141 mask
+# .x hot.C+("map8",  1000) 212
+# .x hot.C+("map8",   100) 406
 
 # 600, 102 uA
 modrun 208 999799
@@ -1182,7 +1207,7 @@ run 35133  4566.203  99.60
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # 509i Sync vertical (+1st Lin column)
 
-# 800 V, 134 uA
+# 800-27 V, 134 uA
 modrun 221  1001783  erase 309568, 663752, 676511, 676512, 758473
 run 35150  1001.778  
 
@@ -1201,8 +1226,8 @@ run 35156  1019.341  copied
 # 400  83 uA
 modrun 226  1008573
 run 35157  1008.575  copied
-              
-# 6 GeV for the night              
+
+GeV  6 for the night 509i Sync
 800 V  138 uA
 modrun 227 42538720
 run 35158 42.5M  copied
@@ -1211,7 +1236,7 @@ run 35158 42.5M  copied
 # Sun 9.12.2018
 # 509i Syn continue vertical bias scan
 
-# 5.2 GeV              
+GeV 5.2
 
 # 350  72 uA
 modrun 228  1001287
@@ -1308,7 +1333,7 @@ run 35427 # 497k
 modrun 248  # 46% yield: modlky triangular
 run 35429  500
 
-GeV 5.6 over night
+GeV 5.6 over night 1470
 # 200V, 326 uA
 modrun 249
 run 35430
@@ -1523,7 +1548,7 @@ adjust x from +1.0 to +4.0 mm
 
 turn -30
 modrun 306
-run 35485  27371 over night
+run 35485  27371 over night 1470
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Thu 14.2.2019
@@ -1578,16 +1603,19 @@ geo geo_2019_02e.dat = 0  153  305  573  720  874
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Fri 15.2.2019
 
-chip 512 = FTH150P RD53A 100x25 P2 = p-stop with bias dot 1.5E16 p/cm2 CERN PS
+chip 512 = FTH150P RD53A 100x25 P2 = p-stop bias dot  3E15 n/cm2 CERN PS on Lin
 
 # Lin section
 
 fifty 0
 
 turn 1
+
 geo geo_2019_02g.dat = 0  153  305  538  685  839 # 100x25
-5.2 GeV
-bias dot floating
+
+GeV 5.2
+
+# bias dot floating
 
 # 200 kOhm on bias
 
@@ -1598,32 +1626,39 @@ modrun 360
 run 35543
 
 # Vthreshold 345
+
+# 400 V, 79 uA
 modrun 361
-run 35548  490
+run 35548  490  88.64 mask
 
 # 500 V, 93 uA
 modrun 362  skip 2
-run 35549  362
+run 35549  362  91.37 mask
 
 # 600 V, 109 uA
 modrun 363
-run 35550  364
+run 35550  364  92.71 mask
 
 # 700 V, 128 uA
 modrun 364  skip 4  lost sync 73k
-run 35551  360
+run 35551  360  93.35 mask
 
 # 300 V, 61 uA
 modrun 366  skip 2
-run 35553  345  copied
+run 35553  345  83.42 mask
 
 # problems in DESY II, dinner, TCP errors, reboot rcdatura              
 # 800 V, 151 uA
 modrun 368  skip 1
-run 35555  360  copied
+run 35555  360  94.34 mask
+
+# hot above 360000   53
+# hot above  36000  164
+# hot above   3600  327 mask
+# hot above    360  564
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Sat 16.2.2019
+# Sat 16.2.2019 512i
 
 turn -34
 
@@ -1631,48 +1666,55 @@ geo geo_2019_02h.dat = 0  153  305  573  720  874
 
 # move in x by 7 mm
 
-# 300 V, 60 uA
-modrun 374  skip 0
-run  35562  361  copied
+# 300-12 V, 60 uA
+modrun 374  skip 0  
+run  35562  361  1.04  no correlation
 
-# 400 V, 74 uA
-modrun 375  skip 0
-run 35563  361  copied
+# 400-15 V, 74 uA
+modrun 375  skip 0  
+run 35563  361  93.55 mask
 
-# 500 V, 90 uA
-modrun 376  skip 2
-run 35564  360  copied
+# 500-18 V, 90 uA
+modrun 376  skip 2  
+run 35564  360  96.76 mask
 
-# 600 V, 106 uA
+# 600-21 V, 106 uA
 modrun 377  skip 0
-run 35565  370
+run 35565  370  98.24 mask
 
-# 700 V, 126 uA
-modrun 378  skip 
-run 35566  360  copied
+# 700-25 V, 126 uA
+modrun 378  skip    
+run 35566  360  98.98 mask
 
-# 800 V,  uA  360
+# 800-30 V,  152 uA
 modrun 379  skip 0
-run 35567  360k  99.7
+run 35567  361  99.29 mask
+
+# hot above 360000  40
+# hot above  36000 133
+# hot above   3600 269 mask
+# hot above    360 477
+# hot above     36 840
 
 # Grounded bias dot
+
 modrun 380  skip 0
-run 35568  360k  99.7
+run 35568  360  99.7
 
 modrun 381  skip 0
-run 35569  414k  9  copied
+run 35569  414    
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Grounded bias dot, vertical incidence
+# Grounded bias dot, vertical incidence 512i
 
 turn 1
 geo geo_2019_02g.dat = 0  153  305  538  685  839 # 100x25
 
-modrun 384  skip 
+modrun 384
 run 35572  
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# threshold scan against noise
+# 512i threshold scan against noise
 
 turn -33
 #x from -1 to +6 mm
@@ -1684,7 +1726,12 @@ geo geo_2019_02h.dat = 0  153  305  573  720  874
 # Vthreshold 347  S/N = dutpxbc->GetBinContent(20) / dutpxbc->GetBinContent(29) - 1
 
 modrun 386  skip 0 
-run 35574  360  99.50
+run 35574  360  99.324 mask
+
+# .x hot.C+("map8",36000)  57
+# .x hot.C+("map8", 3600) 117 mask
+# .x hot.C+("map8",  360) 239
+# .x hot.C+("map8",   36) 476
 
 modrun 387  skip 0
 run 35575  360  99.5
@@ -1699,53 +1746,93 @@ modrun 390  skip 0
 run 35578  360  copied
 
 # Vthreshold 349
+
 modrun 391  skip 0
-run 35579  360  99.34
+run 35579  361  99.235 mask
+
+# .x hot.C+("map8",36100)  18
+# .x hot.C+("map8", 3610)  62 mask
+# .x hot.C+("map8",  361) 126
 
 # Vthreshold 351
+
 modrun 392  skip 0
-run 35580  360  99.17
+run 35580  361  99.088 mask
+
+# .x hot.C+("map8",36100)  11
+# .x hot.C+("map8", 3610)  23 mask
+# .x hot.C+("map8",  361)  60
 
 # Vthreshold 353
+
 modrun 393  skip 0
-run 35581  360  99.05
+run 35581  361  98.995 mask
+
+# .x hot.C+("map8",36100)   8
+# .x hot.C+("map8", 3610)  15 mask
+# .x hot.C+("map8",  361)  37
 
 # Vthreshold 355
+
 modrun 394  skip 0
-run 35582  360  98.72
+run 35582  361  98.854 mask
+
+# .x hot.C+("map8",36100)   5
+# .x hot.C+("map8", 3610)  10 mask
+# .x hot.C+("map8",  361)  21
 
 # Vthreshold 357
+
 modrun 395  skip 0
-run 35583  360  98.41
+run 35583  362  98.390 mask
+
+# .x hot.C+("map8",36200)   5
+# .x hot.C+("map8", 3620)  10 mask
+# .x hot.C+("map8",  362)  14
 
 #Vthreshold 359
+
 modrun 396  skip 0,
-run 35584  360
+run 35584  361  98.107 mask  npx0 5.2
+
+# .x hot.C+("map8",36100)   0
+# .x hot.C+("map8", 3610)   0 mask
+# .x hot.C+("map8",  361)   1
+# .x hot.C+("map8",   36)  13
 
 #Vthreshold 351
-#700 V, 130 uA
-modrun 397  skip 0,
-run 35585  390
 
-#600 V, 109 uA
+# 700 V, 130 uA
+modrun 397  skip 0,
+run 35585  390  98.40 mask  npx0 7.7
+
+# .x hot.C+("map8",39000)   9
+# .x hot.C+("map8", 3900)  23 mask
+# .x hot.C+("map8",  390)  59
+# .x hot.C+("map8",   39) 134
+
+# 600 V, 109 uA
 modrun 398  skip 0,
 run 35586  360
 
-#500 V, 92 uA
+# 500 V, 92 uA
 modrun 399  skip 0,
 run 35587  360
 
-#400 V, 76 uA
+# 400 V, 76 uA
 modrun 400  skip 0,
 run 35588  360
 
-#300 V, 61 uA
+# 300 V, 61 uA
 modrun 401  skip 0,
 run 35589  360
 
-# 800 V over night
-modrun 402  TLU 41'460'016
-run 35590  41461.428  copied
+# 800 V turn -33 over night: 512i 100x25 bias dot  3E15 n/cm2 CERN PS on Lin
+modrun 402  41'461'427  removed 1411 around 7'463'610
+# scope53m -m -f 7390200 -l 7437700 35590
+
+run 35590  41461.428  99.07
+#      TLU 41460.016
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Sun 17.2.2019
@@ -1775,12 +1862,14 @@ turn -2.0  x -1
 modrun 408  skip 0
 run 35596  93.7
 
+# dismount
+
 #-------------------------------------------------------------------------------
 # Mar 2019
 #-------------------------------------------------------------------------------
 # Sat 16.3.2019
 
-chip 511 = FDB150P RD53A 50x50 P3 p-stop bias dot with 1.5E16 CERN PS p/cm2
+chip 511 = FDB150P RD53A 50x50 P3 p-stop bias dot with 7E15 CERN PS p/cm2 on Lin
 
 # Lin section, thr 1.4 ke
 
@@ -1818,114 +1907,122 @@ turn -30
 
 geo geo_2019_03c.dat = 0  153  305  576  729  883 # 50x50
 
-# vbias still 800V, 232uA
+# vbias 800-46 V, 232uA  effvsxmbias.C
 # move x +4mm
 modrun 416
-run 35636  530  99.53
+run 35636  530  99.26 mask  linq0 7.13
 
-# vbias 700V, 188uA
+# vbias 700-38 V, 188uA
 # move x to +5mm
 modrun 418  skip 2
-run 35638  562  99.14
+run 35638  562  98.58 mask
 
-# vbias 600V, ileak 152uA
+# vbias 600-30 V, ileak 152uA
 modrun 419
-run 35639  523k 98.35
+run 35639  523  97.31 mask
 
-# vbias 500V, ileak 123uA
+# vbias 500-25 V, ileak 123uA
 modrun 420  skip 1
-run 35640  586  96.74
+run 35640  586  94.90 mask
 
-# vbias 400V, ileak 95uA
+# vbias 400-19 V, ileak 95uA
 modrun 421  skip 2
-run 35641  505  92.88
+run 35641  505  89.35 mask  bias dot
 
-# vbias 300V, ileak 70uA
+# vbias 300-14 V, ileak 70uA
 modrun 422  skip 2
-run 35642  525  64.8
+run 35642  525  77.75 mask
 
-# for the night: 5.6 GeV: 433 Hz
-# vbias 800V, ileak 231uA
-GeV 5.6
-modrun 423  4'964'583
-run 35643  4957.152  
+# vbias 800-46 V, ileak 231uA
+GeV 5.6 for the night: 433 Hz for 11'433 s 511i 50x50 turn 30
+modrun 423  4'964'583  insert B 2'079'294
+run 35643  4957.152  10 GB 99.26 masked
 # Mimosa: lost 7430 events
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Sun 17.3.2019
-# continue 511i
+# continue 511i Lin
 
 # beam but no rate: target wire broken?
 # BKR changed target from #5/#2 to #6/#3 at -16/+14 mm
 
 # 50x50 turn scan at 800 V for resolution
-turn -30
+
+# start without alignDUT_35647.dat but with hotDUT_35647.dat
+# scope53m -l 40200 35647 for coarse x,y alignment, save alignDUT_35647.dat
+# scope53m -l 40200 35647 for finer  x,y alignment, save alignDUT_35647.dat
+# scope53m -l 90200 35647 for rot, tilt, turn, z alignment, save alignDUT_35647.dat
+# scope53m -l 90200 35647 iteration 4, save alignDUT_35647.dat
+# scope53m -l 90200 35647 iteration 5, check for significant extra rot, tilt, turn
+# scope53m          35647 full stat
+
+turn -29
 modrun 426  skip 0
-run 35646  500  99.62  ncol 1.635
+run 35646  493  99.27 mask  linncol 1.638  linq 8.59  dxcq 18.2
 
-turn -28
+turn -27
 modrun 427  skip 0
-run 35647  500
+run 35647  500  99.21 mask  linncol 1.575  linq 8.47  dxcq 17.8
 
-turn -26
+turn -25
 modrun 428
-run 35648
+run 35648  520  99.14 mask  linncol 1.516  linq 8.37  dxcq 17.4
 
-turn -24
+turn -23
 modrun 429
-run 35649
+run 35649  501  99.03 mask  linncol 1.466  linq 8.31  dxcq 17.2
 
-turn -22
+turn -21
 modrun 430
-run 35650  99.35
+run 35650  500  98.84 mask  linncol 1.410  linq 8.21  dxcq 17.1
 
-turn -20
+turn -19
 modrun 431
-run 35651  99.26
+run 35651  501  98.68 mask  linncol 1.363  linq 8.20  dxcq 16.9
 
-turn -18
+turn -17
 modrun 432
-run 35652  99.09  lncol 1.32  dxcq 16.7
+run 35652  501  98.42 mask  linncol 1.316  linq 8.14  dxcq 17.0
 
 # shift 1 mm x
-turn -16
+turn -15
 modrun 433
-run 35653  500
+run 35653  504  98.17 mask  linncol 1.275  linq 8.12  dxcq 17.35
 
-turn -14
+turn -13
 modrun 434
-run 35654  500
+run 35654  500  97.80 mask  linncol 1.234  linq 8.09  dxcq 17.46
 
-turn -12
+turn -11
 modrun 435
-run 35655  500
+run 35655  501  97.30 mask  linncol 1.196  linq 8.05  dxcq 17.75
 
 # shift 1 mm x
-turn -10
+turn -9
 modrun 436
-run 35656  98.12
+run 35656  512  96.91 mask  linncol 1.169  linq 8.10  dxcq 18.05
 
-turn -8
+turn -7
 modrun 437
-run 35657  548
+run 35657  548  96.19 mask  linncol 1.141  linq 8.11  dxcq 18.14
 
 # shift 1 mm x
-turn -6
+turn -5
 modrun 438
-run 35658
+run 35658  556  95.54 mask  linncol 1.121  linq 8.18  dxcq 18.3
 
-turn -4
+turn -3
 modrun 439
-run 35659  
+run 35659  529  94.76 mask  linncol 1.107  linq 8.19  dxcq 18.4
 
 # shift 2 mm x
-turn -2
+turn -1
 modrun 440
-run 35660
+run 35660  517  94.33 mask  linncol 1.100  linq 8.25
 
 turn 1
-modrun 441
-run 35661
+modrun 441  lost sync 237 s = 93k = end of Mod data
+run 35661  520  94.57 mask  linncol 1.100  linq 8.25
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # search for resolution: finer ToT
@@ -1943,18 +2040,43 @@ run 35663  dutpxq 6.9 ToT
 
 # KRUM_CURR_LIN : 16
 modrun 445
-run 35665  dutpxq 8.1 ToT  ncol 1.37  dxcq 16.2
+run 35665  dutpxq 8.1 ToT  ncol 1.37 even-odd column  dxcq 16.2
 
 modrun 446
 run 35666  dutpxq 8.1 ToT
 
 # Vthreshold_LIN : 350 to 346  file size doubles
 modrun 447  empty
-run 35667  dutpxq 7.8  ncol 1.42  dxcq 16.2
+run 35667  96k  dutpxq 7.8  ncol 1.42  dxcq 16.2
+
+# .x hot.C+("map0",9600)  210
+# .x hot.C+("map0", 960)  542
+# .x hot.C+("map0",  96) 1061
+
+# Vthreshold_LIN : 346 to 350
+modrun 448 empty
+run 35668  143
+
+# for the night: vertical incidence bias dot study 511i 50x50 800V
+
+turn 0
+move in x by -4 mm from +4 to 0
+# KRUM_CURR_LIN : 16 to 29
+modrun 449 empty
+run 35669
+# cmspixel-daq ran out of disk space: remove 2017 Dreimaster plane B data
+
+modrun 450   del B 2080198 
+run 35670  10136  94.438
+
+# .x hot.C+("map8",1013600) 114
+# .x hot.C+("map8", 101360) 196
+# .x hot.C+("map8",  10136) 285
+# .x hot.C+("map8",   1014) 409
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Mon 18.3.2019
-# 511i: SynC section with auto-zero trigger veto
+# 511i: Sync section with auto-zero trigger veto
 
 # 800 V
 modrun 451 skip
@@ -2204,7 +2326,7 @@ run 35801  703  91.0
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Thu 21.3.2019
 #
-chip 511 = FDB150P RD53A 50x50 P3 p-stop bias dot with 1.5E16 CERN PS p/cm2
+chip 511 = FDB150P RD53A 50x50 P3 p-stop bias dot with 7E15 CERN PS p/cm2 Lin
 
 fifty 1
 
@@ -2266,19 +2388,19 @@ run 35831  97.0
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Fri 22.3.2019
-# X0 study: DUT = 20 mm blue armaflex on half  of the Mimosa chip
+# X0 study: DUT = 20 mm blue armaflex on half of the Mimosa chip
 
-geo_2019_03h: 0 - 153 - 305 - DUT - 343 - 495 - 649 mm
+geo geo_2019_03h.dat  0  153  305  343  495  649 mm
 
 GeV 2 (max multiple scattering)
 
-run 35861  1037  2 kHz
+run 35861  1037  2 kHz  THROW: Unrecognised Event type
 
 # empty telescope
 
 geo geo_2019_03i.dat = 0  24  49  72  97  121 mm
 
-5.6 GeV
+GeV  5.6
 Mimosa thr 6
 run 35862  250k  tridy 4.12
 
@@ -2295,84 +2417,89 @@ chip 521 = FTH150P RD53A 50x50 P4 = p-stop bias dot wiggle with 5.3E15 KIT
 
 geo geo_2019_03j.dat  0  153  305  575 726  880 mm for 50x50
 
-# blue armaflex with cutout entrance window
+# blue armaflex with entrance window cutout
 
 # Vthreshold_LIN : 340
-# Vbias= -800  Ibias=125 uA
+
+# Vbias 800-25   125 uA
+
 GeV 5.2  650 Hz
 
-turn -28
+# mask 153 above 900/514k
+
+turn -28  manual DUT align
 modrun 609
-run 35873  514  99.97  dxc 17.2  dyc 18.8
+run 35873  514  99.885 mask  ncol 2.060  linq 14.19  dxc 17.2  dyc 18.8
 
 turn -26 deg
 modrun 610  skip 0
-run 35874  521  99.95  dxc 15.6  dyc 18.1
+run 35874  521  99.884 mask  ncol 1.959  linq 13.83  dxc 15.6  dyc 18.1
 
 turn -24 deg
 modrun 611  skip 0
-run 35875  503  99.95  dxc 13.7  dyc 17.5  DUT lost sync 285 s
+run 35875  503  99.882 mask  ncol 1.871  linq 13.56  dxc 13.7  dyc 17.5
+# DUT lost sync 285 s
 
 turn -22 deg
 modrun 612  skip 0
-run 35876  515  99.95  dxc 12.4  dyc 16.9
+run 35876  515  99.873 mask  ncol 1.786  linq 13.35  dxc 12.4  dyc 16.9
 
 turn -20 deg
 modrun 613  skip 0
-run 35877  502  99.94  dxc 11.6  dyc 16.5  DUT lost sync 150k
+run 35877  502  99.869 mask  ncol 1.702  linq 13.12  dxc 11.6  dyc 16.5
+# DUT lost sync 150k
 
 # hadd scopeRD35873-76.root  scopeRD35873.root scopeRD35874.root scopeRD35876.root
 
 turn -18 deg; move in x from +1 to 0
 modrun 614  skip 0
-run 35879  521  99.91  dxc 11.7  dyc 16.5
+run 35879  521  99.815 mask  ncol 1.620  linq 12.86  dxc 11.7  dyc 16.5
 
 # ext151-103.txt: 7.86 um at 5.2 GeV => sigx = 8.4 um
 
-#turn -16 deg
-#modrun 615  skip 0
-#run 35880  505  DUT lost sync after 200 s
+turn -16 deg; move in x from -1 to 0
+modrun 618 skip 0
+run 35883  506  99.721 mask  ncol 1.542  linq 12.65  dxc 12.1  dyc 16.5
 
 turn -14 deg; move in x from 0 to -1
 modrun 616  skip
-run 35881  509  99.75  dxc 12.5  dyc 16.4
+run 35881  509  99.561 mask  ncol 1.477  linq 12.55  dxc 12.5  dyc 16.4
 
 turn -12 deg; move in x from -1 to -2
 modrun 617 skip 0
-run 35882  504  99.57  dxc 13.2  dyc 16.35
-
-turn -16 deg; move in x from -1 to 0
-modrun 618 skip 0
-run 35883  506  99.84  dxc 12.1  dyc 16.5
+run 35882  504  99.310 mask  ncol 1.410  linq 12.40  dxc 13.2  dyc 16.35
 
 turn -10 deg; move in x from 0 to -2
 modrun 620 skip 0
-run 35885  524  99.36  dxc 13.9  dyc 16.4  DUT lost sync 550s
+run 35885  524  99.024 mask  ncol 1.349  linq 12.28  dxc 13.9  dyc 16.4
+# DUT lost sync 550s
 
 turn -8 deg; move in x from -2 to -3
 modrun 621 skip 0
-run 35886  549  99.06  dxc 14.65 dyc 16.3
+run 35886  549  98.546 mask  ncol 1.298  linq 12.28  dxc 14.65 dyc 16.3
 
 turn -6 deg; move in x from -3 to -4
 modrun 622 skip 0
-run 35887  547  98.75  dxc 15.4  dyc 16.1  DUT lost sync 100 s 50k
+run 35887  547  98.035 mask  ncol 1.244  linq 12.20  dxc 15.4  dyc 16.1
+# DUT lost sync 100 s 50k
 
 turn -4 deg
 modrun 623 skip 1
-run 35888  575  98.38  dxc 15.9  dyc 16.2
+run 35888  575  97.622 mask  ncol 1.209  linq 12.19  dxc 15.9  dyc 16.2
 
 turn -2 deg; move in x from -4 to -5
 modrun 624 skip
-run 35889  532  98.10  dxc 16.3  dyc 16.2  DUT lost sync 400 s
+run 35889  532  97.194 mask  ncol 1.182  linq 12.18  dxc 16.3  dyc 16.2
+# DUT lost sync 400 s
 
 turn -0 deg
 modrun 625 skip 0
-run 35891  502  98.00  dxc 16.4  dyc 16.2
+run 35891  502  97.075 mask  ncol 1.173  linq 12.18  dxc 16.4  dyc 16.2
 
-GeV 5.6 for the night: more of the best:
+GeV 5.6 for the night: more of the best: 521i
 turn -18 deg; move in x from -5 to 0
-modrun 626 25'783'128 lost 2
-run 35892  25'783'130  17GB  99.90  DUT lost 1610s
+modrun 626 25'783'128 lost 2  yield 0.32 after 2'065'500
+run 35892  25'783'130  17GB  99.90  bdaq dead 1610s: npx0 at 0
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Sun 24.3.2019
@@ -2382,51 +2509,52 @@ chip 521 = FTH150P RD53A 50x50 P4 = p-stop bias dot wiggle with 5.3E15 KIT
 
 # bias 700 V 108 uA
 modrun 627
-run 35894  500  99.90
+run 35894  500  99.785 mask
 
 GeV 5.2 (750 Hz)
+
 # 600 V, 99 uA
 modrun 628
-run 35895  503  99.84
+run 35895  503  99.692 mask
 
 # 500 V, 91 uA
 modrun 629
-run 35896  525  99.70
+run 35896  525  99.487 mask
 
 # 400 V, 82 uA
 modrun 630
-run 35897  561  99.40
+run 35897  561  99.042 mask
 
 # 350 V, 76 uA
 modrun 631
-run 35898  500  98.94
+run 35898  500  98.317 mask
 
 # bias 300 V, 70 uA
 modrun 632
-run 35899  500  98.2
+run 35899  500  97.281 mask
 
 # bias 250 V, 62 uA
 modrun 633
-run 35900  511  97.28
+run 35900  511  95.971 mask
 
 # bias 200 V, 54 uA
 modrun 634
-run 35901  507  96.00
+run 35901  507  94.159 mask
 
 # bias 150 V, 45 uA
 modrun 635
-run 35902       94.03
+run 35902  506  91.298 mask
 
 # bias 100 V, 35 uA
 modrun 636
-run 35903  509  90.00
+run 35903  509  85.456 mask
 							
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # finer ToT binning = better resolution?
 
 # bias 800 V, 121 uA							
 
-# KRUM_CURR_LIN : 29 -> 25
+# KRUM_CURR_LIN : 29 -> 25  check hot !!!
 modrun 637
 run 35905  512  dxc 11.6
 
@@ -2438,15 +2566,23 @@ run 35906  498  dxc 11.5
 modrun 639
 run 35907  511  dxc 11.4
 
-GeV 5.6 GeV (less scattering)
+GeV 5.6 (less scattering)
 modrun 640  skip 0
 run 35908  1997
 
 Vthreshold_LIN  340 -> 336  noisy
 modrun 641
-run 35909       99.97  dxc 10.9  dyc 15.4
+run 35909  248  99.97  dxc 10.9  dyc 15.4
+
+# .x hot.C+("map0",25000) 174
+# .x hot.C+("map0", 2500) 311
+# .x hot.C+("map0",  250) 520
+
+# warmup dismount
 
 #-------------------------------------------------------------------------------
+# measured RD53A
+
 # Jun 2018
 # 501 HLL 25x100x100 um
 # 504 FDB 50x50x150 bias dot wiggle thr scan
@@ -2464,10 +2600,12 @@ run 35909       99.97  dxc 10.9  dyc 15.4
 # 512 FTH150P RD53A 100x25 P2 = p-stop with bias dot 1.5E16 p/cm2 CERN PS
 
 # Mar 2019
-# 511 FDB150P RD53A 50x50 P3 p-stop bias dot with 1.5E16 CERN PS p/cm2 turn scan
+# 511 FDB150P RD53A 50x50 P3 p-stop bias dot with 6.6E15 CERN PS p/cm2 turn scan
 # 182 UZh fresh HLL 100x25x150 Lin section thr scan
 # 521 FTH150P RD53A 50x50 P4 = p-stop bias dot wiggle, KIT 5E15 n/cm^2
 
+#-------------------------------------------------------------------------------
+# Apr 2019: Sync, 3D, fresh, edge-on
 #-------------------------------------------------------------------------------
 # Mon 8.4.2019
 
@@ -2480,6 +2618,7 @@ fifty 1
 GeV 5.2
 
 geo geo_2019_04a.dat = 0  153  305  543  696  847
+
 turn -2 deg
 
 #SYNC FE
@@ -2519,9 +2658,9 @@ run 35922	250
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Tue 9.4.2019
-# continue 521i Lin vertical
+# continue 521i Sync vertical
 
-# VBL_SYNC: 400  Threshold ~1000e-							
+# VBL_SYNC: 400  Threshold ~1000e-
 # Bias -800 V, 91 uA
 modrun 649
 run 35924  330
@@ -2629,3 +2768,769 @@ run 35952  361  eff 96.49
 az_setup(delay=240...width=7, synch=60)
 modrun 677
 run 35953  337  eff 96.54
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Wed 10.4.2019
+
+chip 334 FBK 3D 50x50x130 irradiated to 1E16 neq/cm2 at CERN PS
+fifty 1
+
+# chiller -31, peltier 3.8 A
+
+#same geo_2019_04a = 0  153  305  543  696  847
+
+tilt  3
+turn -1
+
+GeV 5.2
+
+# IRef = 4.3 uA							
+# thr 1150 e
+
+# bias 40 V, 57.5 uA
+modrun 678
+run 35965  250  67.7
+
+# bias 50 V, 63 uA
+modrun 679
+run 35966  320  76.6
+
+# bias 60 V, 68 uA
+modrun 680
+run 35967  261  84.0
+
+# bias 70 V, 71 uA
+modrun 681
+run 35968  310  89.3
+
+# hadd scopeRD35965-68.root  scopeRD35965.root scopeRD35966.root scopeRD35967.root scopeRD35968.root
+
+# bias 80 V, 75 uA
+modrun 682
+run 35969  305  92.8
+
+# bias 90 V, 79 uA
+modrun 683
+run 35970  305  95.1
+
+# bias 100 V, 84 uA
+modrun 684
+run 35971  305  96.6
+
+# bias 110 V, 87 uA
+modrun 685
+run 35972  315  97.9
+
+# bias 120 V, 91 uA
+modrun 686
+run 35973  300  98.6
+
+# bias 130 V, 95 uA
+modrun 687
+run 35974  370  99.05 all  98.3 mask
+
+# bias 140 V, 101 uA
+modrun 688
+run 35975  500  
+
+# bias 150 V, 106 uA
+modrun 689
+run 35976  500  99.4 all  98.8 mask
+
+# bias 160 V, 113 uA
+run 35977  1050
+modrun 690, eff 99.4
+
+# bias 170 V, 119 uA
+run 35978  250
+modrun 691, eff 98.7, 400 hot pixels, 99.5 w/o masking
+
+# bias 170 V, 119 uA
+run 35979	1202
+modrun 692, eff 98.7, 345 hot pixels, 99.5 w/o masking
+
+# bias 170 V, 117 uA
+run 35980	3503
+modrun 693 
+							
+turn -22 deg (atan(50/130) = 21 deg)
+tilt 3
+
+# Temperature probe on copper -27C							
+# move DUT -4.5mm X
+
+geo geo_2019_04b.dat = 0  152  305  560  714  865
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Thu 11.4.2019
+# continue chip 334 FBK 3D 50x50x130 irradiated to 1E16 neq/cm2 at CERN PS
+		
+# Temperature probe on copper -26C							
+							
+# bias 170 V, 111 uA		22
+modrun 704
+run 35989  257k, eff 99.1,  327 hot pixels, 99.95 w/o masking
+
+modrun 706
+run 35991  760, mimosa crash again
+
+modrun 707
+run 35992
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+turn -45 deg 							
+
+geo geo_2019_04c.dat = 0  153  305  578  732  883
+move DUT -5mm X							
+
+# bias 170 V, 115 uA
+modrun 709
+run 35995  505
+
+# bias 170 V, 115 uA
+modrun 710
+run 35996  1162
+
+modrun 711 +1 event mod
+run 35997  1280
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+turn -60 deg 							
+# same geo_2019_04c.dat = 0  153  305  578  732  883
+# move DUT -3mm X							
+# bias 170 V, 115 uA
+
+modrun 712
+run 35999  587
+
+modrun 713
+run 36000
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+turn 90 = edge-on !
+modrun 717
+run 36006
+
+# thr 370 (was 373)
+modrun 718
+run 36007  251
+
+# thr 367
+modrun 719
+run 36008  
+
+# Krum_Curr_Lin 20 (was 29)
+modrun 723
+run 36012  756  2.7GB
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+turn 22
+
+geo geo_2019_04b.dat = 0  152  305  560  714  865
+
+# Armaflex entry window opened
+
+modrun 725
+run 36014  dxc 12.0
+
+# thr 370
+
+modrun 727
+run 36016  dxc 11.8
+
+# thr 373
+
+modrun 729
+run 36018  dxc 12.1
+
+modrun 730
+run 36019  1166
+							
+# Vthreshold_LIN   : 370
+
+turn 20
+modrun 731
+run 36020  391
+
+turn 18
+modrun 732
+run 36021  254  dxc 11.66
+
+turn 16
+modrun 733
+run 36022  254  dxc 
+
+turn 14
+modrun 734
+run 36023  254  dxc 12.25
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Fri 12.4.2019 cross talk study
+
+chip 543 = FDB150P RD53A 100x25 P1 p-stop default fresh (back from KIT)
+
+fifty 0
+
+tilt 0
+turn 0
+
+geo geo_2019_04d.dat = 0  153  305  386  540  691
+# without cold box, holder on extension pillars
+
+GeV 5.2
+#Vthreshold_LIN   : 325
+modrun 762
+run 36060  999  99.982  88.08% even
+
+#Vthreshold_LIN   : 328 ?
+modrun 763
+run 36061  500  99.985  88.15% even
+
+#Vthreshold_LIN   : 331
+modrun 765
+run 36063  500  99.982  87.1% even
+
+# Vthreshold_LIN   : 334
+modrun 766
+run 36064  500  85.6 even
+
+# Vthreshold_LIN   : 337
+modrun 767
+run 36065  500  83.3% even
+
+# Vthreshold_LIN   : 340
+modrun 768
+run 36066  500  80.8% even
+
+# Vthreshold_LIN   : 343
+modrun 769
+run 36067  500  78.2 even
+
+# Vthreshold_LIN   : 346
+modrun 770
+run 36068  500  75.0 even  99.985
+
+# Vthreshold_LIN   : 349
+modrun 771
+run 36069  500  72.0 even  99.988
+
+# Vthreshold_LIN   : 352
+modrun 772
+run 36070  550  69.2 even  99.98
+
+# Vthreshold_LIN   : 355
+modrun 773
+run 36071  500  66.6 even  99.98
+
+# Vthreshold_LIN   : 358
+modrun 774
+run 36072  500  64.4 even  99.98
+
+# Vthreshold_LIN   : 361
+modrun 775
+run 36073  500  62.6 even  
+
+# Vthreshold_LIN   : 364
+modrun 776
+run 36074  500  61.0
+
+# Vthreshold_LIN   : 367
+modrun 777
+run 36075  500  59.7  
+
+# Vthreshold_LIN   : 373
+modrun 779
+run 36077  500  57.6 even
+
+# Vthreshold_LIN   : 376
+modrun 780
+run 36078  500  56.8 even
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Sat 13.4.2019 continue 543 cross talk study
+
+# Vthreshold_LIN   : 370
+modrun 782
+run 36080  500  99.77  58.5% even
+
+# Vthreshold_LIN   : 380
+modrun 783
+run 36081  500  99.972  55.8% even
+
+# Vthreshold_LIN   : 385
+modrun 784
+run 36082  500  99.96  54.95% even
+
+# Vthreshold_LIN   : 390
+modrun 785
+run 36083  500  99.95  54.1 even
+
+# Vthreshold_LIN   : 395
+modrun 786
+run 36084  500  99.94  53.7% even
+
+#Vthreshold_LIN   : 400
+modrun 787
+run 36085  509
+					
+#Vthreshold_LIN   : 328					
+#KRUM_CURR_LIN : 20
+modrun 788
+run 36086  562
+
+#KRUM_CURR_LIN : 10
+modrun 789
+run 36087  509  99.986
+
+#KRUM_CURR_LIN : 4
+modrun 790
+run 36088  509  99.986
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+turn -34 = atan(100/150)
+geo geo_2019_04e.dat = 0  153  305  438  592  743
+
+# KRUM_CURR_LIN : 29
+modrun 791
+run 36090  509  99.993  dxc 9.88
+
+# KRUM_CURR_LIN : 20
+modrun 792
+run 36091  509  99.990  dxc 9.95
+
+# KRUM_CURR_LIN : 10
+modrun 793
+run 36092  509  99.993  dxc 
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# edge-on 543
+
+geo geo_2019_04f.dat = 0  153  305  450  604  755
+
+# bias 120
+modrun 794
+run 36094  
+
+# Vbias  50
+modrun 795
+run 36095  522
+
+# Vbias  40
+modrun 796
+run 36096  501
+
+# Vbias  30
+modrun 797
+run 36097  510
+
+# Vbias  20
+modrun 798
+run 36098  499
+
+# Vbias  10
+modrun 799
+run 36099 501
+
+# for the night: fresh 543 vertical, flat scintillator
+# bias 120
+GeV 5.6 = 570 Hz
+# KRUM_CURR_LIN : 4
+modrun 800
+run 36102
+
+#-------------------------------------------------------------------------------
+# Sun 14.4.2019
+
+chip 512 FTH150P RD53A 100x25 P2 = p-stop with bias dot 5E15 p/cm2 CERN PS
+
+fifty 0
+
+tilt 0
+turn 0
+
+geo geo_2019_04g.dat # 0  153  305  587  741  892
+
+GeV 5.2
+
+# Vthreshold_LIN :338 ~ 1067 e-, 215 failed fits
+
+# 800 V, 285 uA
+modrun 802
+run 36105  554  96.4
+
+# 400 V, 147 uA
+modrun 803
+run 36106  413  92.7
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# edge-on 512i
+
+# same geo
+
+# 800 V, 285 uA
+modrun 804
+run 36109  752  
+
+# 700 V, 246 uA
+modrun 805
+run 36110  490
+
+# 600 V, 206 uA
+modrun 806
+run 36111  
+
+# 500 V, 172 uA
+modrun 809
+run 36114  498  16 ev remain
+
+# 400 V, 140 uA
+modrun 810
+run 36115  532
+
+# 300 V, 111 uA
+modrun 811
+run 36116
+
+# 200 V,  83 uA
+modrun 812
+run 36117
+
+# for the night: 512i 100x25
+# back to vertical, 300 V, study 90% efficiency map
+GeV 5.6
+
+geo geo_2019_04h.dat = 0  153  305  533  687  838
+
+# 300 V, 111 uA
+modrun 814
+run 36120  29350
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Mon 15.4.2019
+# 512i Sync
+
+tilt 0
+turn 0
+
+# bias 800 V
+
+modrun 817
+run 36130  550
+
+#-------------------------------------------------------------------------------
+# May 2019
+#-------------------------------------------------------------------------------
+# Wed 29.5.2019
+
+chip 516 = FTH150P RD53A 50x50 P3 = p-stop bias dot
+# was in set 2 in 2018 at CERN PS irrad, with Sylgard
+# bias dot floating
+
+fifty 1
+
+tilt -1 # good default
+turn 0
+
+geo geo_2019_05a.dat #  0  123  246  480  500  521
+
+# Armaflex entry window: open
+
+# Mimosa threshold: 5
+
+GeV 5.2
+
+# 800 V, 256 uA
+# Lin section
+# Vthr 340 = 1100 e
+# KRUM_CURR_LIN : 29
+
+modrun 824  
+run 36524  94.0 mask
+
+# 90k triggers:
+# .x hot.C+("map0", 99) 167
+# .x hot.C+("map0",999) 109 mask
+
+modrun 826
+run 36526  
+
+GeV 5.6  0.8 kHz							
+							
+turn 30
+modrun 827
+run 36529
+
+turn 28
+modrun 828
+run 36530  500
+
+turn 26
+modrun 829
+run 36531  500  99.3  dxc 15.1
+
+turn 24
+modrun 830
+run 36532  500  99.2  dxc 14.5
+
+turn 22 over night: 516i
+modrun 831  clean end
+run 36533  47'301k  91 GB
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Thu 30.5.2019
+# continue 516i turn scan
+
+turn 20
+modrun 833
+run 36535  500  99.2  dxc 13.4
+
+turn 18
+modrun 841
+run 36543  570  99.1  dxc 13.9
+
+turn 16
+modrun 845
+run 36550  500
+
+turn 14
+modrun 846
+run 36551  500
+
+turn 12
+modrun 847
+run 36554  500
+
+turn 10
+modrun 848
+run 36555  500
+
+turn 8
+modrun 850
+run 36559  500
+
+turn 6
+modrun 851
+run 36561  500
+
+turn 4
+modrun 852
+run 36564  500
+
+turn 2
+modrun 853
+run 36566
+
+# KRUM_CURR_LIN    : 16  Threshold 826 e-
+
+turn 22
+modrun 855
+run 36571  99.4  
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Thu 30.5.2019
+# empty telescope study
+
+geo geo_2019_05b.dat = 0  20  40  60  80  100
+
+GeV 5.6
+
+# trigger on downstream paddle scint: bit 8
+# yellow collimator: no Pb insert
+# main collimator: y +- 6 mm, x -6, +8
+# 560 Hz
+
+# Mimosa threshold 6, 18 to 24 hits per plane per trigger
+run 36582  
+
+# removed material from beam line: upstream scint, Koetz monitors
+run 36585
+# beam profile peaks at x = +9 mm
+
+GeV 4
+run 36586  ntri 11.6
+
+# move tele stage 2 mm down, 8 mm in x
+run 36587
+
+# close main collimator to x +- 3 mm
+run 36588  ntri 5
+
+GeV 2.4
+run 36589  ntri 5.9  trix almost flat
+
+GeV 5.2
+run 36590  160.3  300 Hz
+
+GeV 4  650 Hz 
+
+# Mimosa threshold 4
+run 36591  500
+
+# Mimosa threshold 5
+run 36593  500.4
+
+# Mimosa threshold 6
+run 36594  507
+
+# Mimosa threshold 8
+run 36595  494.5
+
+# Mimosa threshold 10
+run 36597
+
+#-------------------------------------------------------------------------------
+# Fri 31.5.2019
+
+chip 515 = FTH150P RD53A 50x50 P3 = p-stop bias dot
+# was in set 3 in 2018 at CERN PS irrad, with Sylgard
+# bias dot floating
+
+fifty 1
+
+tilt -1
+
+geo geo_2019_05a.dat #  0  123  246  480  500  521
+
+# Armaflex entry window: open
+
+# Mimosa threshold: 6
+
+GeV 5.2
+
+# 800 V, 230 uA
+# Lin section
+# Vthr 360 = 1170 e
+# KRUM_CURR_LIN : 29
+
+turn 30
+modrun 864  
+run 36603  
+
+# moved the telscope stage to 0932.1 and -1.8
+modrun 865
+run 36604  250
+
+# move in x by + 3 mm, in y by -1 mm
+modrun 866
+run 36606  360
+
+# move in y by +0.5 mm
+modrun 868
+run 36608  507  99.2
+
+# Vbias -700, 176 uA		-30	36609	640			modrun 869
+# Vbias -600,  146.7 uA		-30	36610	517			modrun 870
+# Vbias -500,  116 uA		-30	36611	501			modrun 871
+# Vbias -400,  89 uA		-30	36612	500			modrun 872
+# Vbias -300,  66 uA		-30	36613	500			modrun 873
+# Vbias -200,  45 uA		-30	36614	500			modrun 874
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# edge-on 516i: turn finger scint
+
+turn 90
+
+geo_2019_05c = 0  123  245  533  553  573
+
+# Vbias - 800 V, 216 uA
+modrun 876
+run 36617
+
+# KRUM_CURR_LIN    : 8
+modrun 877
+run 36618
+
+# KRUM_CURR_LIN    : 16
+
+modrun 878
+run 36619  437.7
+
+turn 87
+
+modrun 879
+run 36620
+
+turn 88 over night:
+modrun 880
+run 36621  26762k  73 GB
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Sat 1.6.2016
+
+chip 516 = FTH150P RD53A 50x50 P3 = p-stop bias dot
+# was in set 2 at CERN PS irrad in 2018, with Sylgard							
+							
+geo geo_2019_05d.dat = 0  123  245  475  495  515							
+							
+# separated VDDA and VDDD
+# VDDA = 1.510 V on PS, 1.19 V on irrad. card
+# VDDD = 1.430 V on PS, 1.27 V on irrad. card
+# Iref =  3.95 uA, cold
+
+# KRUM_CURR_LIN    : 16
+# Vthreshold_LIN : 340 ~ 832
+
+turn 90
+
+# Alu cooling bar: sunken plastic screws, free path to sensor
+
+# Vbias -600, 459 uA
+
+modrun 882
+run 36624  400
+
+# KRUM_CURR_LIN    : 12
+modrun 883
+run 36625  330
+
+# Vbias 800, 580 uA, step to 720 uA
+modrun 884
+run 36626  310  COPY
+
+# Vbias 700, 500 uA
+modrun 885
+run 36627  600.7
+
+# Vbias 400, 210 uA
+modrun 886
+run 36628  500.9  COPY
+
+# Vbias 200, 120 uA
+modrun 887
+run 36629  500.1  COPY
+
+# Vbias 300, 155 uA
+modrun 888
+run 36630  501  COPY
+
+# Vbias 500, 241 uA
+modrun 889
+run 36631  500.5  COPY
+
+# Vbias 600, 304 uA
+modrun 890
+run 36632  500.6  COPY
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Sun 2.6.2019
+
+chip 529 = FDD150P RD53A 100x25 P2 p-stop bias dot straight fresh						
+
+fifty 0
+
+geo geo_2019_05e.dat = 0  123  245  328  481  634
+
+turn 0
+tilt 0
+
+GeV 5.2
+
+modrun 891
+run 36633  
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# further topics
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 511i FDB150P RD53A 50x50 P3 p-stop bias dot with 6.6E15 CERN PS p/cm2
+# fine turn scan with opened Armaflex for resolution
+# KRUM_CURR_LIN : 16 or lower

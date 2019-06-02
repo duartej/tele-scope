@@ -316,10 +316,8 @@ int main( int argc, char* argv[] )
 
   string geoFileName( "geo.dat" );
   double pbeam = 4.8;
-  double DUTtilt0 = 0.0;
-  double DUTturn0 = 0.5; // small turn will not be aligned
-  double DUTtilt = DUTtilt0; // [deg]
-  double DUTturn = DUTturn0; // [deg]
+  double DUTtilt = 0.0;
+  double DUTturn = 0.5; // small turn will not be aligned
   int chip0 = 501;
   int fifty = 0; // default is 100x25
   int rot90 = 0; // default is straight
@@ -376,7 +374,7 @@ int main( int argc, char* argv[] )
       }
 
       if( tag == TURN ) {
-	tokenizer >> DUTturn0;
+	tokenizer >> DUTturn;
 	continue;
       }
 
@@ -413,7 +411,7 @@ int main( int argc, char* argv[] )
       cout 
 	<< "  beam " << pbeam << " GeV" << endl
 	<< "  geo file " << geoFileName << endl
-	<< "  nominal DUT turn " << DUTturn0 << " deg" << endl
+	<< "  nominal DUT turn " << DUTturn << " deg" << endl
 	<< "  DUT chip " << chip0 << endl
 	<< "  fifty " << fifty << endl
 	<< "  rot90 " << rot90 << endl
@@ -650,7 +648,7 @@ int main( int argc, char* argv[] )
 
   rootFileName << "scopeRD" << run << ".root";
 
-  TFile* histoFile = new TFile( rootFileName.str(  ).c_str(  ), "RECREATE" );
+  TFile histoFile( rootFileName.str(  ).c_str(  ), "RECREATE" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // telescope hot pixels:
@@ -796,11 +794,6 @@ int main( int argc, char* argv[] )
   } // alignFile
 
   iDUTalignFile.close();
-
-  if( DUTaligniteration <= 1 ) {
-    DUTtilt = DUTtilt0;
-    DUTturn = DUTturn0;
-  }
 
   double DUTalignx0 = DUTalignx; // at time 0
   double DUTaligny0 = DUTaligny;
@@ -2065,9 +2058,9 @@ int main( int argc, char* argv[] )
 		      "signal in row before track;row signal [ToT];row before track",
 		    31, -0.5, 30.5 );
 
-  TH1I dutpdyHisto( "dutpdy",
-		   "DUT row - track dy;DUT row - track #Deltay [mm];DUT rowq [ToT]",
-		   100, -100, 100 );
+  TH1I dutpdyrowHisto( "dutpdyrow",
+		       "DUT row - track dy;DUT row - track #Deltay [mm];DUT rowq [ToT]",
+		       100, -100, 100 );
 
   TProfile dutrowqvsdy( "dutrowqvsdy",
 			"DUT row signal vs #Deltay;track-row #Deltay [#mum];DUT <row signal> [ToT]",
@@ -2251,21 +2244,53 @@ int main( int argc, char* argv[] )
 	  "MOD-linked sixplets with DUT;x [mm];y [mm];DUT-MOD-linked sixplets",
 	  240, -12, 12, 120, -6, 6 );
 
-  int nbx = 440;
+  int nbx = 440; // 50x50
   int nby = 240;
   if( rot90 ) { // HLL 25x100
     nbx = 880;
     nby = 120;
   }
   if( !fifty ) {
-    nbx = 880;
-    nby = 120;
+    nbx = 220; // 100x25
+    nby = 480;
   }
 
-  TH2I * dutpxxyHisto = new
-    TH2I( "dutpxxy",
+  TH2I * dutpxyHisto = new
+    TH2I( "dutpxy",
 	  "DUT hits vs x;x [mm];y [mm];pixels",
 	  nbx, -11, 11, nby, -6, 6 ); // bin = pix
+
+  TH1I dutpdyHisto( "dutpdy",
+		    "pixel - Telescope dy;pixel - triplet #Deltaxy [mm];pixels",
+		    200, -0.5, 0.5 );
+  TH1I dutpdxcHisto( "dutpdxc",
+		    "pixel - Telescope dx;pixel - triplet #Deltaxx [mm];in-road pixels",
+		    200, -2, 2 );
+  TH1I roadnpxHisto( "roadnpx",
+		    "pixels in track road;in-road pixels;fiducial tracks",
+		    101, -0.5, 100.5 );
+  TH1I roadnpxlkHisto( "roadnpxlk",
+			"pixels in track road;in-road pixels;fiducial in-time tracks",
+			101, -0.5, 100.5 );
+  TH2I * roadnpx0Map = new
+    TH2I( "roadnpx0map",
+	  "empty roads;x track at DUT [mm];y track at DUT [mm];empty roads",
+	  nbx, -11, 11, nby, -6, 6 ); // bin = pix
+  TH2I * roadnpx1Map = new
+    TH2I( "roadnpx1map",
+	  "light roads;x track at DUT [mm];y track at DUT [mm];light roads",
+	  nbx, -11, 11, nby, -6, 6 ); // bin = pix
+  TH2I * roadnpx2Map = new
+    TH2I( "roadnpx2map",
+	  "full roads;x track at DUT [mm];y track at DUT [mm];full roads",
+	  nbx, -11, 11, nby, -6, 6 ); // bin = pix
+  TH1I roadncolHisto( "roadncol",
+		      "filled columns in track road;filled columns;tracks",
+		      51, -0.5, 50.5 );
+  TProfile roadncolvsx( "roadncolvsx",
+			"road length;x track [mm];filled columns",
+			nbx, -11, 11, -1, 99 );
+
   TProfile2D * effvsxy = new
     TProfile2D( "effvsxy",
 		"DUT efficiency vs x;x track at DUT [mm];y track at DUT [mm];efficiency",
@@ -3755,6 +3780,9 @@ int main( int argc, char* argv[] )
       double dxmin = 99;
       double dymin = 99;
 
+      int nroad = 0;
+      vector <int> roadcol(nx[iDUT]);
+
       for( vector<cluster>::iterator c = cl[iDUT].begin(); c != cl[iDUT].end(); ++c ) {
 
 	double ccol = c->col;
@@ -4172,7 +4200,7 @@ int main( int argc, char* argv[] )
 
 	    double py = ( irow + 0.5 - ny[iDUT]/2 ) * ptchy[iDUT]; // mm
 	    double pdy = py - y4;
-	    dutpdyHisto.Fill( pdy*1E3, rowq.at(irow) );
+	    dutpdyrowHisto.Fill( pdy*1E3, rowq.at(irow) );
 
 	    dutrowqvsdy.Fill( pdy*1E3, rowq.at(irow) );
 	    if( krow%2 )
@@ -4280,17 +4308,58 @@ int main( int argc, char* argv[] )
 	    px = ( c->vpix[ipx].row + 0.5 - ny[iDUT]/2 ) * ptchy[iDUT]; // -4..4 mm
 	    py =-( c->vpix[ipx].col + 0.5 - nx[iDUT]/2 ) * ptchx[iDUT]; // -3.9..3.9 mm
 	  }
-	  dutpxxyHisto->Fill( px, py );
+	  dutpxyHisto->Fill( px, py );
 	  double pdx = px - x4; // triplet extrapol
 	  double pdy = py - y4;
 	  double pdxy = sqrt( pdx*pdx + pdy*pdy );
 	  if( pdxy < pdmin ) pdmin = pdxy;
 
-	} // pix
+	  dutpdyHisto.Fill( pdy );
+	  if( fabs(pdy) < 0.1 ) {
+	    dutpdxcHisto.Fill( pdx );
+	    ++nroad;
+	    ++roadcol[c->vpix[ipx].col];
+	  }
+
+	} // loop pix
 
       } // loop DUT clusters
 
-      int nm[99] = {0};
+      if( y4 > -4.7 && y4 < 4.7 && // Lin+Dif
+	  x4 > -3.5 && x4 < 9.9 ) {
+	roadnpxHisto.Fill( nroad );
+	if( lsixlk && dddmin > 0.2 )
+	  roadnpxlkHisto.Fill( nroad );
+      }
+      if( lsixlk && dddmin > 0.2 ) {
+	if( nroad == 0 )
+	  roadnpx0Map->Fill( x4, y4 );
+	else if( nroad < 15 )
+	  roadnpx1Map->Fill( x4, y4 );
+	else
+	  roadnpx2Map->Fill( x4, y4 );
+      }
+      int ncol = 0;
+      int col0 = nx[iDUT];
+      int col9 = 0;
+      for( int icol = 0; icol < nx[iDUT]; ++icol ) {
+	if( roadcol[icol] ) {
+	  ++ncol;
+	  if( icol < col0 ) col0 = icol;
+	  if( icol > col9 ) col9 = icol;
+	}
+      }
+
+      if( y4 > -4.7 && y4 < 4.7 && // Lin+Dif
+	  lsixlk && dddmin > 0.2 )
+	roadncolvsx.Fill( x4, ncol );
+
+      if( y4 > -4.7 && y4 < 4.7 && // Lin+Dif
+	  x4 > -2.6 && x4 < 9.0 && // turn 83
+	  lsixlk && dddmin > 0.2 )
+	roadncolHisto.Fill( ncol );
+
+      bool nm[99] = {0};
       for( int iw = 1; iw < 99; ++iw )
 	if( pdmin < iw*0.010 ) // 10 um bins
 	  nm[iw] = 1; // eff
@@ -4461,8 +4530,8 @@ int main( int argc, char* argv[] )
   delete reader;
 
   cout << "done after " << iev << " events" << endl;
-  histoFile->Write();
-  histoFile->Close();
+  histoFile.Write();
+  //histoFile.Close();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // MOD alignment:
@@ -5123,7 +5192,8 @@ int main( int argc, char* argv[] )
 
     ofstream DUTalignFile( DUTalignFileName.str() );
 
-    DUTalignFile << "# DUT alignment for run " << run << endl;
+    DUTalignFile << "# DUT alignment for run " << run
+		 << " using " << iev << " events" << endl;
     ++DUTaligniteration;
     DUTalignFile << "iteration " << DUTaligniteration << endl;
     DUTalignFile << "alignx " << DUTalignx0 << endl;
@@ -5144,7 +5214,7 @@ int main( int argc, char* argv[] )
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done
 
-  cout << endl << histoFile->GetName() << endl;
+  cout << endl << histoFile.GetName() << endl;
 
   cout << endl;
 

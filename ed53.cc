@@ -4,6 +4,7 @@
 
 // make ed53
 // ed53 34239
+// ed53 36619
 // needs runs.dat
 
 #include "eudaq/FileReader.hh"
@@ -445,7 +446,7 @@ int main( int argc, char* argv[] )
     // DUT:
 
     TH2D hpxmap( "pxmap",
-		 Form( "pixel map %i;col;row;signal [ToT]", iev ),
+		 Form( "pixel map %i;sensor column;sensor row;signal [ToT]", iev ),
 		 nbc, -0.5, nbc-0.5, nbr, -0.5, nbr-0.5 );
     hpxmap.SetMinimum(0);
     hpxmap.SetMaximum(16);
@@ -468,14 +469,15 @@ int main( int argc, char* argv[] )
 
     } // clus
 
-    if( maxncol > 11 ) {
-      //if( maxncol > 22 ) {
+    //if( maxncol > 33 ) {
+    if( maxncol > 22 ) {
       //if( rows.size() > 22 ) {
 
       hpxmap.Draw( "colz" );
       c1.Update();
 
-      cout << "enter any key, q to stop" << endl;
+      cout << "event " << iev
+	   << ". enter any key, q to stop" << endl;
 
       while( !kbhit() ) // ioctl
 	gSystem->ProcessEvents(); // ROOT

@@ -18,6 +18,11 @@ scope53m: scope53m.cc
 	$(ROOTLIBS) -L../lib -lEUDAQ
 	@echo 'done: scope53m'
 
+edg53: edg53.cc
+	g++ $(CXXFLAGS) edg53.cc -o edg53 \
+	$(ROOTLIBS) -L../lib -lEUDAQ
+	@echo 'done: edg53'
+
 scope53: scope53.cc
 	g++ $(CXXFLAGS) scope53.cc -o scope53 \
 	$(ROOTLIBS) -L../lib -lEUDAQ
