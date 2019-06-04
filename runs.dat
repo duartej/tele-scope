@@ -2548,11 +2548,11 @@ run 35902  506  91.298 mask
 # bias 100 V, 35 uA
 modrun 636
 run 35903  509  85.456 mask
-							
+
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # finer ToT binning = better resolution?
 
-# bias 800 V, 121 uA							
+# bias 800 V, 121 uA
 
 # KRUM_CURR_LIN : 29 -> 25  check hot !!!
 modrun 637
@@ -2639,11 +2639,11 @@ run 35917
 
 VTH_SYNC: 90 ~ 1000e
 modrun 644
-run 35918	400
+run 35918  400
 
 move in x by +2 mm
 modrun 645
-run 35919	160
+run 35919  160
 
 bias -800 V, 100 uA
 modrun 646
@@ -2651,10 +2651,10 @@ run 35920  303  88.6
 
 # VTH_SYNC: 83 ~ 900e
 modrun 647
-run 35921	250
+run 35921  250
 
 modrun 648
-run 35922	250
+run 35922  250
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Tue 9.4.2019
@@ -2677,7 +2677,7 @@ run 35926  360
 modrun 652
 run 35927  330  eff 92.3
 
-# CONF_FE_SYNC     : 0x0004							
+# CONF_FE_SYNC     : 0x0004
 # mVTH_SYNC         : 94 ~989 e-
 modrun 653
 run 35928  330  eff 89.1
@@ -2686,8 +2686,8 @@ run 35928  330  eff 89.1
 modrun 654
 run 35929  330  eff 89.4
 
-#CONF_FE_SYNC     : 0x0002							
-#VTH_SYNC         : 94							
+#CONF_FE_SYNC     : 0x0002
+#VTH_SYNC         : 94
 #IBIASP1_SYNC : 150
 #IBIASP2_SYNC : 240
 #IBIAS_SF_SYNC : 120
@@ -2784,7 +2784,7 @@ turn -1
 
 GeV 5.2
 
-# IRef = 4.3 uA							
+# IRef = 4.3 uA
 # thr 1150 e
 
 # bias 40 V, 57.5 uA
@@ -2846,17 +2846,17 @@ run 35978  250
 modrun 691, eff 98.7, 400 hot pixels, 99.5 w/o masking
 
 # bias 170 V, 119 uA
-run 35979	1202
+run 35979  1202
 modrun 692, eff 98.7, 345 hot pixels, 99.5 w/o masking
 
 # bias 170 V, 117 uA
-run 35980	3503
+run 35980  3503
 modrun 693 
-							
+
 turn -22 deg (atan(50/130) = 21 deg)
 tilt 3
 
-# Temperature probe on copper -27C							
+# Temperature probe on copper -27C
 # move DUT -4.5mm X
 
 geo geo_2019_04b.dat = 0  152  305  560  714  865
@@ -2864,10 +2864,10 @@ geo geo_2019_04b.dat = 0  152  305  560  714  865
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Thu 11.4.2019
 # continue chip 334 FBK 3D 50x50x130 irradiated to 1E16 neq/cm2 at CERN PS
-		
-# Temperature probe on copper -26C							
-							
-# bias 170 V, 111 uA		22
+
+# Temperature probe on copper -26C
+
+# bias 170 V, 111 uA
 modrun 704
 run 35989  257k, eff 99.1,  327 hot pixels, 99.95 w/o masking
 
@@ -2878,10 +2878,10 @@ modrun 707
 run 35992
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-turn -45 deg 							
+turn -45 deg
 
 geo geo_2019_04c.dat = 0  153  305  578  732  883
-move DUT -5mm X							
+move DUT -5mm X
 
 # bias 170 V, 115 uA
 modrun 709
@@ -2895,9 +2895,9 @@ modrun 711 +1 event mod
 run 35997  1280
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-turn -60 deg 							
+turn -60 deg
 # same geo_2019_04c.dat = 0  153  305  578  732  883
-# move DUT -3mm X							
+# move DUT -3mm X
 # bias 170 V, 115 uA
 
 modrun 712
@@ -2945,7 +2945,7 @@ run 36018  dxc 12.1
 
 modrun 730
 run 36019  1166
-							
+
 # Vthreshold_LIN   : 370
 
 turn 20
@@ -3072,8 +3072,8 @@ run 36084  500  99.94  53.7% even
 #Vthreshold_LIN   : 400
 modrun 787
 run 36085  509
-					
-#Vthreshold_LIN   : 328					
+
+#Vthreshold_LIN   : 328
 #KRUM_CURR_LIN : 20
 modrun 788
 run 36086  562
@@ -3254,8 +3254,8 @@ run 36524  94.0 mask
 modrun 826
 run 36526  
 
-GeV 5.6  0.8 kHz							
-							
+GeV 5.6  0.8 kHz
+
 turn 30
 modrun 827
 run 36529
@@ -3415,15 +3415,33 @@ modrun 866
 run 36606  360
 
 # move in y by +0.5 mm
+
 modrun 868
 run 36608  507  99.2
 
-# Vbias -700, 176 uA		-30	36609	640			modrun 869
-# Vbias -600,  146.7 uA		-30	36610	517			modrun 870
-# Vbias -500,  116 uA		-30	36611	501			modrun 871
-# Vbias -400,  89 uA		-30	36612	500			modrun 872
-# Vbias -300,  66 uA		-30	36613	500			modrun 873
-# Vbias -200,  45 uA		-30	36614	500			modrun 874
+# Vbias -700, 176 uA
+modrun 869
+run 36609	640
+
+# Vbias -600,  146.7 uA
+modrun 870
+run 36610	517
+
+# Vbias -500,  116 uA
+modrun 871
+run 36611	501
+
+# Vbias -400,  89 uA
+modrun 872
+run 36612	500
+
+# Vbias -300,  66 uA
+modrun 873
+run 36613	500
+
+# Vbias -200,  45 uA
+modrun 874
+run 36614	500
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # edge-on 516i: turn finger scint
@@ -3458,10 +3476,10 @@ run 36621  26762k  73 GB
 # Sat 1.6.2016
 
 chip 516 = FTH150P RD53A 50x50 P3 = p-stop bias dot
-# was in set 2 at CERN PS irrad in 2018, with Sylgard							
-							
-geo geo_2019_05d.dat = 0  123  245  475  495  515							
-							
+# was in set 2 at CERN PS irrad in 2018, with Sylgard
+
+geo geo_2019_05d.dat = 0  123  245  475  495  515
+
 # separated VDDA and VDDD
 # VDDA = 1.510 V on PS, 1.19 V on irrad. card
 # VDDD = 1.430 V on PS, 1.27 V on irrad. card
@@ -3514,7 +3532,7 @@ run 36632  500.6  COPY
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Sun 2.6.2019
 
-chip 529 = FDD150P RD53A 100x25 P2 p-stop bias dot straight fresh						
+chip 529 = FDD150P RD53A 100x25 P2 p-stop bias dot straight fresh
 
 fifty 0
 

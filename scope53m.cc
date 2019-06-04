@@ -5515,17 +5515,17 @@ int main( int argc, char* argv[] )
 
     cout << endl;
 
-    if( dutdxHisto.GetEntries() > 999 ) {
+    if( dutdxcHisto.GetEntries() > 999 ) {
 
-      cout << "finer x " << dutdxHisto.GetTitle()
-	   << " bin " << dutdxHisto.GetBinWidth(1)
+      cout << "finer x " << dutdxcHisto.GetTitle()
+	   << " bin " << dutdxcHisto.GetBinWidth(1)
 	   << endl;
       TF1 * fgp0 = new TF1( "fgp0", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", -1, 1 );
-      fgp0->SetParameter( 0, dutdxHisto.GetMaximum() ); // amplitude
-      fgp0->SetParameter( 1, dutdxHisto.GetBinCenter( dutdxHisto.GetMaximumBin() ) );
-      fgp0->SetParameter( 2, 8*dutdxHisto.GetBinWidth(1) ); // sigma
-      fgp0->SetParameter( 3, dutdxHisto.GetBinContent(1) ); // BG
-      dutdxHisto.Fit( "fgp0", "q" );
+      fgp0->SetParameter( 0, dutdxcHisto.GetMaximum() ); // amplitude
+      fgp0->SetParameter( 1, dutdxcHisto.GetBinCenter( dutdxcHisto.GetMaximumBin() ) );
+      fgp0->SetParameter( 2, 8*dutdxcHisto.GetBinWidth(1) ); // sigma
+      fgp0->SetParameter( 3, dutdxcHisto.GetBinContent(1) ); // BG
+      dutdxcHisto.Fit( "fgp0", "q" );
       cout << "Fit Gauss + BG:"
 	   << endl << "  A " << fgp0->GetParameter(0)
 	   << endl << "mid " << fgp0->GetParameter(1)
@@ -5542,17 +5542,17 @@ int main( int argc, char* argv[] )
 
     cout << endl;
 
-    if( dutdyHisto.GetEntries() > 999 ) {
+    if( dutdycHisto.GetEntries() > 999 ) {
 
-      cout << "finer y " << dutdyHisto.GetTitle()
-	   << " bin " << dutdyHisto.GetBinWidth(1)
+      cout << "finer y " << dutdycHisto.GetTitle()
+	   << " bin " << dutdycHisto.GetBinWidth(1)
 	   << endl;
       TF1 * fgp0 = new TF1( "fgp0", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", -1, 1 );
-      fgp0->SetParameter( 0, dutdyHisto.GetMaximum() ); // amplitude
-      fgp0->SetParameter( 1, dutdyHisto.GetBinCenter( dutdyHisto.GetMaximumBin() ) );
-      fgp0->SetParameter( 2, 5*dutdyHisto.GetBinWidth(1) ); // sigma
-      fgp0->SetParameter( 3, dutdyHisto.GetBinContent(1) ); // BG
-      dutdyHisto.Fit( "fgp0", "q" );
+      fgp0->SetParameter( 0, dutdycHisto.GetMaximum() ); // amplitude
+      fgp0->SetParameter( 1, dutdycHisto.GetBinCenter( dutdycHisto.GetMaximumBin() ) );
+      fgp0->SetParameter( 2, 5*dutdycHisto.GetBinWidth(1) ); // sigma
+      fgp0->SetParameter( 3, dutdycHisto.GetBinContent(1) ); // BG
+      dutdycHisto.Fit( "fgp0", "q" );
       cout << "Fit Gauss + BG:"
 	   << endl << "  A " << fgp0->GetParameter(0)
 	   << endl << "mid " << fgp0->GetParameter(1)
@@ -5800,7 +5800,7 @@ int main( int argc, char* argv[] )
   // write new DUT alignment:
 
   cout << endl
-       << "DUT alignment iteration " << DUTaligniteration << endl
+       << "DUT alignment iteration " << DUTaligniteration + 1 << endl
        << "  alignx " << DUTalignx0 << endl
        << "  aligny " << DUTaligny0 << endl
        << "  rot    " << DUTrot << endl
