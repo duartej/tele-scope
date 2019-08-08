@@ -3,7 +3,7 @@
 // hot pixels from map
 
 // .x hot.C+("map7")
-// .x hot.C+("map0",99)
+// .x hot.C+("map8",9999)  RD53
 
 #include "TDirectory.h"
 #include "TH2I.h"
@@ -24,7 +24,7 @@ struct pixel
 };
 
 //------------------------------------------------------------------------------
-void hot( string hs, int printcut = 999 )
+void hot( string hs, int hotcut = 999 )
 {
   cout << hs;
 
@@ -39,23 +39,20 @@ void hot( string hs, int printcut = 999 )
 
   // frequency:
 
-  double z9 = 1.1*h2->GetMaximum();
+  double z9 = 1.02*h2->GetMaximum();
   if( z9 < 1.1 ) z9 = 1.1;
 
   TH1I * h1 = new
     TH1I( "freq",
-	  Form( "%s;counts;pixels",h2->GetZaxis()->GetTitle( ) ),
-	  100, 0, z9 );
+	  Form( "%s;hits/pixel;pixels",h2->GetZaxis()->GetTitle( ) ),
+	  200, 0, z9 );
 
   const double log10 = log(10);
 
   TH1I * hl = new
     TH1I( "frel",
-	  Form( "%s;log_{10}(counts);pixels",h2->GetZaxis()->GetTitle( ) ),
+	  Form( "%s;log_{10}(hits/pixel);pixels",h2->GetZaxis()->GetTitle( ) ),
 	  100, 0, log(z9)/log10 );
-
-  //h1->GetXaxis()->SetTitle( h2->GetZaxis()->GetTitle( ) );
-  //h1->GetYaxis()->SetTitle( "pixels" );
 
   multiset <pixel> pxset;
 
@@ -63,31 +60,32 @@ void hot( string hs, int printcut = 999 )
 
     for( int jj = 1; jj <= h2->GetNbinsY(); ++jj ) {
 
-      int n = h2->GetBinContent(ii,jj);
+      int n = ( h2->GetBinContent(ii,jj) + 0.1 );
 
-      h1->Fill( n );
-
-      if( n )
+      if( n ) { // active
+	h1->Fill( n );
 	hl->Fill( log( n ) / log10 );
-      else
-	hl->Fill( -1 ); // underflow = zero
 
-      if( n > 9 ) {
 	pixel px{ ii-1, jj-1, n };
 	pxset.insert(px);
       }
+
     }
 
-  cout << "hot " << pxset.size() << endl;
-
+  int nhot = 0;
   for( auto px = pxset.begin(); px != pxset.end(); ++px ) {
     cout << "pix "
 	 << setw(3) << px->col
 	 << setw(5) << px->row
 	 << "  " << px->cnt
 	 << endl;
-    if( px->cnt <= printcut ) break;
+    ++nhot;
+    if( px->cnt <= hotcut ) break;
   }
+
+  cout << "hot " << nhot << " above " << hotcut << endl;
+
+  cout << "active " << pxset.size() << endl;
 
   h1->Draw();
   cout << "freq" << endl;
