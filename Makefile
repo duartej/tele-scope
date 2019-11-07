@@ -15,25 +15,25 @@ CXXFLAGS = -O2 -Wall -Wextra $(ROOTCFLAGS) -I../main/include/
 
 scope53m: scope53m.cc
 	g++ $(CXXFLAGS) scope53m.cc -o scope53m \
-	$(ROOTLIBS) -L../lib -lEUDAQ
+	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ
 	@echo 'done: scope53m'
 
 edg53: edg53.cc
 	g++ $(CXXFLAGS) edg53.cc -o edg53 \
-	$(ROOTLIBS) -L../lib -lEUDAQ
+	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ
 	@echo 'done: edg53'
 
 scope53: scope53.cc
 	g++ $(CXXFLAGS) scope53.cc -o scope53 \
-	$(ROOTLIBS) -L../lib -lEUDAQ
+	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ
 	@echo 'done: scope53'
 
 tele: tele.cc
 	g++ tele.cc $(CXXFLAGS) -fopenmp -o tele \
-	$(ROOTLIBS) -L../lib -lEUDAQ
+	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ
 	@echo 'done: tele'
 
 ed53: ed53.cc
 	g++ $(CXXFLAGS) ed53.cc -o ed53 \
-	$(ROOTLIBS) -L../lib -lEUDAQ
+	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ
 	@echo 'done: ed53'
