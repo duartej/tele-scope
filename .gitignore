@@ -1,18 +1,16 @@
 *.root
-align*
-hot*
-scope
-tele
-
-*.txt
-
+hot*.dat
+al*
 *.pdf
-scopes
-data/*
-*.backup
+*.sh
+#*.C
+*.py
+*.dat
+*.out
+*.raw
 
-*.swp
-ROOT
-*.pyc
-
-
+# ignore executables:
+evmod
+tele
+scope53
+scope53m
