@@ -8,10 +8,7 @@ ROOTGLIBS   = $(shell $(ROOTSYS)/bin/root-config --glibs)
 # -pg for gprof
 # -std=c++11
 
-CXXFLAGS = -O2 -Wall -Wextra $(ROOTCFLAGS) -I../main/include/
-#-I/home/pitzl/GBL/V01-17-00/cpp/include
-
-# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/pitzl/GBL/V01-17-00/cpp/lib/
+CXXFLAGS = -O2 -Wall -Wextra $(ROOTCFLAGS) -I/eudaq/eudaq/include/
 
 scope53m: scope53m.cc
 	g++ $(CXXFLAGS) scope53m.cc -o scope53m \
