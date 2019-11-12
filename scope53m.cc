@@ -15,7 +15,6 @@
 
 #include "eudaq/FileReader.hh"
 #include "eudaq/PluginManager.hh"
-#include "../main/lib/plugins/BDAQ53ConverterPlugin.cc"
 
 #include <TFile.h>
 #include <TH1I.h> // counting
