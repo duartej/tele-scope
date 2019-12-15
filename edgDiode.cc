@@ -1,20 +1,19 @@
 
-// Daniel Pitzl, DESY, Jun 2018, Apr 2019
-// telescope analysis with RD53A: edge-on
+// Daniel Pitzl, DESY, Sep 2019
+// telescope analysis with Diode
 // module in front
 
-// make edg53
-// edg53 36094
+// make edgDiode
+// edgDiode 37849
 // needs runs.dat
 // needs geo_201x_yy.dat
 // needs align_36094.dat from tele
 // uses hot_36094.dat from tele
-// uses alignDUT_36094.dat
 // uses alignMOD_36094.dat
 
 #include "eudaq/FileReader.hh"
 #include "eudaq/PluginManager.hh"
-#include "../main/lib/plugins/BDAQ53ConverterPlugin.cc"
+//#include "../main/lib/plugins/BDAQ53ConverterPlugin.cc"
 
 #include <TFile.h>
 #include <TH1I.h> // counting
@@ -94,7 +93,7 @@ vector <cluster> getClusn( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
           for( unsigned int p = 0; p < c.vpix.size(); ++p ) { // vpix in cluster so far
             int dr = c.vpix.at(p).row - pb[i].row;
             int dc = c.vpix.at(p).col - pb[i].col;
-            if( (   dr>=-fCluCut) && (dr<=fCluCut) 
+            if( (   dr>=-fCluCut) && (dr<=fCluCut)
 		&& (dc>=-fCluCut) && (dc<=fCluCut) ) {
               c.vpix.push_back(pb[i]);
 	      gone[i] = 1;
@@ -205,7 +204,7 @@ vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
           for( unsigned int p = 0; p < c.vpix.size(); ++p ) { // vpix in cluster so far
             int dr = c.vpix.at(p).row - pb[i].row;
             int dc = c.vpix.at(p).col - pb[i].col;
-            if( (   dr>=-fCluCut) && (dr<=fCluCut) 
+            if( (   dr>=-fCluCut) && (dr<=fCluCut)
 		&& (dc>=-fCluCut) && (dc<=fCluCut) ) {
               c.vpix.push_back(pb[i]);
 	      gone[i] = 1;
@@ -324,6 +323,7 @@ int main( int argc, char* argv[] )
   int chip0 = 501;
   int fifty = 0; // default is 100x25
   int modrun = 0;
+  int dioderun = 0;
 
   ifstream runsFile( "runs.dat" );
 
@@ -340,6 +340,7 @@ int main( int argc, char* argv[] )
     string hash( "#" );
     string RUN( "run" );
     string MODRUN( "modrun" );
+    string DIODERUN( "dioderun" );
     string GEO( "geo" );
     string GeV( "GeV" );
     string CHIP( "chip" );
@@ -375,6 +376,11 @@ int main( int argc, char* argv[] )
 	continue;
       }
 
+      if( tag == DIODERUN ) {
+	tokenizer >> dioderun;
+	continue;
+      }
+
       if( tag == GEO ) {
 	tokenizer >> geoFileName;
 	continue;
@@ -400,12 +406,13 @@ int main( int argc, char* argv[] )
     } // while getline
 
     if( found )
-      cout 
+      cout
 	<< "  beam " << pbeam << " GeV" << endl
 	<< "  geo file " << geoFileName << endl
 	<< "  DUT chip " << chip0 << endl
 	<< "  fifty " << fifty << endl
 	<< "  modrun " << modrun << endl
+	<< "  dioderun " << dioderun << endl
 	;
     else {
       cout << "run " << run << " not found in runs.dat" << endl;
@@ -416,7 +423,7 @@ int main( int argc, char* argv[] )
 
   runsFile.close();
 
-  const double fTLU = 384E6; // 384 MHz TLU clock
+  const double fTLU = 384E6 + 23.58E3; // 384 MHz TLU clock, vs R&S fTLU*(1-slope)
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // geometry:
@@ -597,7 +604,7 @@ int main( int argc, char* argv[] )
       if( tag.substr(0,1) == hash ) // comments start with #
 	continue;
 
-      if( tag == iteration ) 
+      if( tag == iteration )
 	tokenizer >> aligniteration;
 
       if( tag == plane )
@@ -638,7 +645,7 @@ int main( int argc, char* argv[] )
 
   ostringstream rootFileName; // output string stream
 
-  rootFileName << "edg53_" << run << ".root";
+  rootFileName << "edgDiode_" << run << ".root";
 
   TFile* histoFile = new TFile( rootFileName.str(  ).c_str(  ), "RECREATE" );
 
@@ -708,11 +715,22 @@ int main( int argc, char* argv[] )
     cout << "  plane " << ipl << ": hot " << hotset[ipl].size() << endl;
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // DUT:
+  // Diode DUT:
 
-  const double wt = atan(1.0) / 45.0; // pi/180 deg
+  string DiodeFileName = "diode/run_" + to_string(dioderun) + ".Wfm.bin";
 
-  int iDUT = 0; // eudaq
+  cout << "try to open: " << DiodeFileName;
+
+  ifstream wff( DiodeFileName, ios::binary );
+
+  if (! wff ) {
+    cout << " failed" << endl;
+    return 1;
+  }
+  cout << " : success" << endl << flush;
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // DUT alignment:
 
   int DUTaligniteration = 0;
   double DUTalignx = 0.0;
@@ -760,7 +778,7 @@ int main( int argc, char* argv[] )
       if( tag.substr(0,1) == hash ) // comments start with #
 	continue;
 
-      if( tag == iteration ) 
+      if( tag == iteration )
 	tokenizer >> DUTaligniteration;
 
       double val;
@@ -789,62 +807,13 @@ int main( int argc, char* argv[] )
   double cf = cos( DUTrot );
   double sf = sin( DUTrot );
   double ca = cos( DUTtilt );
-  double sa = sin( DUTtilt );
+  double sa = sin( DUTtilt ); // [rad]
   double co = cos( DUTturn );
   double so = sin( DUTturn );
 
-  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // DUT hot pixels:
-
-  cout << endl;
-
-  ostringstream DUThotFileName; // output string stream
-
-  DUThotFileName << "hotDUT_" << run << ".dat";
-
-  ifstream iDUThotFile( DUThotFileName.str() );
-
-  if( iDUThotFile.bad() || ! iDUThotFile.is_open() ) {
-    cout << "no " << DUThotFileName.str() << endl;
-  }
-  else {
-
-    cout << "read DUT hot pixel list from " << DUThotFileName.str() << endl;
-
-    string hash( "#" );
-    string pix( "pix" );
-
-    while( ! iDUThotFile.eof() ) {
-
-      string line;
-      getline( iDUThotFile, line );
-      //cout << line << endl;
-
-      if( line.empty() ) continue;
-
-      stringstream tokenizer( line );
-      string tag;
-      tokenizer >> tag; // leading white space is suppressed
-      if( tag.substr(0,1) == hash ) // comments start with #
-	continue;
-
-      if( tag == pix ) {
-
-	int ix, iy;
-	tokenizer >> ix; // ROC col
-	tokenizer >> iy; // ROC row
-	int ipx = ix * ny[iDUT] + iy;
-	hotset[iDUT].insert(ipx);
-
-      }
-
-    } // while getline
-
-  } // hotFile
-
-  iDUThotFile.close();
-
-  cout << "DUT hot " << hotset[iDUT].size() << endl;
+  const double Nx =-ca*so;
+  const double Ny = sa;
+  const double Nz =-ca*co;
 
   cout << endl;
 
@@ -886,9 +855,13 @@ int main( int argc, char* argv[] )
   double MODalignx = 0;
   double MODaligny = 0;
   double MODrot = 0;
-  double MODtilt =  19.2; // [deg]
-  double MODturn = -27.0; // [deg]
-  double MODz = -45 + zz[1];
+  double MODtilt =   9.2; // [deg]
+  double MODturn = -17.0; // [deg]
+  if( run >= 37920 ) { // Dec 2019
+    MODtilt =  17.2; // [deg]
+    MODturn = -27.0; // [deg]
+  }
+  double MODz = -75 + zz[1];
 
   ostringstream MODalignFileName; // output string stream
 
@@ -928,7 +901,7 @@ int main( int argc, char* argv[] )
       if( tag.substr(0,1) == hash ) // comments start with #
 	continue;
 
-      if( tag == iteration ) 
+      if( tag == iteration )
 	tokenizer >> MODaligniteration;
 
       double val;
@@ -960,6 +933,8 @@ int main( int argc, char* argv[] )
   // tilt alpha around x
   // turn omega around y
 
+  const double wt = atan(1.0) / 45.0; // pi/180 deg
+
   const double com = cos( MODturn*wt );
   const double som = sin( MODturn*wt );
   const double cam = cos( MODtilt*wt );
@@ -985,8 +960,9 @@ int main( int argc, char* argv[] )
   TH1I t5Histo( "t5", "event time;event time [s];events / 100 s", 600, 0, 60000 );
   TH1I t6Histo( "t6", "event time;event time [h];events / 3 min", 1000, 0, 50 );
 
-  TH1I dtusHisto( "dtus", "time between events;time between events [us];events", 100, 0, 1000 );
-  TH1I dtmsHisto( "dtms", "time between events;time between events [ms];events", 100, 0, 1000 );
+  TH1I dtusHisto( "dtus", "TLU time between events;TLU time between events [us];events", 100, 0, 1000 );
+  TH1I dtmsHisto( "dtms", "TLU time between events;TLU time between events [ms];events", 100, 0, 1000 );
+
   TH1I dt373Histo( "dt373", "time between events;time between events mod 373;events", 400, -0.5, 399.5 );
   TH1I dt374Histo( "dt374", "time between events;time between events mod 374;events", 400, -0.5, 399.5 );
   TH1I dt375Histo( "dt375", "time between events;time between events mod 375;events", 400, -0.5, 399.5 );
@@ -1041,7 +1017,7 @@ int main( int argc, char* argv[] )
 			  51, -0.5, 50.5 );
 
     hcol[ipl] = TH1I( Form( "col%i", ipl ),
-		      Form( "%i col;col;plane %i pixels", ipl, ipl ), 
+		      Form( "%i col;col;plane %i pixels", ipl, ipl ),
 		      nbx, 0, mx );
     hrow[ipl] = TH1I( Form( "row%i", ipl ),
 		      Form( "%i row;row;plane %i pixels", ipl, ipl ),
@@ -1056,7 +1032,7 @@ int main( int argc, char* argv[] )
     hsiz[ipl] = TH1I( Form( "clsz%i", ipl ),
 		      Form( "%i cluster size;pixels/cluster;plane %i clusters", ipl, ipl ),
 		      51, -0.5, 50.5 );
-    hncol[ipl] = TH1I( Form( "ncol%i", ipl ), 
+    hncol[ipl] = TH1I( Form( "ncol%i", ipl ),
 		       Form( "%i cluster size x;columns/cluster;plane %i clusters", ipl, ipl ),
 		       21, -0.5, 20.5 );
     hnrow[ipl] = TH1I( Form( "nrow%i", ipl ),
@@ -1068,38 +1044,29 @@ int main( int argc, char* argv[] )
 
   } // planes
 
-  TProfile dutnpxvsev( "dutnpxvsev",
-		       "DUT pixels vs events;events;DUT pixels / 1000",
-		       500, 0, 500E3 );
+  // Diode:
 
-  TH1I dutpxbc0Histo( "dutpxbc0",
-		    "DUT pixel BC;DUT pixel BC;DUT pixels without masking",
-		    32, -0.5, 31.5 );
+  TH1I ht1( "D_t1", "events vs time;time [s];events/bin", 100, 0, 1 );
+  TH1I ht2( "D_t2", "events vs time;time [s];events/bin", 10*12.5, 0, 10 );
+  TH1I hdtus( "D_dtus", "R&S time between events;R&S time between events [us];events", 100, 0, 1000 );
+  TH1I hdtms( "D_dtms", "R&S time between events;R&S time between events [ms];events", 100, 0, 1000 );
+  TH1I hddtus( "ddtus", "R&S - TLU times;R&S - TLU time between events [#mus];events", 4000, -2, 2 );
 
-  hmap[8] = new TH2I( Form( "map%i", 8 ),
-		      Form( "%i map;col;row;plane %i pixels", 8, 8 ),
-		      400, 0, 400, 192, 0, 192 );
+  TProfile ddtvsdt( "ddtvsdt",
+		    "R&S-TLU time difference vs dt;TLU #deltat [#mus];R&S-TLU #Delta#deltat [#mus]",
+		    100, 0, 10*1000 );
+  TProfile ddtvst( "ddtvst",
+		   "R&S-TLU time difference vs t;R&S time [s];R&S-TLU #Delta#deltat [#mus]",
+		   100, 0, 1000 );
 
-  TH1I dutpxcolHisto( "dutpxcol",
-		      "DUT pixel column;DUT pixel column;DUT pixels",
-		      nx[iDUT], 0, nx[iDUT] );
-  TH1I dutpxrowHisto( "dutpxrow",
-		      "DUT pixel row;DUT pixel row;DUT pixels",
-		      ny[iDUT], 0, ny[iDUT] );
-  TH1I dutpxqHisto( "dutpxq",
-		    "DUT pixel signal;DUT pixel signal [ToT];DUT pixels",
-		    16, 0, 16 );
-  TH1I dutpxbcHisto( "dutpxbc",
-		    "DUT pixel BC;DUT pixel BC;DUT pixels",
-		    32, 0, 32 );
-
-  TProfile dutpxqvsx( "dutpxqvsx",
-		      "DUT pixel signal vs x;column;<pixel signal> [ToT]",
-		      400, 0, 400, 0, 16 );
-  TProfile2D * dutpxqvsxy = new
-    TProfile2D( "dutpxqvsxy",
-		"DUT pixel signal map;column;row;<pixel signal> [ToT]",
-		400, 0, 400, 192, 0, 192, 0, 16 );
+  TProfile hwave( "wave", "average wave forms;sample;<ADC>", 2000, -0.5, 1999.5 );
+  TH1I hadc( "adc", "ADC;ADC;samples", 256, -128.5, 127.5 );
+  TH1I hoffset( "offset", "Baseline;baseline [ADC];pulses", 150, -50, 150 );
+  TH1I hpeak( "peak", "peak ADC;peak ADC;waves", 256, -128.5, 127.5 );
+  TH1I hpeakpos( "peakpos", "any peak position;peak sample index;waves", 2000, -0.5, 1999.5 );
+  TH1I hpulsepos( "pulsepos", "pulse peak position;peak sample index;peak waves", 2000, -0.5, 1999.5 );
+  TProfile hpulse( "pulse", "average pulse;sample;<ADC>", 2000, -0.5, 1999.5 );
+  TH1I hcall( "hcall", "Charge;charge [fC];pulses", 120, -40, 200 );
 
   // triplets:
 
@@ -1166,10 +1133,10 @@ int main( int argc, char* argv[] )
 
   TH1I modxHisto( "modx",
 		  "MOD x;MOD cluster x [mm];MOD clusters",
-		  700, -35, 35 );
+		  216, -32.4, 32.4 );
   TH1I modyHisto( "mody",
 		  "MOD y;MOD cluster y [mm];MOD clusters",
-		  200, -10, 10 );
+		  160, -8, 8 );
 
   TH1I modsxaHisto( "modsxa",
 		    "MOD + triplet x;MOD cluster + triplet #Sigmax [mm];MOD clusters",
@@ -1271,85 +1238,39 @@ int main( int argc, char* argv[] )
 
   // DUT vs triplets:
 
+
+  TH2I * trixypHisto = new
+    TH2I( "trixyp", "triplets x-y with pulse;x [mm];y [mm];triplets with pulse",
+	  240, -12, 12, 120, -6, 6 );
+
+  TH1I trixpaHisto( "trixpa",
+		   "triplet x with pulse;triplet x at Diode [mm];triplets with pulse",
+		   500, -5, 5 );
+  TH1I trixpHisto( "trixp",
+		   "triplet x with pulse;triplet x in Diode [mm];triplets with pulse",
+		   400, -1, 1 );
+  TH1I triypHisto( "triyp",
+		   "triplet y with pulse;triplet y in Diode [mm];triplets with pulse",
+		   120, -6, 6 );
+  TH1I trixpmHisto( "trixpm",
+		   "Mod triplet x with pulse;triplet x in Diode [mm];Mod triplets with pulse",
+		   400, -1, 1 );
+  TH1I triypmHisto( "triypm",
+		   "Mod triplet y with pulse;triplet y in Diode [mm];Mod triplets with pulse",
+		   120, -6, 6 );
+  TH1I trixpcHisto( "trixpc",
+		    "triplet x with pulse;triplet x in Diode [mm];triplets with pulse",
+		    400, -1, 1 );
+  TH1I triypcHisto( "triypc",
+		    "triplet y with pulse;triplet y in Diode [mm];triplets with pulse",
+		    120, -6, 6 );
+
   TH1I trixcHisto( "trixc",
-		   "in-time triplet at DUT x;triplet x at DUT [mm];in-time triplets",
+		   "in-time triplet in DUT x;triplet x in DUT [mm];in-time triplets",
 		   120, -6, 6 );
   TH1I triycHisto( "triyc",
-		   "in-time triplet at DUT y;triplet y at DUT [mm];in-time triplets",
+		   "in-time triplet in DUT y;triplet y in DUT [mm];in-time triplets",
 		   120, -6, 6 );
-
-  TH2I * pixzyHisto = new
-    TH2I( "pixzy",
-	  "DUT hits;z [mm];y [mm];pixels",
-	  220, -11, 11, 480, -6, 6 ); // bin = pix
-
-  TH1I pixdxaHisto( "pixdxa",
-		    "PIX - Telescope x;pixel - triplet #Deltax [mm];pixels",
-		    440, -11, 11 );
-  TH1I pixsxaHisto( "pixsxa",
-		    "PIX + Telescope x;pixel + triplet #Sigmax [mm];pixels",
-		    440, -11, 11 );
-  TH1I pixdyaHisto( "pixdya",
-		    "PIX - Telescope y;pixel - triplet #Deltay [mm];pixels",
-		    240, -6, 6 );
-  TH1I pixsyaHisto( "pixsya",
-		    "PIX + Telescope y;pixel + triplet #Sigmay [mm];pixels",
-		    240, -6, 6 );
-
-  TH1I pixdyHisto( "pixdy",
-		   "pixel - Telescope dy;pixel - triplet #Deltaxy [mm];pixels",
-		   200, -0.5, 0.5 );
-
-  TH1I pixdxcHisto( "pixdxc",
-		    "pixel - Telescope dx;pixel - triplet #Deltaxx [mm];pixels",
-		    200, -0.5, 0.5 );
-  TProfile pixdxvsz( "pixdxvsz",
-		     "#Deltax vs z;z [mm];<pixel - triplet #Deltax> [mm]",
-		     200, -10, 10, -0.1, 0.1 );
-  TProfile pixdxvsy( "pixdxvsy",
-		     "#Deltax vs y;track y [mm];<pixel - triplet #Deltax> [mm]",
-		     100, -5, 5, -0.1, 0.1 );
-  TProfile pixdxvsev( "pixdxvsev", "PIX - Telescope x vs time;time [events];<#Deltax> [mm]",
-		      600, 0, 600*1000, -0.1, 0.1 );
-
-  TH2I * hroadmap = new TH2I( "roadmap",
-			      "road map;col;row;active pixels",
-			      400, 0, 400, 192, 0, 192 );
-  TH1I pixbclkHisto( "pixbclk",
-		     "DUT linked pixel BC;DUT pixel BC;DUT pixels on tracks",
-		     32, 0, 32 );
-  TProfile pixbcvsd( "pixbcvsd",
-		     "PIX BC vs depth;depth [mm];<pixel BC>",
-		     80, -0.2, 0.2 );
-  TProfile2D * pixqvsdxdy = new
-    TProfile2D( "pixqvsdxdy",
-		"DUT pixel signal map;height [mm];depth [mm];<pixel signal> [ToT]",
-		80, -0.200, 0.200, 60, -0.150, 0.150 );
-
-  TH1I pixdycHisto( "pixdyc",
-		    "pixel - Telescope dy;pixel - triplet #Deltaxy [mm];pixels",
-		    200, -0.5, 0.5 );
-  TProfile pixdyvsz( "pixdyvsz",
-		     "#Deltay vs z;z [mm];<pixel - triplet #Deltay> [mm]",
-		     200, -10, 10, -0.1, 0.1 );
-  TProfile pixdyvsy( "pixdyvsy",
-		     "#Deltay vs y;track y [mm];<pixel - triplet #Deltay> [mm]",
-		     100, -5, 5, -0.1, 0.1 );
-  TProfile pixdyvsty( "pixdyvsty",
-		      "#Deltay vs #theta_{y};track y slope [mrad];<pixel - triplet #Deltay> [#mum]",
-		      40, -2, 2, -100, 100 );
-  TProfile pixdyvsev( "pixdyvsev", "PIX - Telescope y vs time;time [events];<#Deltay> [mm]",
-		      600, 0, 600*1000, -0.1, 0.1 );
-
-  TH1I roadnpxHisto( "roadnpx",
-		    "pixels in track road;in-road pixels;fiducial tracks",
-		    400,  0.5, 400.5 );
-  TH1I roadncolHisto( "roadncol",
-		      "filled columns in track road;filled columns;tracks",
-		      150, 0.5, 150.5 );
-  TProfile roadncolvscol0( "roadncolvscol0",
-			   "filled columns in track road;first column;filled columns;tracks",
-			   400, 0, 400 );
 
   TH1I tridHisto( "trid",
 		  "in-time triplet depth;depth [mm];in-time triplets",
@@ -1358,12 +1279,8 @@ int main( int argc, char* argv[] )
 		  "in-time triplet depth;depth [mm];in-time triplet hits",
 		  80, -0.2, 0.2 );
   TProfile pixqvsd( "pixqvsd",
-		    "PIX column signal vs depth [mm];depth [#mum];<column signal> [ToT]",
-		    80, -200, 200 );
-  TProfile2D * pixqvsyd = new
-    TProfile2D( "pixqvsd",
-		"PIX column signal vs ymod and depth;depth [#mum];y_{track} mod 50 #mum;<column signal [ToT]>",
-		80, -0.2, 0.2, 25, 0, 50 );
+		    "PIX column signal vs depth [mm];depth [mm];<column signal> [ToT]",
+		    80, -0.2, 0.2 );
 
   TH1I triymHisto( "triym",
 		   "in-time in-depth triplet y;y [mm];in-time in-depth triplets",
@@ -1387,6 +1304,30 @@ int main( int argc, char* argv[] )
 
   TH1I ntrimodHisto( "ntrimod", "triplet - MOD links;triplet - MOD links;events",
 		    11, -0.5, 10.5 );
+
+  TH1I hcpk( "hcpk", "Charge;charge [fC];pulses", 50, 0, 200 );
+  TH1I hcx( "hcx", "Charge in x;charge [fC];pulses in x", 50, 0, 200 );
+  TH1I hcm( "hcm", "in-time Charge;charge [fC];in-time pulses", 50, 0, 200 );
+  TH1I hcxm( "hcxm", "in-time Charge in x;charge [fC];in-time pulses in x", 50, 0, 200 );
+
+  TH2D * h2cx = new
+    TH2D( "h2cx", "charge vs x;x [mm];charge [fC]",
+	  200, -1, 1, 100, 0, 200 );
+  TH2D * h2cxm = new
+    TH2D( "h2cxm", "charge vs x with MOD;x [mm];in-time charge [fC]",
+	  200, -1, 1, 100, 0, 200 );
+
+  TH2D * h2cy = new
+    TH2D( "h2cy", "charge vs y;y [mm];charge [fC]",
+	  120, -6, 6, 100, 0, 200 );
+
+  TProfile cvsy( "cvsy",
+		 "Charge vs y;y [mm];<charge>(fC)", 120, -6, 6 );
+
+  TProfile cvsx( "cvsx",
+		 "Charge vs x;x [mm];<charge>(fC)", 200, -1, 1 );
+  TProfile cvsxm( "cvsxm",
+		 "Charge vs x in-time;x [mm];in-time <charge>(fC)", 200, -1, 1 );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // event loop:
@@ -1414,6 +1355,9 @@ int main( int argc, char* argv[] )
   }
   uint64_t prevTLU = evTLU0;
 
+  double ts0 = 0;
+  double prevts = 0;
+
   int iev = 0;
 
   if( fev ) cout << "EU skip " << fev << endl;
@@ -1426,7 +1370,7 @@ int main( int argc, char* argv[] )
   int nevB = 0;
 
   do {
-  
+
     evt = reader->GetDetectorEvent();
 
     uint64_t evTLU = evt.GetTimestamp(); // 384 MHz = 2.6 ns
@@ -1439,16 +1383,16 @@ int main( int argc, char* argv[] )
     t5Histo.Fill( evsec );
     t6Histo.Fill( evsec/3600 );
 
-    double evdt = (evTLU - prevTLU) / fTLU;
-    dtusHisto.Fill( evdt * 1E6 ); // [us]
-    dtmsHisto.Fill( evdt * 1E3 ); // [ms]
+    double dtTLU = (evTLU - prevTLU) / fTLU; // [s]
+    dtusHisto.Fill( dtTLU * 1E6 ); // [us]
+    dtmsHisto.Fill( dtTLU * 1E3 ); // [ms]
 
     dt373Histo.Fill( (evTLU - prevTLU)%373 );
     dt374Histo.Fill( (evTLU - prevTLU)%374 );
     dt375Histo.Fill( (evTLU - prevTLU)%375 ); // best
     dt376Histo.Fill( (evTLU - prevTLU)%376 );
     dt377Histo.Fill( (evTLU - prevTLU)%377 );
-    dt375vsdt.Fill( evdt*1E6, (evTLU - prevTLU)%375 ); // linear
+    dt375vsdt.Fill( dtTLU*1E6, (evTLU - prevTLU)%375 ); // linear
 
     prevTLU = evTLU;
 
@@ -1476,7 +1420,6 @@ int main( int argc, char* argv[] )
 
     if( ldbg ) cout << "planes " << sevt.NumPlanes() << endl;
 
-    vector <pixel> pbDUT;
     vector < cluster > cl[9];
 
     for( size_t iplane = 0; iplane < sevt.NumPlanes(); ++iplane ) {
@@ -1495,9 +1438,9 @@ int main( int argc, char* argv[] )
 	  << " hits " << plane.HitPixels()
 	  ;
 
-      int ipl = plane.ID(); // 0 = DUT, 1..6 = Mimosa
+      int ipl = plane.ID(); // 1..6 = Mimosa
 
-      if( ipl < 0 || ipl > 6 ) {
+      if( ipl < 1 || ipl > 6 ) {
 	cout << "event " << iev << " wrong plane number " << ipl << endl;
 	continue;
       }
@@ -1505,18 +1448,16 @@ int main( int argc, char* argv[] )
       hpivot[ipl].Fill( plane.PivotPixel() );
       hnpx[ipl].Fill( plane.HitPixels() );
       hnframes[ipl].Fill( plane.NumFrames() ); // 32
-      if( ipl == iDUT )
-	dutnpxvsev.Fill( iev, plane.HitPixels() );
 
       vector <pixel> pb; // for clustering
 
       // loop over frames, then pixels per frame
 
-      for( unsigned frm = 0; frm < plane.NumFrames(); ++frm ) 
+      for( unsigned frm = 0; frm < plane.NumFrames(); ++frm )
 
 	for( size_t ipix = 0; ipix < plane.HitPixels( frm ); ++ipix ) {
 
-	  if( ldbg ) 
+	  if( ldbg )
 	    std::cout << ": " << plane.GetX(ipix,frm)
 		      << "." << plane.GetY(ipix,frm)
 		      << "." << plane.GetPixel(ipix,frm) << " ";
@@ -1524,11 +1465,6 @@ int main( int argc, char* argv[] )
 	  int ix = plane.GetX(ipix,frm); // column
 	  int iy = plane.GetY(ipix,frm); // row
 	  int tot = plane.GetPixel(ipix,frm); // ToT 0..15
-
-	  if( ipl == iDUT ) {
-	    dutpxbc0Histo.Fill( frm ); // before hot pixel masking
-	    hmap[8]->Fill( ix+0.5, iy+0.5 ); // before masking
-	  }
 
 	  // skip hot pixels:
 
@@ -1540,25 +1476,6 @@ int main( int argc, char* argv[] )
 	  px.row = iy; // row
 	  px.tot = tot;
 	  px.frm = frm;
-
-	  if( ipl == iDUT ) {
-
-	    px.tot += 1; // shift from zero
-
-	    if( !fifty ) { // 100x25 from ROC to sensor:
-	      px.col = ix/2; // 100 um
-	      if( ix%2 ) 
-		px.row = 2*iy + 0; // different from R4S
-	      else
-		px.row = 2*iy + 1; // see ed53 for shallow angle
-	      if( chip0 == 182 || chip0 == 211 || chip0 == 512 ) { // HLL
-		if( ix%2 ) 
-		  px.row = 2*iy + 1;
-		else
-		  px.row = 2*iy + 0;
-	      }
-	    }
-	  } // DUT
 
 	  pb.push_back(px);
 
@@ -1572,10 +1489,7 @@ int main( int argc, char* argv[] )
 
       // clustering:
 
-      if( ipl == iDUT )
-	pbDUT = pb; // no clustering
-      else
-	cl[ipl] = getClusn( pb ); // Mimosa
+      cl[ipl] = getClusn( pb ); // Mimosa
 
       if( ldbg ) cout << "    clusters " << cl[ipl].size() << endl;
 
@@ -1607,23 +1521,134 @@ int main( int argc, char* argv[] )
     } // eudaq planes
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // DUT:
+    // Diode
+    /*
+      one trigger:
 
-    for( unsigned ipx = 0; ipx < pbDUT.size(); ++ipx ) {
+         8 bytes pre
+         8 bytes timestamp
+         7 bytes pre
+      2000 bytes waveform
+         17 bytes post
+      ----
+      8040
+    */
+    // pre-bytes:
 
-      int col = pbDUT[ipx].col; // sensor
-      int row = pbDUT[ipx].row; // sensor
-      int tot = pbDUT[ipx].tot;
-      int frm = pbDUT[ipx].frm; // [BC]
+    bool ldb = 0;
+    bool ldb2 = 0; // debug flag timestamps
 
-      dutpxcolHisto.Fill( col + 0.5 );
-      dutpxrowHisto.Fill( row + 0.5 );
-      dutpxqHisto.Fill( tot + 0.5 );
-      dutpxbcHisto.Fill( frm + 0.5 );
+    char y;
 
-      dutpxqvsx.Fill( col + 0.5, tot + 0.5 );
-      dutpxqvsxy->Fill( col + 0.5, row + 0.5, tot + 0.5 );
+    for( int k = 0; k < 8; ++k ) {
+      wff.read( ( char * ) &y, sizeof( y ) );
+      if( ldb ) cout << " " << (int) y;
+    }
 
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // Diode time stamp:
+
+    double ts;
+    wff.read( ( char * ) &ts, sizeof( ts ) );
+
+    if( ldb || ldb2 ) cout << ts << " s" << endl;
+
+    if( iev == 0 )
+      ts0 = ts; // most negative
+
+    ht1.Fill( ts - ts0 );
+    ht2.Fill( ts - ts0 );
+
+    if( iev > 0 ) {
+
+      double dt = ts - prevts;
+      hdtus.Fill( dt * 1E6 ); // [us]
+      hdtms.Fill( dt * 1E3 ); // [ms]
+
+      double ddt = dt - dtTLU; // [s]
+      hddtus.Fill( ddt * 1E6 ); // [us]
+      ddtvsdt.Fill( dtTLU*1E6, ddt*1E6 );
+      ddtvst.Fill( ts - ts0, ddt*1E6 );
+
+    }
+
+    prevts = ts; // remember
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // more pre-bytes:
+
+    if( ldb ) cout << wff.tellg();
+
+    for( int k = 0; k < 7; ++k ) {
+
+      wff.read( ( char * ) &y, sizeof( y ) );
+      if( ldb ) cout << " " << (int) y;
+    }
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // waveform:
+
+    if( ldb ) cout << wff.tellg();
+
+    int ymin = 128;
+    int kmin = 0;
+    char yy[2000];
+
+    bool pulse = 0;
+    double offset = 0;
+    int prebins = 800;
+
+    for( int k = 0; k < 2000; ++k ) { // from xml RecordLength
+
+      wff.read( ( char * ) &y, sizeof( y ) );
+      yy[k] = y;
+      hadc.Fill( y ); // mean 25.66, rms 2.4
+      hwave.Fill( k, y );
+      if( y < ymin ) {
+	ymin = y;
+	kmin = k;
+      }
+      if( k < prebins )
+	offset += y;
+
+    } // k samples
+
+    offset = offset / prebins; // [ADC]
+    hoffset.Fill(offset);
+
+    hpeak.Fill( ymin );
+    hpeakpos.Fill( kmin );
+
+    if( ymin < offset - 16 ) { // pulse
+
+      pulse = 1;
+
+      hpulsepos.Fill( kmin );
+
+      for( int k = 0; k < 2000; ++k ) // from xml RecordLength
+	hpulse.Fill( k, yy[k] );
+
+    } // peak
+
+    // integrate pulse:
+
+    int strt =  830;
+    int stop = 1000;
+    double C0 = 0;
+    for( int k = strt; k < stop; ++k ) // 0.1 ns bins
+      C0 += ( yy[k] - offset ) * 0.00158 * 1e-10; // negative, ADC to mV
+
+    C0 *= -1e15 / (50*100); // [fC] into 50 Ohm
+
+    hcall.Fill(C0);
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // post bytes:
+
+    if( ldb ) cout << wff.tellg();
+    for( int k = 0; k < 17; ++k ) {
+      wff.read( ( char * ) &y, sizeof( y ) );
+      if( ldb ) cout << " " << (int) y;
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1932,7 +1957,7 @@ int main( int argc, char* argv[] )
 	double avx = 0.5 * ( xA + xC ); // mid
 	double avy = 0.5 * ( yA + yC );
 	double avz = 0.5 * ( zA + zC ); // mid z
- 
+
 	double slpx = ( xC - xA ) / dzCA; // slope x
 	double slpy = ( yC - yA ) / dzCA; // slope y
 
@@ -2016,8 +2041,8 @@ int main( int argc, char* argv[] )
     int nmdm = 0;
     int ntrimod = 0;
 
-    double xcutMOD = 0.15;
-    double ycutMOD = 0.15;
+    double xcutMOD = 0.200;
+    double ycutMOD = 0.150;
 
     for( unsigned int iA = 0; iA < triplets.size(); ++iA ) { // iA = upstream
 
@@ -2108,9 +2133,9 @@ int main( int argc, char* argv[] )
 	// residuals for pre-alignment:
 
 	modsxaHisto.Fill( modx + x3m ); // peak
-	moddxaHisto.Fill( modx - x3m ); // 
+	moddxaHisto.Fill( modx - x3m ); //
 
-	modsyaHisto.Fill( mody + y3m ); // 
+	modsyaHisto.Fill( mody + y3m ); //
 	moddyaHisto.Fill( mody - y3m ); // peak
 
 	double moddx = modx - x4m;
@@ -2146,11 +2171,6 @@ int main( int argc, char* argv[] )
 	  modqHisto.Fill( q );
 	  modq0Histo.Fill( q0 );
 	  modnpxvsxmym->Fill( xmodm*1E3, ymodm*1E3, c->size );
-
-	}
-
-	if( fabs( moddx ) < xcutMOD &&
-	    fabs( moddy ) < ycutMOD ) {
 
 	  modlkxBHisto.Fill( xB );
 	  modlkyBHisto.Fill( yB );
@@ -2206,194 +2226,93 @@ int main( int argc, char* argv[] )
       ttdmin2Histo.Fill( ttdmin );
       triplets[iA].ttdmin = ttdmin;
 
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      // intersect inclined track with turned DUT plane:
+
+      double zc = (Nz*dzA - Ny*ymA - Nx*xmA) / (Nx*sxA + Ny*syA + Nz); // from zmA
+      double yc = ymA + syA * zc;
+      double xc = xmA + sxA * zc;
+
+      double dzc = zc + zmA - DUTz; // from DUT z0 [-8,8] mm
+
+      // transform into DUT system: (passive).
+      // large rotations don't commute: careful with order
+
+      double x1 = co*xc - so*dzc; // turn o
+      double y1 = yc;
+      double z1 = so*xc + co*dzc;
+
+      double x2 = x1;
+      double y2 = ca*y1 + sa*z1; // tilt a
+
+      double x3 = cf*x2 + sf*y2; // rot
+      double y3 =-sf*x2 + cf*y2;
+
+      double x4 = x3 - DUTalignx; // shift to mid
+      double y4 = y3 - DUTaligny; // shift to mid
+
+      // x4, y4 are the track coordinates at the DUT [mm], alignment applied
+
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       // triplet vs DUT:
 
-      if( ltrimod ) { // in-time
+      if( pulse ) { // Diode
 
-	trixcHisto.Fill( xAc );
-	triycHisto.Fill( yAc );
+	trixpaHisto.Fill( xc ); // in telescope system
+	trixpHisto.Fill( x4 );
+	triypHisto.Fill( y4 );
+	trixypHisto->Fill( x4, y4 );
 
-	int nroad = 0;
-	vector <int> roadcol(nx[iDUT]);
+	if( ltrimod ) { // in-time
+	  trixpmHisto.Fill( x4 );
+	  triypmHisto.Fill( y4 );
+	}
 
-	vector <int> colq(nx[iDUT]);
+	hcpk.Fill(C0);
+	if( ltrimod ) { // in-time
+	  hcm.Fill(C0);
+	}
 
-	for( unsigned ipx = 0; ipx < pbDUT.size(); ++ipx ) { // pixels
+	if( fabs(x4) < 0.1 ) { // cut in x, look at y:
 
-	  int col = pbDUT[ipx].col; // sensor
-	  int row = pbDUT[ipx].row; // sensor
-	  int tot = pbDUT[ipx].tot;
-	  int frm = pbDUT[ipx].frm; // [BC]
+	  triypcHisto.Fill( y4 );
+	  h2cy->Fill( y4, C0 );
+	  cvsy.Fill( y4, C0 );
 
-	  double pz = ( col + 0.5 - nx[iDUT]/2 ) * ptchx[iDUT]; // mm
-	  double py = ( row + 0.5 - ny[iDUT]/2 ) * ptchy[iDUT]; // mm
-
-	  pixzyHisto->Fill( pz, py );
-
-	  // transform pixel into telescope system:
-
-	  double x1 = 0; // sensor mid plane
-	  double y1 = cf*py + sf*pz; // rot
-	  double z1 =-sf*py + cf*pz;
-
-	  double x2 = co*x1 - so*z1; // turn x-z
-	  double y2 = y1;
-	  double z2 = so*x1 + co*z1;
-
-	  double x3 = ca*x2 + sa*y1; // tilt y-x
-	  double y3 =-sa*x2 + ca*y2;
-	  double z3 = z2;
-
-	  // track at z3:
-
-	  double dz = z3 + DUTz - zmA; // z of pixel from mid of triplet A
-	  double xA = xmA + sxA * dz; // triplet impact point on DUT
-	  double yA = ymA + syA * dz; // track A at pixel
-
-	  pixdxaHisto.Fill( xA - x3 );
-	  pixsxaHisto.Fill( xA + x3 );
-	  pixdyaHisto.Fill( yA - y3 );
-	  pixsyaHisto.Fill( yA + y3 );
-
-	  double dx = xA - x3 - DUTalignx;
-	  double dy = yA - y3 - DUTaligny;
-
-	  pixdyHisto.Fill( dy );
-	  pixqvsdxdy->Fill( dy, dx, tot );
-
-	  if( fabs( dy ) < 0.07 ) { // track road
-
-	    pixdxcHisto.Fill( dx );
-	    pixdxvsz.Fill( z3, dx ); // tan(turn) = slope
-	    pixdxvsy.Fill( yA, dx ); // tan(turn) = slope
-	    pixdxvsev.Fill( iev, dx );
-
-	    colq[col] += tot;
-
-	    if( fabs( dx ) < 0.150 ) { // depth
-
-	      hroadmap->Fill( col+0.5, row+0.5 );
-	      ++nroad;
-	      ++roadcol[col];
-	      pixbclkHisto.Fill( frm ); // linked
-	      pixbcvsd.Fill( dx, frm ); // timewalk? drift?
-
-	    }
-
-	  } // dy
-
-	  if( fabs( dx ) < 0.150 ) { // depth
-
-	    pixdycHisto.Fill( dy ); // aligny
-	    pixdyvsz.Fill( z3, dy ); // rot
-	    pixdyvsy.Fill( yA, dy ); // tan(tilt) = slope
-	    pixdyvsty.Fill( syA*1E3, dy*1E3 ); // slope = -dz
-	    pixdyvsev.Fill( iev, dy );
-
+	  hcx.Fill(C0);
+	  if( ltrimod ) { // in-time
+	    hcxm.Fill(C0);
 	  }
 
-	} // loop pix
+	}
 
-	roadnpxHisto.Fill( nroad );
-
-	int ncol = 0;
-	int col0 = nx[iDUT];
-	int col9 = 0;
-	for( int icol = 0; icol < nx[iDUT]; ++icol ) {
-	  if( roadcol[icol] ) {
-	    ++ncol;
-	    if( icol < col0 ) col0 = icol;
-	    if( icol > col9 ) col9 = icol;
+	if( y4 > -2.5 && y4 < 2.5 ) { // cut in y, look at x:
+	  trixpcHisto.Fill( x4 );
+	  h2cx->Fill( x4, C0 );
+	  if( ltrimod ) { // in-time
+	    h2cxm->Fill( x4, C0 );
 	  }
 	}
 
-	roadncolHisto.Fill( ncol );
-	roadncolvscol0.Fill( col0+0.5, ncol ); // overflows have weight zero
+      } // Diode pulse
 
-	// get mean depth per column:
+      if( y4 > -2.5 && y4 < 2.5 ) { // cut in y, look at x:
+	cvsx.Fill( x4, C0 );
+	if( ltrimod ) { // in-time
+	  cvsxm.Fill( x4, C0 );
+	}
+      }
 
-	for( int col = 128/(2-fifty); col < 264/(2-fifty); ++col ) { // Lin
+      if( ltrimod ) { // in-time
 
-	  double depth = 0;
-	  int nd = 0;
-	  bool in = 0;
-	  double ym = yAc; // track y at DUTz
-	  double dymin = 999;
-	  double ymod = 0;
-
-	  for( int row = 0; row < 384/(2-fifty); ++row ) {
-
-	    double pz = ( col + 0.5 - nx[iDUT]/2 ) * ptchx[iDUT]; // mm
-	    double py = ( row + 0.5 - ny[iDUT]/2 ) * ptchy[iDUT]; // mm
-
-	    // transform pixel into telescope system:
-
-	    double x1 = 0; // sensor mid plane
-	    double y1 = cf*py + sf*pz; // rot
-	    double z1 =-sf*py + cf*pz;
-
-	    double x2 = co*x1 - so*z1; // turn x-z
-	    double y2 = y1;
-	    double z2 = so*x1 + co*z1;
-
-	    double x3 = ca*x2 + sa*y1; // tilt y-x
-	    double y3 =-sa*x2 + ca*y2;
-	    double z3 = z2;
-
-	    // track at z3:
-
-	    double dz = z3 + DUTz - zmA; // z of pixel from mid of triplet A
-	    double xA = xmA + sxA * dz; // triplet impact point on DUT
-	    double yA = ymA + syA * dz; // track A at z(pixel)
-
-	    ymod = fmod( 8.000 + yA, 0.050 );
-
-	    double dx = xA - x3 - DUTalignx;
-	    double dy = yA - y3 - DUTaligny;
-
-	    if( fabs( dx ) > 0.220 ) continue; // depth
-	    if( fabs( dy ) > 0.100 ) continue; // road
-
-	    depth += dx;
-	    ++nd;
-
-	    if( fabs( dx ) < 0.075 )
-	      in = 1;
-
-	    if( fabs(dy) < fabs(dymin) ) {
-	      dymin = dy;
-	      ym = yA; // track at pixel
-	    }
-
-	  } // rows
-
-	  if( nd ) { // track in depth
-
-	    depth /= nd; // average of rows in this column
-
-	    tridHisto.Fill( depth );
-	    if( roadcol[col] )
-	      tridlkHisto.Fill( depth );
-
-	    pixqvsd.Fill( depth*1e3, colq[col] );
-	    pixqvsyd->Fill( depth*1e3, ymod*1e3, colq[col] );
-
-	  }
-
-	  if( in ) { // track in depth: fiducial
-
-	    triymHisto.Fill( ym );
-	    if( roadcol[col] )
-	      triymlkHisto.Fill( ym ); // check y acceptance
-
-	  }
-
-	} // cols = z along track
+	trixcHisto.Fill( x4 );
+	triycHisto.Fill( y4 );
 
       } // in-time
 
     } // loop triplets
+
+    // Find the events with amplitude bigger than threshold
 
     modlkvst1.Fill( evsec, nmdm ); // MOD yield vs time
     modlkvst3.Fill( evsec, nmdm );
@@ -2403,7 +2322,7 @@ int main( int argc, char* argv[] )
 
     ++iev;
 
-  } while( reader->NextEvent() && iev < lev );
+  } while( reader->NextEvent() && iev < lev && ! wff.eof() ); // event loop
 
   delete reader;
 
@@ -2414,7 +2333,7 @@ int main( int argc, char* argv[] )
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // MOD alignment:
 
-  if( moddxaHisto.GetEntries() > 9999 ) {
+  if( moddxaHisto.GetEntries() > 999 ) {
 
     double newMODalignx = MODalignx;
     double newMODaligny = MODaligny;
@@ -2708,6 +2627,8 @@ int main( int argc, char* argv[] )
       ;
 
   } // MOD
+  else
+    cout << "not enough entries for Mod align: " << moddxaHisto.GetEntries() << endl;
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done

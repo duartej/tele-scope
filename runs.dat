@@ -824,21 +824,21 @@ modrun 128
 run 34243  490  
 
 #-------------------------------------------------------------------------------
-# Autumn 2018: irradiated RD53A at CERN PS
+# Autumn 2018: irradiated RD53A at CERN PS, dosimetry E. Curras May 2019
 #
-# Set 1: 509, 518, 507, 508 and 506 got 2.5E15 on Lin
+# Set 1: 509, 518, 507, 508 and 506 got 4.1 to 6.4E15 on Lin
 # 506 glue failure dead
 # 507 FDB p-stop 100x25 bias dot: not measured
 # 508 dead
 # 509 FTH p-stop 100x25 default: measured Dec 2018
 # 518 glue failure dead
 #
-# Set 2: 510, 512 and 516 got 3E15 on Lin
+# Set 2: 510, 512 and 516 got 2.14 to 3.33E15 on Lin
 # 510 dead
 # 512 FTH p-stop 100x25 bias dot: measured Feb 2019
 # 516 dead
 #
-# Set 3: 505, 511 and 515 got 6.6E15 on Lin
+# Set 3: 505, 511 and 515 got 6.0 to 7.2E15 on Lin
 # 505 broken corner
 # 511 FDB p-stop 50x50 bias dot: measured Mar 2019
 # 515 FDB p-stop 50x50 bias dot: not measured
@@ -848,7 +848,7 @@ run 34243  490
 #-------------------------------------------------------------------------------
 # Tue 4.12.2018
 
-chip 509 = FTH150P RD53A 100x25 default  2.6E15 n_eq at CERN PS on Lin
+chip 509 = FTH150P RD53A 100x25 default  5.2E15 n_eq at CERN PS on Lin
 
 fifty 0
 
@@ -908,7 +908,7 @@ run 35020  45.0M
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Wed 5.12.2018
-# continue 509 = FTH150P RD53A 100x25 default  5E15 n_eq at CERN PS
+# continue 509 = FTH150P RD53A 100x25 default  5.2E15 n_eq at CERN PS
 # Lin section
 # vertical
 
@@ -959,7 +959,7 @@ run 35043  1.0M  80.91
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Thu 6.12.2018
-# continue 509 = FTH150P RD53A 100x25 default  5E15 n_eq at CERN PS
+# continue 509 = FTH150P RD53A 100x25 default  5.2E15 n_eq at CERN PS
 # Lin + DIF sections
 # vertical
 
@@ -1603,7 +1603,7 @@ geo geo_2019_02e.dat = 0  153  305  573  720  874
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Fri 15.2.2019
 
-chip 512 = FTH150P RD53A 100x25 P2 = p-stop bias dot  3E15 n/cm2 CERN PS on Lin
+chip 512 = FTH150P RD53A 100x25 P2 = p-stop bias dot  2.6E15 n/cm2 CERN PS on Lin
 
 # Lin section
 
@@ -1827,7 +1827,7 @@ run 35588  360
 modrun 401  skip 0,
 run 35589  360
 
-# 800 V turn -33 over night: 512i 100x25 bias dot  3E15 n/cm2 CERN PS on Lin
+# 800 V turn -33 over night: 512i 100x25 bias dot  2.6E15 n/cm2 CERN PS on Lin
 modrun 402  41'461'427  removed 1411 around 7'463'610
 # scope53m -m -f 7390200 -l 7437700 35590
 
@@ -2548,11 +2548,11 @@ run 35902  506  91.298 mask
 # bias 100 V, 35 uA
 modrun 636
 run 35903  509  85.456 mask
-							
+
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # finer ToT binning = better resolution?
 
-# bias 800 V, 121 uA							
+# bias 800 V, 121 uA
 
 # KRUM_CURR_LIN : 29 -> 25  check hot !!!
 modrun 637
@@ -2594,10 +2594,10 @@ run 35909  248  99.97  dxc 10.9  dyc 15.4
 # 550 FDD 25x100x150 default
 
 # Dec 2018 irradiated
-# 509 FTH 25x100x150  8E15p/cm2
+# 509 FTH 25x100x150  5.2E15p/cm2
 
 # Feb 2019
-# 512 FTH150P RD53A 100x25 P2 = p-stop with bias dot 1.5E16 p/cm2 CERN PS
+# 512 FTH150P RD53A 100x25 P2 = p-stop with bias dot 2.6E15 p/cm2 CERN PS
 
 # Mar 2019
 # 511 FDB150P RD53A 50x50 P3 p-stop bias dot with 6.6E15 CERN PS p/cm2 turn scan
@@ -2639,11 +2639,11 @@ run 35917
 
 VTH_SYNC: 90 ~ 1000e
 modrun 644
-run 35918	400
+run 35918  400
 
 move in x by +2 mm
 modrun 645
-run 35919	160
+run 35919  160
 
 bias -800 V, 100 uA
 modrun 646
@@ -2651,10 +2651,10 @@ run 35920  303  88.6
 
 # VTH_SYNC: 83 ~ 900e
 modrun 647
-run 35921	250
+run 35921  250
 
 modrun 648
-run 35922	250
+run 35922  250
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Tue 9.4.2019
@@ -2677,7 +2677,7 @@ run 35926  360
 modrun 652
 run 35927  330  eff 92.3
 
-# CONF_FE_SYNC     : 0x0004							
+# CONF_FE_SYNC     : 0x0004
 # mVTH_SYNC         : 94 ~989 e-
 modrun 653
 run 35928  330  eff 89.1
@@ -2686,8 +2686,8 @@ run 35928  330  eff 89.1
 modrun 654
 run 35929  330  eff 89.4
 
-#CONF_FE_SYNC     : 0x0002							
-#VTH_SYNC         : 94							
+#CONF_FE_SYNC     : 0x0002
+#VTH_SYNC         : 94
 #IBIASP1_SYNC : 150
 #IBIASP2_SYNC : 240
 #IBIAS_SF_SYNC : 120
@@ -2784,7 +2784,7 @@ turn -1
 
 GeV 5.2
 
-# IRef = 4.3 uA							
+# IRef = 4.3 uA
 # thr 1150 e
 
 # bias 40 V, 57.5 uA
@@ -2846,17 +2846,17 @@ run 35978  250
 modrun 691, eff 98.7, 400 hot pixels, 99.5 w/o masking
 
 # bias 170 V, 119 uA
-run 35979	1202
+run 35979  1202
 modrun 692, eff 98.7, 345 hot pixels, 99.5 w/o masking
 
 # bias 170 V, 117 uA
-run 35980	3503
+run 35980  3503
 modrun 693 
-							
+
 turn -22 deg (atan(50/130) = 21 deg)
 tilt 3
 
-# Temperature probe on copper -27C							
+# Temperature probe on copper -27C
 # move DUT -4.5mm X
 
 geo geo_2019_04b.dat = 0  152  305  560  714  865
@@ -2864,10 +2864,10 @@ geo geo_2019_04b.dat = 0  152  305  560  714  865
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Thu 11.4.2019
 # continue chip 334 FBK 3D 50x50x130 irradiated to 1E16 neq/cm2 at CERN PS
-		
-# Temperature probe on copper -26C							
-							
-# bias 170 V, 111 uA		22
+
+# Temperature probe on copper -26C
+
+# bias 170 V, 111 uA
 modrun 704
 run 35989  257k, eff 99.1,  327 hot pixels, 99.95 w/o masking
 
@@ -2878,10 +2878,10 @@ modrun 707
 run 35992
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-turn -45 deg 							
+turn -45 deg
 
 geo geo_2019_04c.dat = 0  153  305  578  732  883
-move DUT -5mm X							
+move DUT -5mm X
 
 # bias 170 V, 115 uA
 modrun 709
@@ -2895,9 +2895,9 @@ modrun 711 +1 event mod
 run 35997  1280
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-turn -60 deg 							
+turn -60 deg
 # same geo_2019_04c.dat = 0  153  305  578  732  883
-# move DUT -3mm X							
+# move DUT -3mm X
 # bias 170 V, 115 uA
 
 modrun 712
@@ -2945,7 +2945,7 @@ run 36018  dxc 12.1
 
 modrun 730
 run 36019  1166
-							
+
 # Vthreshold_LIN   : 370
 
 turn 20
@@ -2963,6 +2963,96 @@ run 36022  254  dxc
 turn 14
 modrun 734
 run 36023  254  dxc 12.25
+
+turn 12
+modrun 735
+run 36024  302  
+
+turn 10
+modrun 736
+run 36025  255  
+
+turn  8
+modrun 737
+run 36026  252  
+
+turn  6
+modrun 738
+run 36027  253  99.35  dxcq 14.7  
+
+geo geo_2019_04c.dat = 0  153  305  578  732  883
+
+turn 50
+modrun 742
+run 36030  251  
+
+turn 48
+modrun 743
+run 36031  252
+
+turn 46
+modrun 744
+run 36032  255
+
+turn 44
+modrun 745
+run 36033  252
+
+turn 42
+modrun 746
+run 36034  256
+
+turn 40
+modrun 747
+run 36035  255
+
+turn 38
+modrun 748
+run 36036  255
+
+turn 36
+modrun 750
+run 36038  252
+
+turn 34
+modrun 751
+run 36039  252
+
+turn 32
+modrun 752
+run 36040  254
+
+turn 30
+modrun 753
+run 36041  252
+
+turn 28
+modrun 754
+run 36042  254
+
+turn 26
+modrun 755
+run 36043  254
+
+turn 24
+modrun 756
+run 36044  255
+
+turn 22
+modrun 757
+run 36045  272
+
+turn 20
+modrun 758
+run 36046  252  99.95  dxcq 12.6
+
+turn 20
+modrun 759
+run 36047  202
+
+# over night: 56 GB
+modrun 760
+run 36048  25889
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Fri 12.4.2019 cross talk study
@@ -3072,8 +3162,8 @@ run 36084  500  99.94  53.7% even
 #Vthreshold_LIN   : 400
 modrun 787
 run 36085  509
-					
-#Vthreshold_LIN   : 328					
+
+#Vthreshold_LIN   : 328
 #KRUM_CURR_LIN : 20
 modrun 788
 run 36086  562
@@ -3141,7 +3231,7 @@ run 36102
 #-------------------------------------------------------------------------------
 # Sun 14.4.2019
 
-chip 512 FTH150P RD53A 100x25 P2 = p-stop with bias dot 5E15 p/cm2 CERN PS
+chip 512 FTH150P RD53A 100x25 P2 = p-stop with bias dot 2.6E15 p/cm2 CERN PS
 
 fifty 0
 
@@ -3254,8 +3344,8 @@ run 36524  94.0 mask
 modrun 826
 run 36526  
 
-GeV 5.6  0.8 kHz							
-							
+GeV 5.6  0.8 kHz
+
 turn 30
 modrun 827
 run 36529
@@ -3320,11 +3410,42 @@ turn 2
 modrun 853
 run 36566
 
-# KRUM_CURR_LIN    : 16  Threshold 826 e-
+# KRUM_CURR_LIN: 16  Threshold 826 e-
 
 turn 22
 modrun 855
 run 36571  99.4  
+
+# KRUM_CURR_LIN: 29
+
+turn 30
+
+# bias scan 516i
+# 800 V see 36529
+
+Vbias -700, 225 uA
+modrun 857
+run 36573  500  99.35
+
+# Vbias -600, 190 uA
+modrun 858
+run 36574  516.2  98.89
+
+# Vbias -500, 158 uA
+modrun 859
+run 36575  500  98.11
+
+# Vbias -400, 131 uA
+modrun 860
+run 36576  500  96.27
+
+# Vbias -300, 105 uA
+modrun 861
+run 36577  500  91.75
+
+# Vbias -200,  78 uA
+modrun 862
+run 36578  500  82.18
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Thu 30.5.2019
@@ -3355,8 +3476,8 @@ run 36587
 # close main collimator to x +- 3 mm
 run 36588  ntri 5
 
-GeV 2.4
-run 36589  ntri 5.9  trix almost flat
+GeV 2.4  COPY FULL
+run 36589  ntri 5.9  trix almost flat  kxsc 0.424
 
 GeV 5.2
 run 36590  160.3  300 Hz
@@ -3376,7 +3497,7 @@ run 36594  507
 run 36595  494.5
 
 # Mimosa threshold 10
-run 36597
+run 36597  495
 
 #-------------------------------------------------------------------------------
 # Fri 31.5.2019
@@ -3458,10 +3579,10 @@ run 36621  26762k  73 GB
 # Sat 1.6.2016
 
 chip 516 = FTH150P RD53A 50x50 P3 = p-stop bias dot
-# was in set 2 at CERN PS irrad in 2018, with Sylgard							
-							
-geo geo_2019_05d.dat = 0  123  245  475  495  515							
-							
+# was in set 2 at CERN PS irrad in 2018, with Sylgard
+
+geo geo_2019_05d.dat = 0  123  245  475  495  515
+
 # separated VDDA and VDDD
 # VDDA = 1.510 V on PS, 1.19 V on irrad. card
 # VDDD = 1.430 V on PS, 1.27 V on irrad. card
@@ -3514,19 +3635,1170 @@ run 36632  500.6  COPY
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Sun 2.6.2019
 
-chip 529 = FDD150P RD53A 100x25 P2 p-stop bias dot straight fresh						
+chip 529 = FDD150P RD53A 100x25 P2 p-stop bias dot straight fresh
 
 fifty 0
 
-geo geo_2019_05e.dat = 0  123  245  328  481  634
+geo geo_2019_05e.dat = 0  123  245  328  481  634  for 100x25
 
 turn 0
 tilt 0
 
-GeV 5.2
+GeV 5.2  600 Hz
 
-modrun 891
-run 36633  
+# separated VDDA and VDDD
+# VDDA = 1.520 V on PS, 1.19 V on irrad. card
+# VDDD = 1.420 V on PS, 1.19 V on irrad. card
+# Iref =  3.95 uA
+
+# bia grid floating
+
+# Vthreshold_LIN: 350 ~ 817 e-
+# FC_BIAS_LIN      : 20
+# KRUM_CURR_LIN    : 29
+# LDAC_LIN         : 130
+# COMP_LIN         : 110
+# REF_KRUM_LIN     : 300
+
+modrun 892
+run 36636  500  99.96  bias dot deep diffused
+
+# KRUM_CURR_LIN: 20
+# Vthreshold_LIN : 350 ~ 758 e-
+
+modrun 893
+run 36637  500  99.97
+
+# open telescope
+# bias dot grounded
+
+modrun 894
+run 36638  501  
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Sun 2.6.2019
+# material budget imaging
+
+geo geo_2019_05f.dat = 0  153  305  326  479  632
+
+GeV 2  1.36 kHz
+
+# Mimosa thr 6
+
+# yellow collimator: no Pb insert, Koetz counters shifted away
+# trigger on 4th paddle scint downstream
+
+# rot90 R4S PCB after 3rd Mimosa
+
+run 36651  2168k  1.6 GB  948795836
+
+# rot90 PCB shifted
+run 36652  1131.6  
+
+# rot90 PCB lower edge
+run 36653  
+
+# thick blue Armaflex
+geo geo_2019_05g.dat = 0  153  305  342  494  647
+run 36654  
+
+# tele.cc: all data in memory: 500k in 8 GB
+# longer run on xps
+
+#-------------------------------------------------------------------------------
+# Tue 4.6.2019
+# all target wires exchanged
+
+# Thu:
+# both target wires on #1/#4 broke
+# use #2/#5 at -15/+15 mm
+
+#-------------------------------------------------------------------------------
+# Thu 6.6.2019
+GeV 4
+geo geo_2019_06a.dat = 0  153  305  330  482.5  635.5
+
+# main colli +-3 mm in x
+
+# yellow colli: no insert
+
+#thr 6 -1
+run 36656
+
+#  1: active 641840, max 7733,   hot 43
+#  2: active 646276, max 8404,   hot 45
+#  3: active 649125, max 215734, hot 40
+3  4: active 649651, max 2525,   hot 6
+#  5: active 654344, max 23340,  hot 54
+#  6: active 655811, max 215734, hot 58
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+geo geo_2019_06b.dat = 0  20  39  59  79  98
+
+# pos0_chip73_thresh6.txt
+# 147 ; :BIAS_DAC[0][10]
+# 152 ; :BIAS_DAC[0][11]
+# 188 ; :BIAS_DAC[0][12]
+# 113 ; :BIAS_DAC[0][13]
+
+run 36658  99%
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# pos0_chip73_thresh6.txt
+# 147 ; :BIAS_DAC[0][10]
+# 152 ; :BIAS_DAC[0][11]
+# 186 ; :BIAS_DAC[0][12] 
+# 111 ; :BIAS_DAC[0][13]
+
+run 36660
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# pos0_chip73_thresh6.txt
+# 147 ; :BIAS_DAC[0][10]
+# 152 ; :BIAS_DAC[0][11]
+# 192 ; :BIAS_DAC[0][12] acts at -x: worse
+# 117 ; :BIAS_DAC[0][13]
+
+run 36661 worse
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# pos0_chip73_thresh6.txt
+# 142 ; :BIAS_DAC[0][10]  hot 67
+# 157 ; :BIAS_DAC[0][11]  good
+# 190 ; :BIAS_DAC[0][12]
+# 115 ; :BIAS_DAC[0][13]
+
+run 36662 plane 1 good
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# pos3_chip78_thresh6.txt = plane 4
+# 137 ; :BIAS_DAC[3][10]
+# 133 ; :BIAS_DAC[3][11]
+# 213 ; :BIAS_DAC[3][12]
+# 109 ; :BIAS_DAC[3][13]
+
+run 36663  187.6
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Mimosa thr 5
+
+run 36664  251.7
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Mimosa thr 6: shower
+
+# 3x2 = 6 mm Cu in front
+
+GeV 4
+GeV 1
+
+run 36665  104k  vertices
+
+# 6 mm Pb in front
+
+run 36666  156k
+
+GeV 5.8  less pileup
+
+# 12 mm Pb in front  too much: Mimosa overflow?
+
+run 36667  141k  
+
+# 24 mm Pb in front  too much
+
+run 36668  106k
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Fri 7.6.2019
+# empty telescope Datura
+
+geo geo_2019_06b.dat = 0  20  39  59  79  98
+
+# thr 6 improved
+
+GeV 4
+
+run 36669  582  sixdtx 0.21 mrad  dridxc 4.0
+
+GeV 2  1.4 kHz
+
+run 36670  ntri 5.2  beam is left  dridxc 4.2
+
+# move stage from 940 to 932 in x
+
+run 36671
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# pos2_chip75_thresh6.txt
+# 173 ; :BIAS_DAC[2][10]
+# 125 ; :BIAS_DAC[2][11]  was 127
+# 189 ; :BIAS_DAC[2][12]
+# 189 ; :BIAS_DAC[2][13]
+
+# pos5_chip79_thresh6.txt
+#  84 ; :BIAS_DAC[5][10]
+# 230 ; :BIAS_DAC[5][11]
+#  97 ; :BIAS_DAC[5][12] was 99
+# 142 ; :BIAS_DAC[5][13]
+
+run 36672  sixdtx 0.29 mrad
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+geo geo_2019_06c.dat = 0  152  305  325  477  630
+
+GeV 2
+
+run 36673  sixdtx 0.26 mrad
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 0.125 mm protective Kapton
+# same geo
+
+GeV 2
+run 36674  sixdtx 0.29
+
+GeV 1.2 (45 A)
+run 36675  sixdtx 0.44  beam is left
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 1 mm Al horizontal lower half: Fotos
+
+# X0 Kapton 390 mm
+# X0 CFK 400 mm
+# X0 C 193.2 mm
+# X0 G10 168 mm
+# X0 Al 88.9 mm
+# X0 Si 93.65 mm
+# X0 Fe 17.57 mm
+# X0 Cu 14.35 mm
+
+X0 0.01
+GeV 1.2 (45 A)
+
+run 36676  need alignment run
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 0.5 mm Al full: Fotos
+
+GeV 1.2 (45 A)
+run 36677
+
+GeV 4.8 (180A) alignment run  580 Hz
+run 36678  250.4
+
+# triCut 0.048 mm  tridxc 7 um
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 4 x 0.6 mm CFK
+
+GeV 1.2
+run 36679  sixdtx 0.91
+
+GeV 4.8
+run 36680
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 0.6 mm CFK lower half
+
+GeV 4.8
+run 36681
+
+GeV 1.2
+run 36682  sixdtvsy: 0.66 -> 0.90 mrad
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# PSI46 PCB: hole
+
+GeV 4.8
+run 36683
+
+GeV 1.2
+run 36684  sixdtx 
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# PSI46 PCB: fan-out
+
+GeV 4.8
+run 36685  161.2
+
+GeV 1.2
+run 36686  4410.2  
+# tele -l 4410200 36686  needs 26 GB
+
+GeV 2.4  better position resolution?
+run 36687  1172.9
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# R4S chip 160 with cutout
+
+GeV 4.8
+run 36688  159.7
+
+GeV 1.2
+run 36689  4122.6
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 3 mm Al full coverage
+
+X0 0.03
+
+GeV 4.8
+run 36690
+
+GeV 1.2
+run 36691  sixdtx 1.78+-0.003
+
+GeV 2.4
+run 36692  sixdtx 0.96+-0.001
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Sat 8.6.2019
+# empty telescope
+# same geo_2019_06c.dat = 0  152  305  325  477  630
+# 0.125 mm protective Kapton
+
+X0 0.003
+
+GeV 4.8
+run 36693  112.6  sixdtx 0.135  4kx 0.122  4ky 0.120
+
+GeV 2.4  1.3 kHz
+run 36694  505.6  sixdtx 0.254  dty 0.252  4kx 0.2230  4ky 0.2211
+
+GeV 1.2  1.3 kHz
+run 36695  501.0  sixdtx 0.456  4kx 0.4127  4ky 0.4098
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Alu scan
+
+# 0.5 mm Alu
+
+X0 0.005
+
+geo geo_2019_06d.dat = 0  152  305  338  490  643.5
+
+GeV 4.8
+run 36696  472.8  4kx 0.2198  4ky 0.2202
+
+GeV 2.4
+run 36697  550.7  sixdtx 0.430 fid  4kx 0.4216  4ky 0.4222
+
+GeV 1.2
+run 36698  501.6  sixdtx 0.817 fid  4kx 0.7931  4ky 0.7915
+
+
+# 1.0 mm Alu inserted without opening the telescope
+
+X0 0.011
+
+GeV 2.4
+run 36699  501.0  sixdtx 0.577  4kx 0.5715  4ky 0.5673
+
+GeV 1.2
+run 36700  532.1  sixdtx 1.062  4kx 1.073  4ky 1.064
+
+
+# 1.5 mm Alu
+
+X0 0.017
+
+GeV 2.4
+run 36701  578.7  sixdtx 0.6955  4kx 0.6943  4ky 0.6848
+
+GeV 1.2
+run 36702  531.5  sixdtx 1.282  4kx 1.306  4ky 1.293
+
+
+# 2.0 mm Alu
+
+X0 0.022
+
+GeV 2.4
+run 36703  552.7  sixdtx 0.798  4kx 0.7999  4ky 0.7924
+
+GeV 1.2
+run 36704  524.7  sixdtx 1.475  4kx 1.509  4ky 1.500
+
+
+# 2.5 mm Alu
+
+X0 0.028
+
+GeV 2.4
+run 36705  566.1  sixdtx 0.892  4kx 0.8962  4ky 0.8899
+
+GeV 1.2
+run 36706  512.3  sixdtx 1.646  4kx 1.683  4ky 1.678
+
+
+# 3.0 mm Alu
+
+X0 0.034
+
+GeV 2.4
+run 36707  671.3  sixdtx 0.968  4kx 0.9801  4ky 0.9742
+
+GeV 1.2
+run 36708  536.1  sixdtx 1.802  4kx 1.847  4ky 1.842
+
+
+# 4.0 mm Alu
+
+X0 0.045
+
+GeV 2.4
+run 36709  579.8  sixdtx 1.127  4kx 1.134  4ky 1.131
+
+GeV 1.2
+run 36710  598.1  sixdtx 2.080  4kx 2.140  4ky 2.135
+
+
+# 5.0 mm Alu
+
+X0 0.056
+
+GeV 2.4
+run 36711  610.0  sixdtx 1.263  4kx 1.271  4ky 1.271
+
+GeV 1.2
+run 36712  538.0  sixdtx 2.337  4kx 2.405  4ky 2.394
+
+
+# 6.0 mm Alu = 12 Plaettchen
+
+X0 0.07
+
+GeV 2.4
+run 36713  501.6  sixdtx 1.392  4kx 1.403  4ky 1.405
+
+GeV 1.2
+run 36714  672.4  sixdtx 2.571  4kx 2.659  4ky 2.650
+
+
+# 7.0 mm Alu = 14 Plaettchen
+
+X0 0.08
+
+GeV 2.4  ndri 5.0
+run 36715  540.1  sixdtx 1.514  dty 1.486  4kx 1.528  4ky 1.528
+trend in x: momentum
+  
+GeV 1.2
+run 36716  513.9  sixdtx 2.801  4kx 2.898  4ky 2.882
+
+
+# empty telescope (not changed) sixdx -8 um 
+
+X0 0.003
+
+GeV 4.8
+run 36717  250.4  sixdtx 0.136  4kx 0.1222  4ky 0.1214
+
+#-------------------------------------------------------------------------------
+# Sun 9.6.2019
+# scattering in Fe
+
+geo geo_2019_06e.dat = 0  147  295  322  473  627
+
+# 0.33 mm Fe
+
+X0 0.02
+
+GeV 4.8
+
+# trigger: paddle scint in back  556 Hz
+run 36718  149.2
+
+# trigger: paddle scint in front  1.3 kHz
+run 36719  409.2  dtx 0.365  dty 0.364  4kx 0.3665  4ky 0.3654
+
+GeV 2.4  2.3 kHz
+run 36720 1068.0  dtx 0.7125 dty 0.708  4kx 0.7103  4ky 0.7039
+
+GeV 1.2  2.8 kHz
+run 36721  503.4                        4kx 1.343  4ky 1.339
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 2 x 0.33 mm Fe
+
+X0 0.04
+
+GeV 4.8
+run 36722  502.0  dtx 0.5146 dty 0.5144  4kx 0.5195  4ky 0.5187
+
+GeV 2.4
+run 36723  579.6  dtx 1.006  dty 1.002  4kx 1.012  4ky 1.006
+
+GeV 1.2
+run 36724  582.7                        4kx 1.901  4ky 1.907
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 3 x 0.33 mm Fe
+
+X0 0.06
+
+GeV 4.8
+run 36725  495.1  dtx 0.642  dty 0.638  4kx 0.6490  4ky 0.6425
+
+GeV 2.4
+run 36726  513.9  dtx 1.253  dty 1.240  4kx 1.258  4ky 1.264
+
+GeV 1.2
+run 36727  510.3                        4kx 2.378  4ky 2.385
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 4 x 0.33 mm Fe
+
+X0 0.08
+
+GeV 4.8
+run 36728  493.6  dtx 0.753  dty 0.747  4kx 0.7631  4ky 0.7553
+
+GeV 2.4
+run 36729  538.4  dtx 1.475  dty 1.450  4kx 1.476  4ky 1.477
+
+GeV 1.2
+run 36730  506.3                        4kx 2.805  4ky 2.794
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 5 x 0.33 mm Fe
+
+X0 0.10
+
+GeV 4.8
+run 36731  495.0  dtx 0.851  dty 0.843  4kx 0.8562  4ky 0.8549
+
+GeV 2.4
+run 36732  506.9  dtx 1.666  dty 1.629  4kx 1.666  4ky 1.662
+
+GeV 1.2
+run 36733  504.9                        4kx 3.172  4ky 3.156
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 6 x 0.33 mm Fe
+
+X0 0.12
+
+GeV 4.8
+run 36734  494.2  dtx 0.946  dty 0.935  4kx 0.9541  4ky 0.9542
+
+GeV 2.4
+run 36735  506.6  dtx 1.844  dty 1.801  4kx 1.843  4ky 1.848
+
+GeV 1.2
+run 36736  507.8  4kx 3.528             4ky 3.503
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 9 x 0.33 mm Fe
+
+X0 0.17
+
+GeV 4.8
+run 36737  496.9  dtx 1.194  dty 1.181  4kx 1.1995  4ky 1.2098
+
+GeV 2.4
+run 36738  507.9  dtx 2.346  dty 2.253  4kx 2.347  4ky 2.334
+
+GeV 1.2
+run 36739  508.7  6kx 4.462  6ky 4.156  4kx 4.446  4ky 4.453
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 0.6 mm CFK full coverage
+# without 0.125 mm protective Kapton
+
+X0 0.003
+
+GeV 4.8
+run 36740  494.8
+
+GeV 0.8 (30 A)  2.6 kHz
+run 36741  10086.5  weak checkerboard pattern
+
+# read 10086520 events in 1602.34 s
+# parallel clustering in 88.6273 s 31+8 GB
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 1 mm white CERN card board with square cutout
+# without 0.125 mm protective Kapton
+
+X0 0.003
+
+GeV 4.8
+run 36742  189.6
+
+GeV 0.8 (30 A)  2.6 kHz
+run 36743  1004.6  sixdtvsxy clear hole 
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# empty telescope
+# without 0.125 mm protective Kapton
+# same geo_2019_06e.dat = 0  147  295  322  473  627
+
+X0 0.003
+
+GeV 4.8
+run 36744  197.7  sixdtx 0.119  4kx 0.1080  3kxc 0.089  kxsc 0.086  fourzi8 two peaks
+
+GeV 0.8 (30 A)  2.6 kHz
+run 36745  642.4  sixdtx 0.617  4kx 0.5025  3kxc        kxsc 0.356
+
+GeV 1.2 (45 A)  
+run 36746  635.3  sixdtx 0.434  4kx 0.3604  3kxc        kxsc 0.254
+
+GeV 2.4 (90 A)  
+run 36747  514.2  sixdtx 0.229  4kx 0.1949  3kxc 0.148  kxsc 0.141
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 12 x 0.33 mm Fe
+
+X0 0.23
+
+GeV 4.8
+run 36748  494.7  dtx 1.413  dty 1.391  4kx 1.417  4ky 1.428
+
+GeV 2.4
+run 36749  507.7  dtx 2.783  dty 2.651  4kx 2.784  4ky 2.772
+
+GeV 1.2
+run 36750  505.7  6kx 5.255  6ky 4.795  4kx 5.289  4ky 5.428
+
+# reading 500k takes 3.5 min on cmspitzl
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 15 x 0.33 mm Fe
+
+X0 0.28
+
+GeV 4.8
+run 36751  493.4  dtx 1.607  dty 1.565  4kx 1.617  4ky 1.627
+
+GeV 2.4
+run 36752  507.6  dtx 3.183  dty 2.986  4kx 3.207  4ky 3.211
+
+GeV 1.2
+run 36753  507.5  dtx 5.890  dty 5.253  4kx 6.103
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 18 x 0.33 mm Fe
+
+X0 0.34
+
+GeV 4.8
+run 36754  494.9  dtx 1.712  dty 1.669  4kx 1.722  4ky 1.724
+
+GeV 2.4
+run 36755  505.1  dtx 3.428  dty 3.209  4kx 3.451  4ky 3.409
+
+GeV 1.2
+run 36756  508,6  dtx 6.416  dty 5.639  4kx 6.652
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 21 x 0.33 mm Fe
+
+X0 0.39
+
+GeV 4.8
+run 36757  494.6  dtx 1.772  dty 1.728  dridxc 8  4kx 1.780  4ky 1.778
+
+GeV 2.4
+run 36758  509.4  dtx 3.518  dty 3.336  dridyc 15  4kx 3.574  4ky 3.517
+
+GeV 1.2
+run 36759  508.6  dtx 6.642  dty 5.934  dridyc 26  4kx 6.941
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Mon 10.6.2019
+
+# same geo_2019_06e.dat = 0  147  295  322  473  627
+
+# 0.6 mm CFK full coverage
+
+X0 0.004
+
+GeV 4.8
+run 36760  498.7  sixdtx 0.161  dty 0.160
+
+GeV 1.2
+run 36761  540.3  sixdtx 0.520  dty 0.590  4kx 0.5414  4ky 0.5410
+
+GeV 0.8
+run 36762  519.7  6kx 0.854  6ky 0.85133  4kx 0.7658  4ky 0.7587
+
+
+# 2 x 0.6 mm CFK
+
+X0 0.005
+
+GeV 4.8
+run 36763  495.1  sixdtx 0.186  dty 0.185
+
+GeV 1.2
+run 36764  546.2  sixdtx 0.707  dty 0.703  4kx 0.6724  4ky 0.6679
+
+GeV 0.8
+run 36765  513.3  sixdtx 1.004  dty 0.997  4kx 0.9512  4ky 0.9433
+
+
+# 3 x 0.6 mm CFK
+
+X0 0.006
+
+GeV 4.8
+run 36766  643.7  sixdtx 0.214  dty 0.2136
+
+GeV 1.2
+run 36767  507.1  sixdtx 0.8166 dty 0.809  4kx 0.7909  4ky 0.7803
+
+GeV 0.8
+run 36768  511.8  sixdtx 1.159  dty 1.149  4kx 1.117  4ky 1.107
+
+
+# 4 x 0.6 mm CFK
+
+X0 0.007
+
+GeV 4.8
+run 36769  578.8  sixdtx 0.240  dty 0.240
+
+GeV 1.2
+run 36770  510.9  sixdtx 0.916  dty 0.909  4kx 0.8966  4ky 0.8885
+
+GeV 0.8
+run 36771  529.1  sixdtx 1.303  dty 1.286  4kx 1.268  4ky 1.258
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# black Armaflex: 10 mm, with hole
+
+X0 0.004
+
+GeV 4.8
+run 36772  306.0
+
+GeV 0.8
+run 36773  998.2  mostly the hole
+
+
+# black Armaflex: 10 mm, full coverage
+
+GeV 4.8
+run 36774  493.2
+
+GeV 0.8
+run 36775  506.2
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Kapton: 125, 250, 375, 500 um in 5 mm steps
+
+X0 0.004
+
+GeV 4.8
+run 36776  493.3
+
+GeV 0.8
+run 36777 1001.9  4kx 0.748  4ky 0.743
+
+#-------------------------------------------------------------------------------
+# shower: 6 mm Cu in the middle
+
+X0 0.42
+
+geo geo_2019_06f.dat = 0  20  39  65  85  105
+
+GeV 4.8
+
+run 36778  493.5  vertices
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# shower: 3 mm Pb in the middle
+
+X0 0.53
+
+GeV 4.8
+
+run 36779  500.1  vertices  dridxc 5
+
+GeV 1.2  less boost
+
+run 36780  496.3  kxsc 0.494 dominated by hit resolution
+
+GeV 2.4  opening angles
+
+run 36781  494.5  vertices
+
+X0 0.003
+
+#-------------------------------------------------------------------------------
+# Sun 30.6.2019
+# empty telescope: air
+
+# main collimator +-3 mm horizontal, +-6 mm vertical
+
+# yellow collimator: no Pb insert, Koetz counter moved out
+
+geo geo_2019_06g.dat = 0  76  152  1115  1191  1267
+
+X0 0.003
+
+GeV 4.8  1.1 kHz
+run 36941  2047.8  4kx 
+
+GeV 3.6  
+run 36942  1012.4
+
+GeV 2.4  2.4 kHz
+run 36943  1043.0
+
+GeV 1.8  
+run 36944  1199.9
+
+GeV 1.2  2.8 kHz
+run 36945  1334.6
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 75 um protective Kapton on 4th plane
+
+geo geo_2019_06h.dat = 0  76  152  228  303  379
+
+GeV 4.8  1.1 kHz  lunch  tracks are straight after align: <tritx> 0 mrad
+run 36948  4691.2  beam is at +x  3kxc 0.122  4kx 0.1294
+
+GeV 3.6  1.7 kHz
+run 36949  1000.3  beam is at +x  4kx 0.1518
+
+GeV 2.4  2.3 kHz
+run 36950  1004.1  beam is at +x  drikxc 0.156  4kx 0.2015
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# move stage 10 mm in x: 939  tracks are not straight after alignment: <tritx> +0.8 mrad
+
+GeV 4.8
+run 36951   371.9  more flat in x
+
+# move stage another 10 mm in x: 949  tracks are not straight after alignment: <tritx> +1.4 mrad
+
+GeV 4.8  1.2 kHz
+run 36952  1034.9  same slope in x
+
+# close main collimator to +-1.5 mm
+
+GeV 4.8  0.95 kHz
+run 36954   418.9
+
+# move stage back 20 mm in x: 929
+
+GeV 4.8  0.74 kHz
+run 36955   408.9
+
+# vary main collimator:
+# West 1.5  East 1.5  0.74 kHz
+# West 1.5  East 0.0  0 kHz
+# West 0.0  East 3.0  0.90 kz
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# back to default:
+# West30.0  East 3.0  1.20 kz
+
+GeV 1.8  2.5 kHz
+run 36958   997.2  4kx 0.255
+
+GeV 1.2  2.7 kHz
+run 36959  1001.2  4kx 0.355
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# add 50 um Alu on 4th plane
+# same geo_06h
+
+GeV 4.8
+run 36961  2071.8  4kx 0.138
+
+GeV 3.6
+run 36962  1080.7  4kx 0.165
+
+GeV 2.4
+run 36963   997.8  4kx 0.222
+
+GeV 1.8
+run 36964  1006.1  4kx 0.283
+
+GeV 1.2
+run 36965  1024.1  4kx 0.399
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 100 um Alu on 4th plane
+# same geo_06h
+
+GeV 4.8
+run 36966  1001.3  4kx 0.145
+
+GeV 3.6
+run 36967  1001.9  4kx 0.177
+
+GeV 2.4
+run 36968   999.7  4kx 0.242
+
+GeV 1.8
+run 36969  1003.4  4kx 0.308
+
+GeV 1.2
+run 36970  1000.7  4kx 0.442
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 200 um Alu on 4th plane
+# same geo_06h
+
+GeV 4.8
+run 36971  1009.8  4kx 0.161
+
+GeV 3.6
+run 36972  1000.7  4kx 0.198
+
+GeV 2.4
+run 36973  1002.1  4kx 0.276
+
+GeV 1.8
+run 36974  1001.4  4kx 0.356
+
+GeV 1.2
+run 36975   999.8  
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Aug 2019: Duranta TB22
+
+X0 0.003
+
+geo geo_2019_08a.dat = 0 20 39 59 79 99
+GeV 4.8
+# Mimosa thr 5
+run  9  390.5k
+
+# Mimosa thr 4
+run 10  129.3k
+
+run 11
+
+GeV 5.6
+run 12
+
+# Mimosa thr 3
+run 14
+
+# lower entire telescope by 4 mm
+run 15
+
+# raise 1st paddle scint
+run 16
+
+# swap paddle scint
+run 18
+
+# remove Pb insert collimator
+run 20
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Tue 6.8.2019
+# Duranta TB 22
+
+# Mimosa thr 3
+
+# decrease threshold of column 10,11 in plane 5 (160->159),(155->154) [general threshold 3]
+
+run 22
+
+# decrease threshold of column 10,11 in plane 5 (159->158),(154->153)[gen threshold 3]
+run 23    Threshold 3 has highest efficiency and resolution
+
+# decrease threshold of column 10,11 in plane 6 (159->157),(138->137) [gen threshold 3]
+run 24    column 13 of plane 6 was too noisy
+
+# increase threshold of column 13 in plane 6(124->125) [gen threshold 3]
+run 25  up to 1595 hot pix  tridxc 4.20
+
+# threshold 4
+# Pos5 = plane6 (163->161,143->141), pos4=plane5(159->157, 165->162, column13: 138->137) 420 Hz
+run 26  538 K   Plane 2 had noise in column 13
+
+# Pos1 = plane2 (column13: 129->127) 490 Hz
+run 27  267.4 K  tridxc 4.52
+
+# threshold 5
+#Pos1 = plane2 ( 124->123, 183-> 182, 134-> 131)
+#Pos4 = plane5 ( 164->162,169->167, 143->142)
+#Pos5 = plane6 (167->165, 147->145, 133->132)
+
+run 28  534.1k  tridxc 4.75
+
+# - -  - - - - -  - - - - - - - - - -  - - - - - - - - - - 
+# empty telescope Duranta, 75 mm spacing
+
+geo geo_2019_08b.dat 0 75 150 224 299 374
+
+# Threshold 3 with new values 
+
+GeV 5.6 (420 Hz)
+run 31  311.9k
+
+GeV 4.8  ( 899Hz)
+run 32  259k  
+
+GeV 3.6 ( 1516 Hz)
+run 33  268.5k  
+
+GeV 2.4 (2131 Hz)
+run 34  273.8k  
+
+GeV 1.8 (2387 Hz)
+run 35  268.5k  
+
+GeV 1.2 (2754 Hz)
+run 36   267.2k  
+
+GeV 6.0 (170 Hz)
+run 37  678.5k
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Wed 7.8.2019
+
+# 1 mm Al target at 3rd plane
+# same geo_2019_08_b 0 75 150 224 299 374
+
+X0 0.01
+
+# threshold 3
+
+GeV 4.8
+run 38  282  1147 Hz  2nd plane eff 97% in col 0 - 287
+
+GeV 3.6
+run 39  453  1780 Hz
+
+GeV 2.4
+run 40  256  2220 Hz
+
+GeV 1.8
+run 41  319  2580 Hz
+
+GeV 1.2
+run 42  350  2735
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+25 mm Armaflex at 3rd plane
+
+GeV 4.8
+run 43  253  1108
+
+GeV 3.6
+run 44  281  1750
+
+GeV 2.4
+run 45  341  2319
+
+GeV 1.8
+run 46  268  2541
+
+GeV 1.2
+run 47  272  2712
+
+GeV 4.8
+
+# thr3 pos2 bias_DAC 13:  125->124
+run 48  257  1186
+
+# thr3 pos2 bias_DAC 13:  124->123
+run 49  259  1141  eff 98.5% on 2nd plane
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 6 mm Cu after 3rd plane
+
+# Pb absorber with 7x7 mm opening in yellow collimator
+# lower telescope platform by 3 mm: centered on collimator
+
+X0 0.42
+
+GeV 4.8
+
+run 52  253  880
+
+GeV 3.6
+run  53  263  1416
+
+GeV 2.4
+run 54  257  1931
+
+GeV 1.8
+run 55  259  2071
+
+GeV 1.2
+run 56  263  2048
+
+GeV 6.0
+run 57  422  45
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Fri 9.8.2019
+
+geo geo_2019_08c.dat  0  75  150  239  314  385
+
+# 6 mm plastic in front of 4th plane
+
+X0 0.02
+
+GeV 4.8
+run 59  254  1.25 kHz
+
+GeV 6.0
+run 60  317  0.26 kHz
+
+GeV 3.6
+run 61  372  1.81 kHz
+
+GeV 2.4
+run 62  262  2.33 kHz
+
+GeV 1.8
+run 63  294  2.60 kHz
+
+GeV 1.2
+run 64  504  2.77kHz
+
+# Perforated metal (Al?) sheet in front of 4th Plane
+
+GeV 4.8
+run 65  258  1.22 kHz
+
+GeV 3.6
+run 66  258  1.78 kHz
+
+GeV 2.4
+run 67  265  2.44 kHz
+
+GeV 1.8
+run 68  350  2.52 kHz
+
+GeV 1.2
+run 69  581  2.84 kHz
+
+GeV 6.0
+run 70  678  0.24kHz
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# RD53A on Bonn card
+
+#geo geo_2019_08d.dat  0  75  150  250  325  399
+
+GeV 4.8
+run 71
+
+GeV 2.4
+run 72
+
+#-------------------------------------------------------------------------------
+# Wed 4.9.2019
+# TB21 Datura
+# Diode with DPO 7254C
+
+run 36987
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # further topics
@@ -3534,3 +4806,671 @@ run 36633
 # 511i FDB150P RD53A 50x50 P3 p-stop bias dot with 6.6E15 CERN PS p/cm2
 # fine turn scan with opened Armaflex for resolution
 # KRUM_CURR_LIN : 16 or lower
+
+#-------------------------------------------------------------------------------
+# Mon 28.10.2019
+
+# CNM 3D 150 um thickness with RD53A
+
+# KRUM_CURR_LIN    : 29
+# LDAC_LIN         : 130
+# COMP_LIN         : 110
+# REF_KRUM_LIN     : 300
+# Vthreshold_LIN   : 335
+
+chip 719 50x50
+fifty 1
+GeV 4.8
+geo geo_2019_10a.dat = 0 122 244 398 550 707 for 50x50
+tilt 0
+
+turn 0
+modrun 987
+run 37473
+
+turn 17 offline
+modrun 992
+run 37478  300k
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Tue 29.10.2019
+# continue 3D 719
+
+# raise telescope 8 mm into beam
+# move DUT
+
+turn 18 offline
+modrun 1010
+run 37496  1.76M  99.97  dutdxc 8.9
+
+# Vthreshold_LIN   : 331
+
+turn 22 offline
+modrun 1014
+run 37500  1M  99.98  dutdxc 9.5
+
+turn 20 offline
+modrun 1016
+run 37502  882k  99.98  dutdxc 8.5
+
+turn 19 offline
+modrun 1017
+run 37503  716k  99.98  dutdxc 8.1  sixdxc 13.2 => sig 4.7
+
+turn 18 offline
+modrun 1018
+run 37504  1M  99.98  dutdxc 7.8  sixdxc 12.6 => sig 4.6
+
+turn  0 offline
+modrun 1020
+run 37506  1M
+
+# module trigger delay from 4 to 0 ns
+
+modrun 1027 MODlk 0.52
+run 37513  2.77M
+
+# module trigger delay 8 ns
+
+# shallow angle: 83 deg
+turn 83
+modrun 1031
+run 37517
+
+#-------------------------------------------------------------------------------
+# Wed 30.10.2019
+
+chip 331 100x25
+fifty 0
+GeV 4.8
+geo geo_2019_10b.dat = 0 122 244 398 550 707 for 100x25
+tilt 0
+
+turn 0
+modrun 1067
+run 37550  851k  97.4
+
+turn 35
+modrun 1071
+run 37554  2.5M  
+
+#-------------------------------------------------------------------------------
+# Thu 31.10.2019
+
+chip 711 50x50
+fifty 1
+GeV 4.8
+geo geo_2019_10a.dat = 0 122 244 398 550 707 for 50x50
+tilt 0
+
+turn 0
+modrun 1073
+run 37556
+
+#-------------------------------------------------------------------------------
+# Mon 4.11.2019: FBK 3D
+
+chip 793350 50x50
+fifty 1
+GeV 5.2
+geo geo_2019_11a.dat = 0  122  244  329  481  635
+tilt 0
+
+turn 2
+
+modrun 1136
+run 37621
+
+turn 4
+modrun 1137
+run 37622
+
+modrun 1138
+run 37623
+
+turn 1
+modrun 1139
+run 37624
+
+# move telescope 5 mm x
+# mod delay 20 ns
+modrun 1140
+run 37625
+
+# mod delay 12 ns
+#Vthreshold_LIN   : 345
+modrun 1146
+run 37631  1260k
+
+turn 21
+geo geo_2019_11b.dat = 0  122  244  348  510  663
+
+modrun 1148
+run 37633
+
+# power cycle RD53A
+
+modrun 1150
+run 37635
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Tue 5.11.2019: FBK 3D edge on
+
+chip 793350 50x50
+fifty 1
+GeV 5.2
+geo geo_2019_11d.dat = 0  122  244  381  533  686
+
+tilt 0
+
+turn 90
+
+modrun 1180
+run 37668
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# FBK w79_x2y1_25 (100x25 um)
+# rot90
+
+rot90 1
+chip 792125
+fifty 0
+
+geo geo_2019_11e.dat = 0  122  244  431  583  736 for 100x25
+tilt 0
+turn 0
+
+modrun 1185
+run 37673  1014
+
+turn 10
+modrun 1193
+run 37681  1015
+
+turn 11
+modrun 1194
+run 37682  1015
+
+#-------------------------------------------------------------------------------
+# Thu 7.11.2019: RD53A HPK fresh planar
+
+chip 563 100x25
+
+# PA_IN_BIAS_LIN   : 350
+# FC_BIAS_LIN      : 20
+# KRUM_CURR_LIN    : 29
+# LDAC_LIN         : 130
+# COMP_LIN         : 110
+# REF_KRUM_LIN     : 300
+# Vthreshold_LIN   : 355  (686 e, spread 65)
+
+fifty 0
+GeV 5.2
+geo geo_2019_11k.dat = 0  122  244  328  480  633
+
+# extrapol 20 mm with 120 mm spacing: 3.8 um at 5.2 GeV
+# sidxc: 7.5 um => 3.75 for x8 ( dri + tri average )
+
+rot90 1
+
+tilt 0
+
+turn 15.63
+modrun 1244
+run 37747  504  linq 15.4 ToT for 11.7 ke => 0.76 ke/ToT
+
+turn 14.80
+modrun 1245
+run 37748  528
+
+turn 13.81
+modrun 1246
+run 37749  620
+
+turn 12.82
+modrun 1247
+run 37750  572  RD53 end 560k
+
+turn 11.80
+modrun 1248
+run 37751  505
+
+turn 10.76
+modrun 1249
+run 37752  518
+
+turn  9.72 (online -8)
+modrun 1250
+run 37753  501
+# thr 1, cx 0.00  dxc 4.46
+# thr 1, cx 0.04  dxc 4.54
+# thr 2, cx 0.04  dxc 4.40
+
+turn  8.75
+modrun 1251
+run 37754  500
+
+turn  7.73
+modrun 1252
+run 37755  511
+
+turn  6.74
+modrun 1253
+run 37756  502
+
+turn  5.75
+modrun 1254
+run 37757  501
+
+turn  3.73
+modrun 1255
+run 37758  533
+
+turn  1.7
+modrun 1256
+run 37759  507
+
+turn  0.7
+modrun 1257
+run 37760  502
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+turn 9.6 (online -8)
+# KRUM_CURR_LIN : 20
+modrun 1261
+run 37764  605
+
+# thr 1, cx 0.04  dxc 4.55
+
+# thr 2, cx 0.00  dxc 4.51
+# thr 2, cx 0.04  dxc 4.46 *
+# thr 2, cx 0.08  dxc 4.53
+# thr 2, cx 0.12  dxc 4.55
+
+# thr 3, cx 0.04  dxc 4.48
+# thr 4, cx 0.04  dxc 4.56
+# thr 5, cx 0.04  dxc 4.72
+# thr 6, cx 0.04  dxc 5.05
+# thr 7, cx 0.04  dxc 5.65
+# thr 8, cx 0.04  dxc 6.62
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# KRUM_CURR_LIN : 12
+modrun 1262
+run 37765  940k  dxc 4.9
+
+turn 10.6 (online -9)
+modrun 1263
+run 37766  255k
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# KRUM_CURR_LIN : 20
+
+turn 10.6 (online -9)
+modrun 1264
+run 37767  835  dxcq 4.67
+
+turn 9.6 (online -8)  over night
+modrun 1265
+run 37768  41M  eff drop 3420s (2.7 M)
+# scope53m -l 2700200 37768
+# stable dx, dy
+# thr2, cx 0.04  dxc 4.49
+# sixdxc 7.5  dxcq 4.41 => 2.4 um
+# GBL six: 3.4 um at 5.2 GeV at 120 mm spacing
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Fri 8.11.2019
+# KRUM_CURR_LIN : 20 turn scan
+
+turn 13.7
+modrun 1266
+run 37769  500  dxcq 5.21  linq 21.2 ToT = 11.6 ke => 0.55 ke/ToT
+
+turn 12.8
+modrun 1267
+run 37770  505  dxcq 5.10
+
+turn 11.8
+modrun 1268
+run 37771  507  dxcq 4.94
+
+turn 8.7 (online -7)
+modrun 1269
+run 37772  500  dxcq 4.29
+
+turn 7.7
+modrun 1270
+run 37773  519  dxcq 4.29
+
+turn 6.7
+modrun 1271
+run 37774  504  dxcq 4.40
+
+turn 5.7
+modrun 1272
+run 37775  504  dxcq 4.71
+
+turn 3.7
+modrun 1273
+run 37776  500  dxcq 5.52
+
+turn 1.6
+modrun 1274
+run 37777  504  dxcq 6.48
+
+turn 0
+modrun 1275
+run 37778  501  dxcq 6.83
+
+# KRUM_CURR_LIN : 29
+
+# Vthreshold_LIN   : 360 ~ 883 e +- 71
+modrun 1276
+run 37779  501
+
+# Vthreshold_LIN   : 365 ~ 1120 e +- 69
+modrun 1277
+run 37780  504
+
+--------------------------------------------------------------------------------
+# Fri 8.11.2019
+
+chip 564 RD53A SCM 50x50 default fresh
+fifty 1
+rot90 1
+
+geo geo_2019_11l.dat = 0  122  244  344  496  649
+
+# PA_IN_BIAS_LIN   : 350
+# FC_BIAS_LIN      : 20
+# KRUM_CURR_LIN    : 29
+# LDAC_LIN         : 130
+# COMP_LIN         : 110
+# REF_KRUM_LIN     : 300
+# Vthreshold_LIN   : 345  581 e +- 77
+
+# Vbias -120 V, 3.5 uA -> it's sunny
+
+turn 30
+modrun 1278
+run 37782  500
+
+KRUM_CURR_LIN : 20
+
+modrun 1279
+run 37783  512
+
+turn 28
+modrun 1280
+run 37784  504
+
+turn 26
+modrun 1281
+run 37785  502
+
+turn 24
+modrun 1282
+run 37786  501  99.96
+
+turn 22
+modrun 1283
+run 37787  500
+
+turn 21
+modrun 1284
+run 37788  523
+
+turn 20
+modrun 1285
+run 37789  512
+
+turn 19
+modrun 1286
+run 37790  610
+
+turn 18
+modrun 1287
+run 37791  500  99.97  dxc 6.7
+
+turn 17
+modrun 1288
+run 37792  500  99.97  dxc 6.44  six 8.3 => 4.9
+
+turn 16 (17.4)
+modrun 1289
+run 37793  500  99.97  dxc 5.95
+
+turn 15
+modrun 1290
+run 37794  530  no RD53 after 103k  dxc 5.82
+
+turn 13
+modrun 1293
+run 37797  500  99.975  dxc 6.0
+
+turn 11
+modrun 1294
+run 37798  502
+
+turn 9
+modrun 1295
+run 37799  500
+
+turn 7
+modrun 1298
+run 37802
+
+turn 5
+modrun 1299
+run 37803  356
+
+turn 15
+modrun 1301
+run 37805  501  99.98  dxc 5.79
+
+turn 14
+modrun 1302
+run 37806  501  RD53 stops 286k  dxc 5.84
+
+turn -1
+modrun 1306
+run 37810  500
+
+turn 3
+modrun 1309
+run 37813  501
+
+turn 1
+modrun 1310
+run 37814  501
+
+turn -3
+modrun 1312
+run 37816  500
+
+turn 15
+modrun 1314
+run 37818  39M over night
+
+#-------------------------------------------------------------------------------
+# Sat 9.11.2019
+# TB21 Datura
+# Diode with R&S and Mod
+
+geo geo_2019_11m.dat =
+
+# new readout mode
+dioderun 15
+modrun 0
+run 37849
+
+# old readout mode
+dioderun 16
+run 37850
+
+dioderun 18
+modrun 1330
+run 37852  30k
+
+# narrow scint overlap
+dioderun 20
+modrun 1335
+run 37857  40
+
+# insert Pb collimator 12x24 mm
+
+dioderun 22
+modrun 1338
+run 37860  40k
+
+# Mod test: h trigg
+modrun 1346
+run 37867
+
+# h+v coinc
+modrun 1347  38% Mod links
+run 37869
+
+#-------------------------------------------------------------------------------
+# Sun 10.11.2019 continue Diode
+
+# RefMod 4186
+
+# main collimator: East +4.0, West +2.0
+
+GeV 5.2 (18 Hz)
+
+modrun 1354  modlk 0.52
+dioderun 25
+run 37875
+
+# shift Diode in x
+turn -88
+dioderun 27
+modrun 1360
+run 37881  25k  cx: triangle, should be box
+
+turn -89
+dioderun 28
+modrun 1361
+run 37882  25k  cx: worse
+
+turn -86
+dioderun 29
+modrun 1362
+run 37883  25k  cx: flat, low
+
+GeV 4 (50 Hz)
+
+turn -90
+dioderun 30
+modrun 1363
+run 37884  25k  cx: flat, high
+
+turn -91
+dioderun 31
+modrun 1364
+run 37885  25k  cx: triangle
+
+turn -90 best
+
+dioderun 32
+modrun 1365
+run 37886  120k
+
+dioderun 33
+modrun 1366
+run 37887  120k
+
+dioderun 34
+modrun 1367
+run 37888  120k
+
+#-------------------------------------------------------------------------------
+# Wed 20.11.2019 Datura + Mod (no DUT)
+
+# RefMod 4186
+# using DTB with LCDS2
+# using DTB FW 4.4/4.6 on cmspixel-daq
+
+# bias -150 V, 7 uA
+
+geo geo_2019_11n.dat = 0  98  197  453  606  758
+
+GeV 4
+
+# NIM trigger delay 12 ns
+# Hauptkollimator x -5.2 +7.5
+# Pb insert 12x12
+
+# trigger on paddle scint after module
+
+modrun 3289  modlk 0.61  mv run3289_ch1.out run3289B.out
+run 37897  1.07M  ntri 8
+
+# no Pb insert in yellow collimator
+
+modrun 3290  modlk 0.47
+run 37898  251k  ntri 9.2
+
+# trigger on paddle & finger scint after module
+
+modrun 3291
+run 37899  251k
+
+# Pb insert 20x10  1100 Hz
+
+modrun 3292  modlk 0.63
+run 37900  251k
+
+# NIM trigger delay 6 ns
+
+modrun 3293  modlk 0.767
+run 37901
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Thu 21.11.2019 continue with Mod 4186
+
+# NIM trigger delay 0 ns
+
+modrun 3294  modlk 0.624
+run 37902
+
+# NIM trigger delay 6 ns
+# Pb insert 7x7  600 Hz
+
+modrun 3295  modlk 0.881
+run 37903  163k  ntri 5.1
+
+# Hauptkollimator x -3.2 +5.0  400 Hz
+
+modrun 3296
+run 37904
+
+#-------------------------------------------------------------------------------
+# Tue 10.12.2019
+# TB22 Duranta
+# Diode with R&S and Mod 4305
+# scp -p cmspixel@fhlrcduranta:/data/cmspix/run037988.raw .
+# scp -p cmspix@uh2ulnmpc67:diode/run_58.Wfm.bin
+
+geo geo_2019_12a.dat = 0  90  180  449  559  669
+
+GeV 4
+
+# Mimosa thr 4
+
+dioderun 43  20k
+modrun 1375  modlk 0.62
+run 37938  20k
+
+# Wed 11.12.2019
+
+dioderun 57
+modrun 1394  no corr
+run 37967   20k  ntri 13
+
+dioderun 58
+modrun 1395  no corr
+run 37968   91k  ntri 13

@@ -18,22 +18,51 @@ scope53m: scope53m.cc
 	$(ROOTLIBS) -L../lib -lEUDAQ
 	@echo 'done: scope53m'
 
+tele: tele.cc
+	g++ tele.cc $(CXXFLAGS) -fopenmp -o tele \
+	$(ROOTLIBS) -L../lib -lEUDAQ
+	@echo 'done: tele'
+
+rswfm: rswfm.cc
+	g++ -O2 -Wall -Wextra $(ROOTCFLAGS) rswfm.cc -o rswfm $(ROOTLIBS)
+	@echo 'done: rswfm'
+
+tekwfm: tekwfm.cc
+	g++ $(CXXFLAGS) tekwfm.cc -o tekwfm \
+	$(ROOTLIBS)
+	@echo 'done: tekwfm'
+
 edg53: edg53.cc
 	g++ $(CXXFLAGS) edg53.cc -o edg53 \
 	$(ROOTLIBS) -L../lib -lEUDAQ
 	@echo 'done: edg53'
+
+edgDiode: edgDiode.cc
+	g++ $(CXXFLAGS) edgDiode.cc -o edgDiode \
+	$(ROOTLIBS) -L../lib -lEUDAQ
+	@echo 'done: edgDiode'
 
 scope53: scope53.cc
 	g++ $(CXXFLAGS) scope53.cc -o scope53 \
 	$(ROOTLIBS) -L../lib -lEUDAQ
 	@echo 'done: scope53'
 
-tele: tele.cc
-	g++ tele.cc $(CXXFLAGS) -fopenmp -o tele \
-	$(ROOTLIBS) -L../lib -lEUDAQ
-	@echo 'done: tele'
-
 ed53: ed53.cc
 	g++ $(CXXFLAGS) ed53.cc -o ed53 \
 	$(ROOTLIBS) -L../lib -lEUDAQ
 	@echo 'done: ed53'
+
+evdt: evdt.cc
+	g++ $(CXXFLAGS) evdt.cc -o evdt \
+	$(ROOTLIBS) -L../lib -lEUDAQ
+	@echo 'done: evdt'
+
+ed3d: ed3d.cc
+	g++ $(CXXFLAGS) ed3d.cc -o ed3d \
+	$(ROOTLIBS) -L../lib -lEUDAQ
+	@echo 'done: ed3d'
+
+kink: kink.cc
+	g++ $(CXXFLAGS) kink.cc -o kink \
+	$(ROOTLIBS) -L../lib -lEUDAQ
+	@echo 'done: kink'

@@ -18,6 +18,7 @@
 #include <TH2.h>
 
 #include <map>
+#include <unistd.h> // usleep
 #include <sys/ioctl.h>
 
 using namespace std;
@@ -43,6 +44,7 @@ struct cluster {
 //------------------------------------------------------------------------------
 bool kbhit()
 {
+  usleep(1000); // [us]
   int byteswaiting;
   ioctl( 0, FIONREAD, &byteswaiting );
   return byteswaiting > 0;
@@ -57,7 +59,7 @@ vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
   vector <cluster> vc;
   if( pb.size() == 0 ) return vc;
 
-  int* gone = new int[pb.size()];
+  int * gone = new int[pb.size()];
   for( unsigned i = 0; i < pb.size(); ++i )
     gone[i] = 0;
 
@@ -77,7 +79,7 @@ vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
     do {
       growing = 0;
       for( unsigned i = 0; i < pb.size(); ++i ) {
-        if( !gone[i] ){ // unused pixel
+        if( !gone[i] ) { // unused pixel
           for( unsigned int p = 0; p < c.vpix.size(); ++p ) { // vpix in cluster so far
             int dr = c.vpix.at(p).row - pb[i].row;
             int dc = c.vpix.at(p).col - pb[i].col;
@@ -154,7 +156,8 @@ vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
   delete gone;
 
   return vc; // vector of clusters
-}
+
+} // getClus
 
 //------------------------------------------------------------------------------
 int main( int argc, char* argv[] )
@@ -230,6 +233,7 @@ int main( int argc, char* argv[] )
   gStyle->SetNumberContours(16); // 0..16
 
   TApplication app( "app", 0, 0 );
+
   TCanvas c1( "c1", "RD53A event display", 900, 800 ); // square
   c1.SetTopMargin( 0.12 );
   c1.SetRightMargin( 0.18 );
@@ -383,7 +387,7 @@ int main( int argc, char* argv[] )
       int ipl = plane.ID(); // 0 = RD53A
 
       if( ipl > 0 )
-	continue;
+	continue; // skip Mimosa
 
       vector <pixel> pb; // for clustering
 
@@ -470,7 +474,7 @@ int main( int argc, char* argv[] )
     } // clus
 
     //if( maxncol > 33 ) {
-    if( maxncol > 22 ) {
+    if( maxncol > 18 ) {
       //if( rows.size() > 22 ) {
 
       hpxmap.Draw( "colz" );
