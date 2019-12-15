@@ -3536,15 +3536,33 @@ modrun 866
 run 36606  360
 
 # move in y by +0.5 mm
+
 modrun 868
 run 36608  507  99.2
 
-# Vbias -700, 176 uA		-30	36609	640			modrun 869
-# Vbias -600,  146.7 uA		-30	36610	517			modrun 870
-# Vbias -500,  116 uA		-30	36611	501			modrun 871
-# Vbias -400,  89 uA		-30	36612	500			modrun 872
-# Vbias -300,  66 uA		-30	36613	500			modrun 873
-# Vbias -200,  45 uA		-30	36614	500			modrun 874
+# Vbias -700, 176 uA
+modrun 869
+run 36609	640
+
+# Vbias -600,  146.7 uA
+modrun 870
+run 36610	517
+
+# Vbias -500,  116 uA
+modrun 871
+run 36611	501
+
+# Vbias -400,  89 uA
+modrun 872
+run 36612	500
+
+# Vbias -300,  66 uA
+modrun 873
+run 36613	500
+
+# Vbias -200,  45 uA
+modrun 874
+run 36614	500
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # edge-on 516i: turn finger scint
