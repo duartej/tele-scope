@@ -1101,6 +1101,8 @@ int main( int argc, char* argv[] )
   // MOD:
 
   string modfileA = "mod/run" + to_string(modrun) + "A.out"; // C++11
+  if( run >= 38027 )
+    modfileA = "mod/run" + to_string(modrun) + "_ch0.out"; // C++11
   cout << "try to open  " << modfileA;
   ifstream Astream( modfileA.c_str() );
   if( !Astream ) {
@@ -1111,6 +1113,8 @@ int main( int argc, char* argv[] )
     cout << " : succeed " << endl;
 
   string modfileB = "mod/run" + to_string(modrun) + "B.out";
+  if( run >= 38027 )
+    modfileB = "mod/run" + to_string(modrun) + "_ch1.out"; // C++11
   cout << "try to open  " << modfileB;
   ifstream Bstream( modfileB.c_str() );
   if( !Bstream ) {
@@ -1626,6 +1630,13 @@ int main( int argc, char* argv[] )
 		     "triplet isolation at MOD;triplet at MOD min #Delta_{xy} [mm];triplet pairs",
 		     150, 0, 15 );
 
+  TH1I modxdHisto( "modxd",
+		   "triplet at MOD x;triplet x at MOD [mm];triplets",
+		   216, -32.4, 32.4 );
+  TH1I modydHisto( "modyd",
+		   "triplet at MOD y;triplet y at MOD [mm];triplets",
+		   160, -8, 8 );
+
   TH1I modxHisto( "modx",
 		  "MOD x;MOD cluster x [mm];MOD clusters",
 		  700, -35, 35 );
@@ -1704,17 +1715,17 @@ int main( int argc, char* argv[] )
 		"MOD cluster size vs xmod ymod;x track mod 300 [#mum];y track mod 200 [#mum];MOD <cluster size> [pixels]",
 		120, 0, 300, 80, 0, 200, 0, 20 );
 
-  TH1I modlkxBHisto( "modlkxb",
+  TH1I modlkxdHisto( "modlkxd",
 		     "linked triplet at MOD x;triplet x at MOD [mm];linked triplets",
 		     216, -32.4, 32.4 );
-  TH1I modlkyBHisto( "modlkyb",
+  TH1I modlkydHisto( "modlkyd",
 		     "linked triplet at MOD y;triplet y at MOD [mm];linked triplets",
 		     160, -8, 8 );
   TH1I modlkxHisto( "modlkx",
-		    "linked triplet at MOD x;triplet x at MOD [mm];linked triplets",
+		    "linked triplet in MOD x;triplet x in MOD [mm];linked triplets",
 		    216, -32.4, 32.4 );
   TH1I modlkyHisto( "modlky",
-		    "linked triplet at MOD y;triplet y at MOD [mm];linked triplets",
+		    "linked triplet in MOD y;triplet y in MOD [mm];linked triplets",
 		    160, -8, 8 );
 
   TH1I modlkcolHisto( "modlkcol",
@@ -3954,7 +3965,7 @@ int main( int argc, char* argv[] )
     int ntrimod = 0;
 
     double xcutMOD = 0.15;
-    double ycutMOD = 0.15;
+    double ycutMOD = 0.10;
 
     int nmtd = 0;
     int ntrilk = 0;
@@ -4021,6 +4032,9 @@ int main( int argc, char* argv[] )
       double yd = ymA + syA * zd;
       double xd = xmA + sxA * zd;
 
+      modxdHisto.Fill( xd );
+      modydHisto.Fill( yd );
+
       double dzd = zd + zmA - MODz; // from MOD z0 [-8,8] mm
 
       // transform into MOD system: (passive).
@@ -4064,11 +4078,11 @@ int main( int argc, char* argv[] )
 
 	// residuals for pre-alignment:
 
-	modsxaHisto.Fill( modx + x3m ); // peak
-	moddxaHisto.Fill( modx - x3m ); // 
+	modsxaHisto.Fill( modx + x3m );
+	moddxaHisto.Fill( modx - x3m );
 
-	modsyaHisto.Fill( mody + y3m ); // 
-	moddyaHisto.Fill( mody - y3m ); // peak
+	modsyaHisto.Fill( mody + y3m );
+	moddyaHisto.Fill( mody - y3m );
 
 	double moddx = modx - x4m;
 	double moddy = mody - y4m;
@@ -4104,8 +4118,8 @@ int main( int argc, char* argv[] )
 	  modq0Histo.Fill( q0 );
 	  modnpxvsxmym->Fill( xmodm*1E3, ymodm*1E3, c->size );
 
-	  modlkxBHisto.Fill( xB );
-	  modlkyBHisto.Fill( yB );
+	  modlkxdHisto.Fill( xd );
+	  modlkydHisto.Fill( yd );
 	  modlkxHisto.Fill( x4m );
 	  modlkyHisto.Fill( y4m );
 	  modlkcolHisto.Fill( ccol );
@@ -5605,24 +5619,7 @@ int main( int argc, char* argv[] )
 
     } // finer y
 
-    // write new MOD alignment:
-
-    ofstream MODalignFile( MODalignFileName.str() );
-
-    MODalignFile << "# MOD alignment for run " << run << endl;
-    ++MODaligniteration;
-    MODalignFile << "iteration " << MODaligniteration << endl;
-    MODalignFile << "alignx " << newMODalignx << endl;
-    MODalignFile << "aligny " << newMODaligny << endl;
-    MODalignFile << "rot " << MODrot << endl;
-    MODalignFile << "tilt " << MODtilt << endl;
-    MODalignFile << "turn " << MODturn << endl;
-    MODalignFile << "dz " << MODz - zz[1] << endl;
-
-    MODalignFile.close();
-
-    cout << endl << "wrote MOD alignment iteration " << MODaligniteration
-	 << " to " << MODalignFileName.str() << endl
+    cout << endl << "new MOD alignment:" << endl
 	 << "  alignx " << newMODalignx << endl
 	 << "  aligny " << newMODaligny << endl
 	 << "  rot    " << MODrot << endl
@@ -5630,6 +5627,36 @@ int main( int argc, char* argv[] )
 	 << "  turn   " << MODturn << endl
 	 << "  dz     " << MODz - zz[1] << endl
       ;
+
+    cout << "update MOD alignment file? (y/n)" << endl;
+    string ans{"n"};
+    string YES{"y"};
+
+    cin >> ans;
+
+    if( ans == YES ) {
+
+      // write new MOD alignment:
+
+      ofstream MODalignFile( MODalignFileName.str() );
+
+      MODalignFile << "# MOD alignment for run " << run << endl;
+      ++MODaligniteration;
+      MODalignFile << "iteration " << MODaligniteration << endl;
+      MODalignFile << "alignx " << newMODalignx << endl;
+      MODalignFile << "aligny " << newMODaligny << endl;
+      MODalignFile << "rot " << MODrot << endl;
+      MODalignFile << "tilt " << MODtilt << endl;
+      MODalignFile << "turn " << MODturn << endl;
+      MODalignFile << "dz " << MODz - zz[1] << endl;
+
+      MODalignFile.close();
+
+      cout << endl << "wrote MOD alignment iteration " << MODaligniteration
+	   << " to " << MODalignFileName.str() << endl
+	;
+
+    }
 
   } // MOD
 
