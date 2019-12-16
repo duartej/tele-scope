@@ -96,7 +96,7 @@ vector <cluster> getClusn( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
           for( unsigned int p = 0; p < c.vpix.size(); ++p ) { // vpix in cluster so far
             int dr = c.vpix.at(p).row - pb[i].row;
             int dc = c.vpix.at(p).col - pb[i].col;
-            if( (   dr>=-fCluCut) && (dr<=fCluCut) 
+            if( (   dr>=-fCluCut) && (dr<=fCluCut)
 		&& (dc>=-fCluCut) && (dc<=fCluCut) ) {
               c.vpix.push_back(pb[i]);
 	      gone[i] = 1;
@@ -207,7 +207,7 @@ vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
           for( unsigned int p = 0; p < c.vpix.size(); ++p ) { // vpix in cluster so far
             int dr = c.vpix.at(p).row - pb[i].row;
             int dc = c.vpix.at(p).col - pb[i].col;
-            if( (   dr>=-fCluCut) && (dr<=fCluCut) 
+            if( (   dr>=-fCluCut) && (dr<=fCluCut)
 		&& (dc>=-fCluCut) && (dc<=fCluCut) ) {
               c.vpix.push_back(pb[i]);
 	      gone[i] = 1;
@@ -430,7 +430,7 @@ int main( int argc, char* argv[] )
     } // while getline
 
     if( found )
-      cout 
+      cout
 	<< "  beam " << pbeam << " GeV" << endl
 	<< "  geo file " << geoFileName << endl
 	<< "  nominal DUT turn " << DUTturn << " deg" << endl
@@ -486,7 +486,7 @@ int main( int argc, char* argv[] )
     m.SetFillStyle(1000);
     m.SetFillColor(1);
     m.Draw("same");
-  */ 
+  */
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // geometry:
@@ -667,7 +667,7 @@ int main( int argc, char* argv[] )
       if( tag.substr(0,1) == hash ) // comments start with #
 	continue;
 
-      if( tag == iteration ) 
+      if( tag == iteration )
 	tokenizer >> aligniteration;
 
       if( tag == plane )
@@ -831,7 +831,7 @@ int main( int argc, char* argv[] )
       if( tag.substr(0,1) == hash ) // comments start with #
 	continue;
 
-      if( tag == iteration ) 
+      if( tag == iteration )
 	tokenizer >> DUTaligniteration;
 
       double val;
@@ -1312,7 +1312,7 @@ int main( int argc, char* argv[] )
       if( tag.substr(0,1) == hash ) // comments start with #
 	continue;
 
-      if( tag == iteration ) 
+      if( tag == iteration )
 	tokenizer >> MODaligniteration;
 
       double val;
@@ -1429,7 +1429,7 @@ int main( int argc, char* argv[] )
 			  51, -0.5, 50.5 );
 
     hcol[ipl] = TH1I( Form( "col%i", ipl ),
-		      Form( "%i col;col;plane %i pixels", ipl, ipl ), 
+		      Form( "%i col;col;plane %i pixels", ipl, ipl ),
 		      nbx, 0, mx );
     hrow[ipl] = TH1I( Form( "row%i", ipl ),
 		      Form( "%i row;row;plane %i pixels", ipl, ipl ),
@@ -1444,7 +1444,7 @@ int main( int argc, char* argv[] )
     hsiz[ipl] = TH1I( Form( "clsz%i", ipl ),
 		      Form( "%i cluster size;pixels/cluster;plane %i clusters", ipl, ipl ),
 		      51, -0.5, 50.5 );
-    hncol[ipl] = TH1I( Form( "ncol%i", ipl ), 
+    hncol[ipl] = TH1I( Form( "ncol%i", ipl ),
 		       Form( "%i cluster size x;columns/cluster;plane %i clusters", ipl, ipl ),
 		       21, -0.5, 20.5 );
     hnrow[ipl] = TH1I( Form( "nrow%i", ipl ),
@@ -1884,10 +1884,10 @@ int main( int argc, char* argv[] )
 
   TH1I hsixdtx( "sixdtx",
 		"driplet slope x - triplet slope x;driplet slope x - triplet slope x;driplet-triplet pairs",
-		100, -0.005*f, 0.005*f );     
+		100, -0.005*f, 0.005*f );
   TH1I hsixdty( "sixdty",
 		"driplet slope y - triplet slope y;driplet slope y - triplet slope y;driplet-triplet pairs",
-		100, -0.005*f, 0.005*f );     
+		100, -0.005*f, 0.005*f );
 
   TProfile sixdtvsx( "sixdtvsx",
 		     "driplet - triplet kink_{xy} vs x;x_{mid} [mm];<sqrt(#Delta#theta_{x}^{2}+#Delta#theta_{y}^{2})> [rad]",
@@ -3017,11 +3017,11 @@ int main( int argc, char* argv[] )
 
       // loop over frames, then pixels per frame
 
-      for( unsigned frm = 0; frm < plane.NumFrames(); ++frm ) 
+      for( unsigned frm = 0; frm < plane.NumFrames(); ++frm )
 
 	for( size_t ipix = 0; ipix < plane.HitPixels( frm ); ++ipix ) {
 
-	  if( ldbg ) 
+	  if( ldbg )
 	    cout << ": " << plane.GetX(ipix,frm)
 		 << "." << plane.GetY(ipix,frm)
 		 << "." << plane.GetPixel(ipix,frm) << " ";
@@ -3108,11 +3108,14 @@ int main( int argc, char* argv[] )
 	    dutpxcol9Histo.Fill( ix + 0.5 );
 
 	    if( !fifty ) { // 100x25 from ROC to sensor:
+
 	      px.col = ix/2; // 100 um
-	      if( ix%2 ) 
+
+	      if( ix%2 )
 		px.row = 2*iy + 0; // different from R4S
 	      else
 		px.row = 2*iy + 1; // see ed53 for shallow angle
+
 	      if( chip0 == 182 || chip0 == 211 || chip0 == 512 || chip0 == 529 || // HLL
 		  chip0 > 79000 ) { // FBK
 		if( ix%2 )
@@ -3120,6 +3123,7 @@ int main( int argc, char* argv[] )
 		else
 		  px.row = 2*iy + 0;
 	      }
+
 	    }
 
 	  } // DUT
@@ -3745,7 +3749,7 @@ int main( int argc, char* argv[] )
 	double avx = 0.5 * ( xA + xC ); // mid
 	double avy = 0.5 * ( yA + yC );
 	double avz = 0.5 * ( zA + zC ); // mid z
- 
+
 	double slpx = ( xC - xA ) / dzCA; // slope x
 	double slpy = ( yC - yA ) / dzCA; // slope y
 
@@ -3865,7 +3869,7 @@ int main( int argc, char* argv[] )
 	double avx = 0.5 * ( xA + xC ); // mid
 	double avy = 0.5 * ( yA + yC );
 	double avz = 0.5 * ( zA + zC ); // mid z
- 
+
 	double slpx = ( xC - xA ) / dzCA; // slope x
 	double slpy = ( yC - yA ) / dzCA; // slope y
 
