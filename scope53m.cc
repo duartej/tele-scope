@@ -1958,6 +1958,9 @@ int main( int argc, char* argv[] )
   TProfile dutdxvsxm( "dutdxvsxm",
 		      "DUT #Deltax vs xmod;x track mod 100 [#mum];<cluster - track #Deltax> [mm]",
 		      50, 0, 100, -limx, limx );
+  TProfile2D * dutdxvsxmym = new TProfile2D( "dutdxvsxmym",
+		"DUT #Deltax vs xmod ymod;x track mod 100 [#mum];y track mod 100",
+ 		 50, 0, 100, 50, 0, 100, -0.1, 0.1 );
   TProfile dutdxvst2( "dutdxvst2",
 		      "DUT #Deltax vs time;time [s];<DUT #Deltax> [mm/5s]",
 		      200, 0, 1000, -limx, limx );
@@ -2014,10 +2017,6 @@ int main( int argc, char* argv[] )
     TProfile2D( "dutdyvsxmym",
 		"DUT #Deltay vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];<#Deltay> [mm]",
 		50, 0, 100, 50, 0, 100, -0.1, 0.1 );
-  // ANDREA: Create residuals in X:
-  TProfile2D * dutdxvsxmym = new TProfile2D( "dutdxvsxmym",
-		"DUT #Deltax vs xmod ymod;x track mod 100 [#mum];y track mod 100",
- 		 50, 0, 100, 50, 0, 100, -0.1, 0.1 );
   TProfile dutdyvst2( "dutdyvst2",
 		      "DUT #Deltay vs time;time [s];<DUT #Deltay> [mm/5s]",
 		      200, 0, 1000, -0.1, 0.1 );
@@ -4385,6 +4384,7 @@ int main( int argc, char* argv[] )
 	    dutdxvstx0.Fill( sxA, dutdx );
 	  else
 	    dutdxvstx1.Fill( sxA, dutdx );
+	  dutdxvsxmym->Fill(xmod*1E3, ymod*1E3, dutdx);
 	  dutdxvsxm.Fill( xmod*1E3, dutdx );
 	  dutdxvst2.Fill( evsec, dutdx );
 	  dutdxvst5.Fill( evsec, dutdx );
