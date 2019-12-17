@@ -333,6 +333,7 @@ int main( int argc, char* argv[] )
   double pbeam = 4.8;
   double DUTtilt = 0.5;
   double DUTturn = 0.5; // small turn will not be aligned
+  double qwid = 1.5; // The sigma estimated from the Moyal distribution: fitmoyal5('linq0')
   int chip0 = 501;
   int fifty = 0; // default is 100x25
   int rot90 = 0; // default is straight
@@ -356,6 +357,7 @@ int main( int argc, char* argv[] )
     string GEO( "geo" );
     string GeV( "GeV" );
     string CHIP( "chip" );
+    string QWID( "qsigma_moyal" );
     string TURN( "turn" );
     string TILT( "tilt" );
     string FIFTY( "fifty" );
@@ -413,6 +415,11 @@ int main( int argc, char* argv[] )
 	tokenizer >> chip0;
 	continue;
       }
+      
+      if( tag == QWID ) {
+	tokenizer >> qwid;
+	continue;
+      }
 
       if( tag == FIFTY ) {
 	tokenizer >> fifty;
@@ -435,6 +442,7 @@ int main( int argc, char* argv[] )
 	<< "  nominal DUT turn " << DUTturn << " deg" << endl
 	<< "  nominal DUT tilt " << DUTtilt << " deg" << endl
 	<< "  DUT chip " << chip0 << endl
+	<< "  Estimated sigma (from charge global dist.) " << qwid << endl
 	<< "  fifty " << fifty << endl
 	<< "  rot90 " << rot90 << endl
 	<< "  modrun " << modrun << endl
@@ -785,8 +793,8 @@ int main( int argc, char* argv[] )
 
   const double wt = atan(1.0) / 45.0; // pi/180 deg
 
-  double qwid = 1.5; // [ToT] for Moyal in 150 um from x fitmoyal5.C+("linq0")
-  double qxmax = 0.04; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
+  //double qwid = 1.5; // [ToT] for Moyal in 150 um from x fitmoyal5.C+("linq0")
+  double qxmax = 0.04; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff ??
 
   int iDUT = 0; // eudaq
 
@@ -976,10 +984,10 @@ int main( int argc, char* argv[] )
 	  int iy = row;
 	  if( !fifty ) {
 	    ix = col/2; // sensor 100
-	    if( col%2 )
-	      iy = 2*row + 0; // sensor 25
+	    if( col%2 == 1 )
+	      iy = 2*row + 1; // sensor 25
 	    else
-	      iy = 2*row + 1;
+	      iy = 2*row + 0;
 	  }
 
 	  int ipx = ix * 384 + iy;
@@ -1011,9 +1019,12 @@ int main( int argc, char* argv[] )
   DUThotFileName << "hotDUT_" << run << ".dat";
 
   ifstream iDUThotFile( DUThotFileName.str() );
-
+ 
+  bool create_duthotfile = false;
   if( iDUThotFile.bad() || ! iDUThotFile.is_open() ) {
     cout << "no " << DUThotFileName.str() << endl;
+    // Calculate the Hot pixels
+    create_duthotfile=true;
   }
   else {
 
@@ -1048,10 +1059,10 @@ int main( int argc, char* argv[] )
 	int row = iy;
 	if( !fifty ) {
 	  col = ix/2; // sensor 100
-	  if( ix%2 )
-	    row = 2*iy + 0; // sensor 25
+	  if( ix%2 == 1 )
+	    row = 2*iy + 1; // sensor 25
 	  else
-	    row = 2*iy + 1;
+	    row = 2*iy + 0;
 	}
 	ipx = col * 384 + row; // sensor
 	deadset.insert(ipx);
@@ -1895,7 +1906,7 @@ int main( int argc, char* argv[] )
 
   TH1I dutdxHisto( "dutdx",
 		   "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
-		   500, -0.5, 0.5 );
+		   500, -2.5, 2.5 );
   TH1I dutdyHisto( "dutdy",
 		   "DUT - track dy;DUT cluster - track #Deltay [mm];DUT clusters",
 		   500, -0.5, 0.5 );
@@ -1906,7 +1917,7 @@ int main( int argc, char* argv[] )
 
   TH1I dutdxcHisto( "dutdxc",
 		    "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
-		    500, -0.5, 0.5 );
+		    500, -2.5, 2.5 );
   TH1I lindxcHisto( "lindxc",
 		    "Lin - track dx;Lin cluster - track #Deltax [mm];Lin clusters",
 		    200, -0.5, 0.5 );
@@ -1924,6 +1935,8 @@ int main( int argc, char* argv[] )
 		     500, -0.5, 0.5 );
 
   double limx = 0.1;
+  if( fabs(DUTturn) > 44 )
+    limx = 0.5;
   if( fabs(DUTturn) > 44 )
     limx = 0.5;
 
@@ -2001,6 +2014,10 @@ int main( int argc, char* argv[] )
     TProfile2D( "dutdyvsxmym",
 		"DUT #Deltay vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];<#Deltay> [mm]",
 		50, 0, 100, 50, 0, 100, -0.1, 0.1 );
+  // ANDREA: Create residuals in X:
+  TProfile2D * dutdxvsxmym = new TProfile2D( "dutdxvsxmym",
+		"DUT #Deltax vs xmod ymod;x track mod 100 [#mum];y track mod 100",
+ 		 50, 0, 100, 50, 0, 100, -0.1, 0.1 );
   TProfile dutdyvst2( "dutdyvst2",
 		      "DUT #Deltay vs time;time [s];<DUT #Deltay> [mm/5s]",
 		      200, 0, 1000, -0.1, 0.1 );
@@ -2864,6 +2881,8 @@ int main( int argc, char* argv[] )
   int ntrck = 0;
   int ngood = 0;
 
+  std::map<int,int> pxdutmap;
+
   do {
 
     evt = reader->GetDetectorEvent();
@@ -2926,7 +2945,7 @@ int main( int argc, char* argv[] )
 
       const eudaq::StandardPlane &plane = sevt.GetPlane(iplane);
 
-      if( ldbg )
+      if(  ldbg )
 	cout
 	  << "  " << iplane
 	  << ": plane " << plane.ID() // 1
@@ -2939,6 +2958,11 @@ int main( int argc, char* argv[] )
 	  ;
 
       int ipl = plane.ID(); // 0 = DUT, 1..6 = Mimosa
+      // RD53A plane from converter, EUDAQ assigned id in [30 ,40)
+      if(ipl >= 30 and ipl < 40)
+      {
+         ipl = 0;
+      }
 
       if( ipl < 0 || ipl > 6 ) {
 	cout << "event " << iev << " wrong plane number " << ipl << endl;
@@ -2987,7 +3011,14 @@ int main( int argc, char* argv[] )
 	  px.frm = frm;
 	  px.pivot = plane.GetPivot(ipix,frm);
 
-	  if( ipl == iDUT ) {
+	  if( ipl == iDUT ) 
+          { 
+	    // for hot pixel (c++11 already take cares of initialization)
+	    if(create_duthotfile)
+ 	    {
+                // Store ipx (see L2992 how is defined)
+                ++pxdutmap[ipx];
+            }
 
 	    dutpxcol0Histo.Fill( ix + 0.5 );
 
@@ -3037,18 +3068,25 @@ int main( int argc, char* argv[] )
 
 	    dutpxcol9Histo.Fill( ix + 0.5 );
 
-	    if( !fifty ) { // 100x25 from ROC to sensor:
-	      px.col = ix/2; // 100 um
-	      if( ix%2 ) 
-		px.row = 2*iy + 0; // different from R4S
-	      else
-		px.row = 2*iy + 1; // see ed53 for shallow angle
-	      if( chip0 == 182 || chip0 == 211 || chip0 == 512 ) { // HLL
+	    if( !fifty ) 
+	    {  // 100x25 from ROC to sensor:
+	       px.col = ix/2; // 100 um
+
+	       if( ix%2 == 1 ) 
+               {
+                 px.row = 2*iy + 1; //
+               }
+	       else
+               {
+		 px.row = 2*iy + 0; // see ed53 for shallow angle
+               }
+	       if( chip0 == 182 || chip0 == 211 || chip0 == 512 ) 
+               { // HLL
 		if( ix%2 )
 		  px.row = 2*iy + 1;
 		else
 		  px.row = 2*iy + 0;
-	      }
+	       }
 	    }
 
 	  } // DUT
@@ -4210,7 +4248,9 @@ int main( int argc, char* argv[] )
 	  if( chip0 == 182 || chip0 == 211 || // fresh: no box
 	      chip0 == 501 || chip0 == 504 ||
 	      chip0 == 520 || chip0 == 524 ||
-	      chip0 == 531 || chip0 == 543 || chip0 == 550 ) {
+	      chip0 == 531 || chip0 == 543 || chip0 == 550 ||
+	      chip0 == 331 || chip0 == 731 ) 
+	  {
 
 	    x4 = x8;
 	    y4 = y8;
@@ -4920,119 +4960,8 @@ int main( int argc, char* argv[] )
 	if( y4 >  4.7 ) fidy = 0;
 	if( y4 < -4.7 ) fidy = 0;
 
-	if( chip0 == 501 ) { // rot90 Lin
-	  if( x4 >  4.7 ) fidx = 0;
-	  if( x4 < -4.7 ) fidx = 0;
-	  fidy = 1;
-	  if( y4 >  3.5 ) fidy = 0;
-	  if( y4 < -2.1 ) fidy = 0; // packman cutout
-	}
-	if( chip0 == 504 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 509 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 509 && run >= 35150 && run <= 99999 ) { // straight Syn
-	  fidx = 1;
-	  if( x4 < -9.9 ) fidx = 0;
-	  if( x4 > -3.7 ) fidx = 0;
-	}
-	if( chip0 == 524 && run < 34090 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 524 ) { // straight Lin+Diff
-	  if( x4 >  9.9 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 531 ) { // straight Lin+Diff
-	  if( x4 >  9.9 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 520 ) { // straight Lin+Diff
-	  if( x4 >  9.9 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 550 ) { // straight Lin+Diff
-	  if( x4 >  9.9 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 1470 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 1472 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 512 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 511 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 511 && run >= 35677 && run <= 99999 ) { // straight Sync
-	  fidx = 1;
-	  if( x4 < -9.9 ) fidx = 0;
-	  if( x4 > -3.7 ) fidx = 0;
-	}
-	if( chip0 == 182 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 182 && run >= 35722 && run <= 99999 ) { // straight Sync
-	  fidx = 1;
-	  if( x4 < -9.9 ) fidx = 0;
-	  if( x4 > -3.7 ) fidx = 0;
-	}
-	if( chip0 == 211 && run >= 35800 && run <= 99999 ) { // straight Sync
-	  fidx = 1;
-	  if( x4 < -9.9 ) fidx = 0;
-	  if( x4 > -3.7 ) fidx = 0;
-	}
-	if( chip0 == 511 && run >= 35808 && run <= 99999 ) { // straight Sync
-	  fidx = 1;
-	  if( x4 < -9.9 ) fidx = 0;
-	  if( x4 > -3.7 ) fidx = 0;
-	}
-	if( chip0 == 521 && run >= 35827 && run <= 99999 ) { // straight Sync
-	  fidx = 1;
-	  if( x4 < -9.9 ) fidx = 0;
-	  if( x4 > -3.7 ) fidx = 0;
-	}
-	if( chip0 == 521 && run >= 35873 && run <= 99999 ) { // straight Lin
-	  fidx = 1;
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 521 && run >= 35917 && run <= 99999 ) { // straight Sync
-	  fidx = 1;
-	  if( x4 < -9.9 ) fidx = 0;
-	  if( x4 > -3.7 ) fidx = 0;
-	}
-	if( chip0 == 334 && run >= 35965 && run <= 99999 ) { // straight Lin
-	  fidx = 1;
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 543 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
-	if( chip0 == 512 && run >= 36124 && run <= 99999 ) { // Sync
-	  fidx = 1;
-	  if( x4 < -9.9 ) fidx = 0;
-	  if( x4 > -3.7 ) fidx = 0;
-	}
-	if( chip0 == 515 || chip0 == 516 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
-	}
+	if( x4 >  3.2 ) fidx = 0;
+	if( x4 < -3.5 ) fidx = 0;
 
 	// from track x, y (at DUT) to sensor col, row:
 
@@ -5837,6 +5766,50 @@ int main( int argc, char* argv[] )
   }
   else
     cout << "no" << endl;
+
+  // --------------- 
+  // hotpixels for DUT
+  if(create_duthotfile)
+  {
+     std::cout << "DUT hot pixel list for run " << run << std::endl;
+     std::ofstream DUThotFile( DUThotFileName.str() );
+
+     DUThotFile << "# DUT  hot pixel list for run " << run
+	  << " with " << iev << " events"
+	  << std::endl;
+     DUThotFile << std::endl;
+     int nmax = 0;
+     int ntot = 0;
+     int nhot = 0;
+     for(const auto & px: pxdutmap) 
+     {
+        ntot += px.second;
+        if( px.second > nmax )
+        { 
+          nmax = px.second;
+        }
+        if( px.second > iev/128 ) 
+        {
+          ++nhot;
+          int ix = px.first/ny[0];
+          int iy = px.first%ny[0];
+	  DUThotFile << "pix "
+             << setw(4) << ix
+             << setw(5) << iy
+             << "  " << px.second
+             << std::endl;
+         }
+      } 
+      std::cout 
+         << ": active " << pxdutmap.size()
+         << ", sum " << ntot 
+         << ", max " << nmax
+         << ", hot " << nhot
+         << std::endl;
+
+      std::cout << "hot pixel list written to " << DUThotFileName.str() << std::endl;
+      DUThotFile.close();
+  }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done

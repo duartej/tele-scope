@@ -2489,6 +2489,11 @@ int main( int argc, char* argv[] )
 	  ;
 
       int ipl = plane.ID(); // 0 = DUT, 1..6 = Mimosa
+      // RD53A plane from converter, EUDAQ assigned id in [30 ,40)
+      if(ipl >= 30 or ipl < 40)
+      {
+         ipl = 0;
+      }
 
       if( ipl < 0 || ipl > 6 ) {
 	cout << "event " << iev << " wrong plane number " << ipl << endl;
@@ -2584,10 +2589,14 @@ int main( int argc, char* argv[] )
 	    }
 	    else {
 	      px.col = ix/2; // 100 um
-	      if( ix%2 ) 
-		px.row = 2*iy + 0; // different from R4S
+	      if( ix%2 == 1 ) 
+              {
+	         px.row = 2*iy + 1; // mapping TOC to sensor
+	      }
 	      else
-		px.row = 2*iy + 1; // see ed53 for shallow angle
+              {
+		px.row = 2*iy + 0; // see ed53 for shallow angle
+	      }
 	    }
 
 	  } // DUT
