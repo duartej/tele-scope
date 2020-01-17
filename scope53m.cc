@@ -62,6 +62,60 @@ struct triplet {
   unsigned iC;
 };
 
+struct CellRelatedHistos
+{
+    CellRelatedHistos(int cells_shown, float xcell, float ycell) 
+    { 
+         this->n_cells = cells_shown;
+	 this->xcell  = xcell;
+	 this->ycell  = ycell;
+         this->linnpxvsxmym = new TProfile2D( ("linnpxvsxmym_"+std::to_string(cells_shown)).c_str(), 
+		("LIN cluster size vs xmod ymod;x track mod "+std::to_string(int(xcell))+
+                   " [#mum];y track mod "+std::to_string(int(ycell))+" [#mum];LIN <cluster size> [pixels]").c_str(),
+		50, 0, cells_shown*xcell, 50, 0, cells_shown*ycell, 0, 20 );
+
+ 	 this->linqxvsxmym = new TProfile2D( ("linqxvsxmym_"+std::to_string(cells_shown)).c_str(),
+		("LIN cluster charge vs xmod ymod;x track mod "+std::to_string(int(xcell))+
+                   " [#mum];y track mod "+std::to_string(int(ycell))+" [#mum];LIN <cluster signal> [ToT]").c_str(),
+		50, 0, cells_shown*xcell, 50, 0, cells_shown*ycell);
+
+  	 this->effvsxmym = new TProfile2D( ("effvsxmym_"+std::to_string(cells_shown)).c_str(),
+		("DUT efficiency vs xmod ymod;x track mod "+std::to_string(int(xcell))+
+                   " [#mum];y track mod "+std::to_string(int(ycell))+" [#mum];efficiency").c_str(),
+		50, 0, cells_shown*xcell, 50, 0, cells_shown*ycell,-1,2);
+    };
+    ~CellRelatedHistos() {};
+
+    void add_coordinates(float x,float y) 
+    {
+         this->xmod = std::fmod(9.0*1e3 + x, this->n_cells*this->xcell);
+         this->ymod = std::fmod(9.0*1e3 + y, this->n_cells*this->ycell);
+    };
+    void fill_clsize(int clsize)
+    {
+        this->linnpxvsxmym->Fill(this->xmod,this->ymod,clsize);
+    };
+    void fill_charge(float charge)
+    {
+         this->linqxvsxmym->Fill(this->xmod,this->ymod,charge);
+    };
+    void fill_eff(float eff)
+    {
+         this->effvsxmym->Fill(this->xmod,this->ymod,eff);
+    };
+	
+    int n_cells = 0;
+    float xcell = 0;
+    float ycell = 0;
+
+    float xmod = 0;
+    float ymod = 0;
+
+    TProfile2D * linnpxvsxmym = nullptr;
+    TProfile2D * linqxvsxmym = nullptr;
+    TProfile2D * effvsxmym = nullptr;
+};
+
 //------------------------------------------------------------------------------
 vector <cluster> getClusn( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
 {
@@ -2713,6 +2767,18 @@ int main( int argc, char* argv[] )
     nbx = 220;
     nby = 480;
   }
+ 
+  float xcell_size_um = 50.0;
+  float ycell_size_um = 50.0;
+  if( !fifty )
+  {
+     xcell_size_um = 100.0;
+     ycell_size_um = 25.0;
+  }
+
+  CellRelatedHistos hcell1(1,xcell_size_um,ycell_size_um);
+  CellRelatedHistos hcell2(2,xcell_size_um,ycell_size_um);
+  CellRelatedHistos hcell4(4,xcell_size_um,ycell_size_um);
 
   TH2I * dutpxxyHisto = new
     TH2I( "dutpxxy",
@@ -4275,6 +4341,11 @@ int main( int argc, char* argv[] )
 
       } // driplets
 
+      // Coordinates for the cell histograms
+      hcell1.add_coordinates(x4*1E3, y4*1E3);
+      hcell2.add_coordinates(x4*1E3, y4*1E3);
+      hcell4.add_coordinates(x4*1E3, y4*1E3);
+
       dutxyHisto->Fill( x4, y4 );
 
       int sect; // Sync, Lin, Diff
@@ -4529,6 +4600,9 @@ int main( int argc, char* argv[] )
 	    }
 
 	    linnpxvsxmym->Fill( xmod*1E3, ymod*1E3, npx );
+            hcell1.fill_clsize(npx);
+            hcell2.fill_clsize(npx);
+            hcell4.fill_clsize(npx);
 	    linncolvsxm.Fill( xmod*1E3, c->ncol );
 	    linncolvsym.Fill( ymod*1E3, c->ncol );
 
@@ -4541,6 +4615,9 @@ int main( int argc, char* argv[] )
 	      linnrowvsym.Fill( ymod*1E3, c->nrow );
 
 	    linqxvsxmym->Fill( xmod*1E3, ymod*1E3, Qx );
+            hcell1.fill_charge(Qx);
+            hcell2.fill_charge(Qx);
+            hcell4.fill_charge(Qx);
 	    linqxvsxm.Fill( xmod*1E3, Qx );
 	    linqxvsxm5.Fill( xmod5*1E3, Qx );
 	    linqxvsym.Fill( ymod*1E3, Qx );
@@ -5013,6 +5090,9 @@ int main( int argc, char* argv[] )
 
 	    effvsr.Fill( drbeam, nm[49] );
 	    effvsxmym->Fill( xmod*1E3, ymod*1E3, nm[49] );
+	    hcell1.fill_eff(nm[49]);
+	    hcell2.fill_eff(nm[49]);
+	    hcell4.fill_eff(nm[49]);
 
 	    // efficiency around dead pixels:
 
