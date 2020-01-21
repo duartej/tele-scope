@@ -15,6 +15,16 @@ scope53m: scope53m.cc
 	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ
 	@echo 'done: scope53m'
 
+scopes: scopes_2017.cc
+	g++ $(CXXFLAGS) scopes_2017.cc -o scopes \
+	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ
+	@echo 'done: scopes (2017 version)'
+
+old_scopes: scopes.cc
+	g++ $(CXXFLAGS) scopes.cc -o scopes \
+	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ
+	@echo 'done: scopes'
+
 edg53: edg53.cc
 	g++ $(CXXFLAGS) edg53.cc -o edg53 \
 	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ
