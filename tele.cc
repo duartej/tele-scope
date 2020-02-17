@@ -966,7 +966,8 @@ int main( int argc, char* argv[] )
   TH2I * htrixy[2];
   TH1I htritx[2];
   TH1I htrity[2];
-
+  TProfile tritxwvsx[2];
+  TProfile tritywvsx[2];
   TH1I htrincol[2];
   TH1I htrinrow[2];
   TH1I htrinpix[2];
@@ -1307,6 +1308,14 @@ int main( int argc, char* argv[] )
 			Form( "%splet #theta_{y};%splet #theta_{y} [mrad];%splets",
 			      tds.c_str(), tds.c_str(), tds.c_str() ),
 			200, -10E3*(ang+itd*scat), 10E3*(ang+itd*scat) );
+    tritxwvsx[itd] = TProfile( Form( "%stxwvsx", tds.c_str() ),
+			       Form( "%splet slope x width vs x;%splet x [mm];MAD(slope_{x}) [mrad]",
+				     tds.c_str(), tds.c_str() ),
+			       240, -12, 12, 0, 5 );
+    tritywvsx[itd] = TProfile( Form( "%stywvsx", tds.c_str() ),
+			       Form( "%splet slope y width vs x;%splet x [mm];MAD(slope_{y}) [mrad]",
+				     tds.c_str(), tds.c_str() ),
+			       240, -12, 12, 0, 5 );
 
     htrincol[itd] = TH1I( Form( "%sncol", tds.c_str() ),
 			  Form( "%s cluster size x;columns/cluster;%s clusters on tracks",
@@ -2126,6 +2135,8 @@ int main( int argc, char* argv[] )
       htrixy[itd]->Reset();
       htritx[itd].Reset();
       htrity[itd].Reset();
+      tritxwvsx[itd].Reset();
+      tritywvsx[itd].Reset();
 
       htrincol[itd].Reset();
       htrinrow[itd].Reset();
@@ -2919,6 +2930,8 @@ int main( int argc, char* argv[] )
 		htrixy[itd]->Fill( xavg2, yavg2 );
 		htritx[itd].Fill( slpx*1E3 ); // truncated: Mimosa acceptance
 		htrity[itd].Fill( slpy*1E3 );
+		tritxwvsx[itd].Fill( xavg2, fabs(slpx)*1E3 ); // U-shape
+		tritywvsx[itd].Fill( xavg2, fabs(slpy)*1E3 ); // flat
 
 		// check z spacing: A-B as baseline
 

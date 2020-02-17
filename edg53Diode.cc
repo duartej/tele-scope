@@ -205,8 +205,8 @@ vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
           for( unsigned int p = 0; p < c.vpix.size(); ++p ) { // vpix in cluster so far
             int dr = c.vpix.at(p).row - pb[i].row;
             int dc = c.vpix.at(p).col - pb[i].col;
-            if( (   dr>=-fCluCut) && (dr<=fCluCut)
-		&& (dc>=-fCluCut) && (dc<=fCluCut) ) {
+            if( dr >= -fCluCut && dr <= fCluCut	&&
+		dc >= -fCluCut && dc <= fCluCut ) {
               c.vpix.push_back(pb[i]);
 	      gone[i] = 1;
               growing = 1;
@@ -324,6 +324,7 @@ int main( int argc, char* argv[] )
   int chip0 = 501;
   int fifty = 0; // default is 100x25
   int modrun = 0;
+  int dioderun = 0;
 
   ifstream runsFile( "runs.dat" );
 
@@ -340,6 +341,7 @@ int main( int argc, char* argv[] )
     string hash( "#" );
     string RUN( "run" );
     string MODRUN( "modrun" );
+    string DIODERUN( "dioderun" );
     string GEO( "geo" );
     string GeV( "GeV" );
     string CHIP( "chip" );
@@ -375,6 +377,11 @@ int main( int argc, char* argv[] )
 	continue;
       }
 
+      if( tag == DIODERUN ) {
+	tokenizer >> dioderun;
+	continue;
+      }
+
       if( tag == GEO ) {
 	tokenizer >> geoFileName;
 	continue;
@@ -406,6 +413,7 @@ int main( int argc, char* argv[] )
 	<< "  DUT chip " << chip0 << endl
 	<< "  fifty " << fifty << endl
 	<< "  modrun " << modrun << endl
+	<< "  dioderun " << dioderun << endl
 	;
     else {
       cout << "run " << run << " not found in runs.dat" << endl;
@@ -416,7 +424,7 @@ int main( int argc, char* argv[] )
 
   runsFile.close();
 
-  const double fTLU = 384E6; // 384 MHz TLU clock
+  const double fTLU = 384E6+26.9E3; // 384 MHz TLU clock
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // geometry:
@@ -708,11 +716,22 @@ int main( int argc, char* argv[] )
     cout << "  plane " << ipl << ": hot " << hotset[ipl].size() << endl;
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // DUT:
+  // Diode DUT:
 
-  const double wt = atan(1.0) / 45.0; // pi/180 deg
+  string DiodeFileName = "data/diode/run_" + to_string(dioderun) + ".Wfm.bin";
 
-  int iDUT = 0; // eudaq
+  cout << "try to open: " << DiodeFileName;
+
+  ifstream wff( DiodeFileName, ios::binary );
+
+  if (! wff ) {
+    cout << " failed" << endl;
+    return 1;
+  }
+  cout << " : success" << endl << flush;
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // DUT alignment:
 
   int DUTaligniteration = 0;
   double DUTalignx = 0.0;
@@ -789,71 +808,22 @@ int main( int argc, char* argv[] )
   double cf = cos( DUTrot );
   double sf = sin( DUTrot );
   double ca = cos( DUTtilt );
-  double sa = sin( DUTtilt );
+  double sa = sin( DUTtilt ); // [rad]
   double co = cos( DUTturn );
   double so = sin( DUTturn );
 
-  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // DUT hot pixels:
+  const double Nx =-ca*so;
+  const double Ny = sa;
+  const double Nz =-ca*co;
 
-  cout << endl;
-
-  ostringstream DUThotFileName; // output string stream
-
-  DUThotFileName << "hotDUT_" << run << ".dat";
-
-  ifstream iDUThotFile( DUThotFileName.str() );
-
-  if( iDUThotFile.bad() || ! iDUThotFile.is_open() ) {
-    cout << "no " << DUThotFileName.str() << endl;
-  }
-  else {
-
-    cout << "read DUT hot pixel list from " << DUThotFileName.str() << endl;
-
-    string hash( "#" );
-    string pix( "pix" );
-
-    while( ! iDUThotFile.eof() ) {
-
-      string line;
-      getline( iDUThotFile, line );
-      //cout << line << endl;
-
-      if( line.empty() ) continue;
-
-      stringstream tokenizer( line );
-      string tag;
-      tokenizer >> tag; // leading white space is suppressed
-      if( tag.substr(0,1) == hash ) // comments start with #
-	continue;
-
-      if( tag == pix ) {
-
-	int ix, iy;
-	tokenizer >> ix; // ROC col
-	tokenizer >> iy; // ROC row
-	int ipx = ix * ny[iDUT] + iy;
-	hotset[iDUT].insert(ipx);
-
-      }
-
-    } // while getline
-
-  } // hotFile
-
-  iDUThotFile.close();
-
-  cout << "DUT hot " << hotset[iDUT].size() << endl;
+  const double norm = cos( DUTturn ) * cos( DUTtilt ); // length of Nz
 
   cout << endl;
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // MOD:
 
-  string modfileA = "mod/run" + to_string(modrun) + "A.out"; // C++11
-  if( run >= 38027 )
-    modfileA = "mod/run" + to_string(modrun) + "_ch0.out"; // C++11
+  string modfileA = "mod/run" + to_string(modrun) + "_ch0.out"; // C++11
   cout << "try to open  " << modfileA;
   ifstream Astream( modfileA.c_str() );
   if( !Astream ) {
@@ -863,9 +833,7 @@ int main( int argc, char* argv[] )
   else
     cout << " : succeed " << endl;
 
-  string modfileB = "mod/run" + to_string(modrun) + "B.out";
-  if( run >= 38027 )
-    modfileB = "mod/run" + to_string(modrun) + "_ch1.out"; // C++11
+  string modfileB = "mod/run" + to_string(modrun) + "_ch1.out";
   cout << "try to open  " << modfileB;
   ifstream Bstream( modfileB.c_str() );
   if( !Bstream ) {
@@ -964,6 +932,8 @@ int main( int argc, char* argv[] )
   // tilt alpha around x
   // turn omega around y
 
+  const double wt = atan(1.0) / 45.0; // pi/180 deg
+
   const double com = cos( MODturn*wt );
   const double som = sin( MODturn*wt );
   const double cam = cos( MODtilt*wt );
@@ -989,8 +959,8 @@ int main( int argc, char* argv[] )
   TH1I t5Histo( "t5", "event time;event time [s];events / 100 s", 600, 0, 60000 );
   TH1I t6Histo( "t6", "event time;event time [h];events / 3 min", 1000, 0, 50 );
 
-  TH1I dtusHisto( "dtus", "time between events;time between events [us];events", 100, 0, 1000 );
-  TH1I dtmsHisto( "dtms", "time between events;time between events [ms];events", 100, 0, 1000 );
+  TH1I dtusHisto( "dtus", "TLU time between events;TLU time between events [us];events", 100, 0, 1000 );
+  TH1I dtmsHisto( "dtms", "TLU time between events;TLU time between events [ms];events", 100, 0, 1000 );
   TH1I dt373Histo( "dt373", "time between events;time between events mod 373;events", 400, -0.5, 399.5 );
   TH1I dt374Histo( "dt374", "time between events;time between events mod 374;events", 400, -0.5, 399.5 );
   TH1I dt375Histo( "dt375", "time between events;time between events mod 375;events", 400, -0.5, 399.5 );
@@ -1072,38 +1042,20 @@ int main( int argc, char* argv[] )
 
   } // planes
 
-  TProfile dutnpxvsev( "dutnpxvsev",
-		       "DUT pixels vs events;events;DUT pixels / 1000",
-		       500, 0, 500E3 );
+  // Diode:
 
-  TH1I dutpxbc0Histo( "dutpxbc0",
-		    "DUT pixel BC;DUT pixel BC;DUT pixels without masking",
-		    32, -0.5, 31.5 );
+  TH1I ht1( "D_t1", "events vs time;time [s];events/bin", 100, 0, 1 );
+  TH1I ht2( "D_t2", "events vs time;time [s];events/bin", 10*12.5, 0, 10 );
+  TH1I hdtus( "D_dtus", "R&S time between events;R&S time between events [us];events", 100, 0, 1000 );
+  TH1I hdtms( "D_dtms", "R&S time between events;R&S time between events [ms];events", 100, 0, 1000 );
+  TH1I hddtus( "ddtus", "R&S - TLU times;R&S - TLU time between events [#mus];events", 4000, -2, 2 );
 
-  hmap[8] = new TH2I( Form( "map%i", 8 ),
-		      Form( "%i map;col;row;plane %i pixels", 8, 8 ),
-		      400, 0, 400, 192, 0, 192 );
-
-  TH1I dutpxcolHisto( "dutpxcol",
-		      "DUT pixel column;DUT pixel column;DUT pixels",
-		      nx[iDUT], 0, nx[iDUT] );
-  TH1I dutpxrowHisto( "dutpxrow",
-		      "DUT pixel row;DUT pixel row;DUT pixels",
-		      ny[iDUT], 0, ny[iDUT] );
-  TH1I dutpxqHisto( "dutpxq",
-		    "DUT pixel signal;DUT pixel signal [ToT];DUT pixels",
-		    16, 0, 16 );
-  TH1I dutpxbcHisto( "dutpxbc",
-		    "DUT pixel BC;DUT pixel BC;DUT pixels",
-		    32, 0, 32 );
-
-  TProfile dutpxqvsx( "dutpxqvsx",
-		      "DUT pixel signal vs x;column;<pixel signal> [ToT]",
-		      400, 0, 400, 0, 16 );
-  TProfile2D * dutpxqvsxy = new
-    TProfile2D( "dutpxqvsxy",
-		"DUT pixel signal map;column;row;<pixel signal> [ToT]",
-		400, 0, 400, 192, 0, 192, 0, 16 );
+  TProfile hwave( "wave", "average wave forms;sample;<ADC>", 2000, -0.5, 1999.5 );
+  TH1I hadc( "adc", "ADC;ADC;samples", 256, -128.5, 127.5 );
+  TH1I hpeak( "peak", "peak ADC;peak ADC;waves", 256, -128.5, 127.5 );
+  TH1I hpeakpos( "peakpos", "any peak position;peak sample index;waves", 2000, -0.5, 1999.5 );
+  TH1I hpulsepos( "pulsepos", "pulse peak position;peak sample index;peak waves", 2000, -0.5, 1999.5 );
+  TProfile hpulse( "pulse", "average pulse;sample;<ADC>", 2000, -0.5, 1999.5 );
 
   // triplets:
 
@@ -1146,27 +1098,40 @@ int main( int argc, char* argv[] )
 		      1100, 0, 66000, -0.05, 0.05 );
 
   TH1I trixHisto( "trix", "triplets x;x [mm];triplets",
-		  240, -12, 12 );
+		  2400, -12, 12 );
   TH1I triyHisto( "triy", "triplets y;y [mm];triplets",
 		  120, -6, 6 );
+
+  TH1I trix1Histo( "trix1", "triplets x;x [mm];triplets",
+		   1000, -5, 5 );
+  TH1I triy1Histo( "triy1", "triplets y;y [mm];triplets",
+		   120, -6, 6 );
+
   TH2I * trixyHisto = new
     TH2I( "trixy", "triplets x-y;x [mm];y [mm];triplets",
-	  240, -12, 12, 120, -6, 6 );
+	  2400, -12, 12, 120, -6, 6 );
   TH1I tritxHisto( "tritx", "triplet slope x;slope x [rad];triplets",
 		   100, -0.005*f, 0.005*f );
   TH1I trityHisto( "trity", "triplet slope y;slope y [rad];triplets",
 		   100, -0.005*f, 0.005*f );
 
-  TH1I ntriHisto( "ntri", "triplets;triplets;events", 51, -0.5, 50.5 );
+  TH1I tritxpHisto( "tritxp", "triplet slope x with pulse;slope x [rad];triplets",
+		    100, -0.005*f, 0.005*f );
+
+  TH1I tritypHisto( "trityp", "triplet slope y with pulse;slope y [rad];triplets",
+		    100, -0.005*f, 0.005*f );
+
+  TH1I ntriHisto( "ntri", "triplets;triplets;events", 51, 0, 51 );
+  TH1I ntriHistoP( "ntrip", "triplets;triplets with pulse;events", 51, 0, 51 );
 
   // MOD vs triplets:
 
   TH1I ttdminmod1Histo( "ttdminmod1",
-		     "triplet isolation at MOD;triplet at MOD min #Delta_{xy} [mm];triplet pairs",
-		     100, 0, 1 );
+			"triplet isolation at MOD;triplet at MOD min #Delta_{xy} [mm];triplet pairs",
+			100, 0, 1 );
   TH1I ttdminmod2Histo( "ttdminmod2",
-		     "triplet isolation at MOD;triplet at MOD min #Delta_{xy} [mm];triplet pairs",
-		     150, 0, 15 );
+			"triplet isolation at MOD;triplet at MOD min #Delta_{xy} [mm];triplet pairs",
+			150, 0, 15 );
 
   TH1I modxHisto( "modx",
 		  "MOD x;MOD cluster x [mm];MOD clusters",
@@ -1275,123 +1240,115 @@ int main( int argc, char* argv[] )
 
   // DUT vs triplets:
 
-  TH1I trixcHisto( "trixc",
-		   "in-time triplet at DUT x;triplet x at DUT [mm];in-time triplets",
+  TH2I * trixypHisto = new TH2I( "trixyp", "triplets x-y with pulse;x [mm];y [mm];triplets with pulse",
+				 600, -12, 12, 12, -6, 6 );
+
+  TH2I * trixyp1Histo = new TH2I( "trixyp1", "triplets x-y with pulse;x [mm];y [mm];triplets with pulse",
+				  2400, -12, 12, 120, -6, 6 );
+
+  TH1I trixpHisto( "trixp",
+		   "triplet x with pulse;triplet x at Diode [mm];triplets with pulse",
+		   1000, -5, 5 );
+
+  TH1I trixpaHisto( "trixpa",
+		    "triplet x with pulse;triplet x at Diode [mm];triplets with pulse",
+		    1000, -5, 5 );
+
+  TH1I triypHisto( "triyp",
+		   "triplet y with pulse;triplet y at Diode [mm];triplets with pulse",
 		   120, -6, 6 );
-  TH1I triycHisto( "triyc",
-		   "in-time triplet at DUT y;triplet y at DUT [mm];in-time triplets",
-		   120, -6, 6 );
 
-  TH2I * pixzyHisto = new
-    TH2I( "pixzy",
-	  "DUT hits;z [mm];y [mm];pixels",
-	  220, -11, 11, 480, -6, 6 ); // bin = pix
+  TH1I triypaHisto( "triypa",
+		    "triplet y with pulse;triplet y at Diode [mm];triplets with pulse",
+		    120, -6, 6 );
 
-  TH1I pixdxaHisto( "pixdxa",
-		    "PIX - Telescope x;pixel - triplet #Deltax [mm];pixels",
-		    440, -11, 11 );
-  TH1I pixsxaHisto( "pixsxa",
-		    "PIX + Telescope x;pixel + triplet #Sigmax [mm];pixels",
-		    440, -11, 11 );
-  TH1I pixdyaHisto( "pixdya",
-		    "PIX - Telescope y;pixel - triplet #Deltay [mm];pixels",
-		    240, -6, 6 );
-  TH1I pixsyaHisto( "pixsya",
-		    "PIX + Telescope y;pixel + triplet #Sigmay [mm];pixels",
-		    240, -6, 6 );
-
-  TH1I pixdyHisto( "pixdy",
-		   "pixel - Telescope dy;pixel - triplet #Deltaxy [mm];pixels",
-		   200, -0.5, 0.5 );
-
-  TH1I pixdxcHisto( "pixdxc",
-		    "pixel - Telescope dx;pixel - triplet #Deltaxx [mm];pixels",
-		    200, -0.5, 0.5 );
-  TProfile pixdxvsz( "pixdxvsz",
-		     "#Deltax vs z;z [mm];<pixel - triplet #Deltax> [mm]",
-		     200, -10, 10, -0.1, 0.1 );
-  TProfile pixdxvsy( "pixdxvsy",
-		     "#Deltax vs y;track y [mm];<pixel - triplet #Deltax> [mm]",
-		     100, -5, 5, -0.1, 0.1 );
-  TProfile pixdxvsev( "pixdxvsev", "PIX - Telescope x vs time;time [events];<#Deltax> [mm]",
-		      600, 0, 600*1000, -0.1, 0.1 );
-
-  TH2I * hroadmap = new TH2I( "roadmap",
-			      "road map;col;row;active pixels",
-			      400, 0, 400, 192, 0, 192 );
-  TH1I pixbclkHisto( "pixbclk",
-		     "DUT linked pixel BC;DUT pixel BC;DUT pixels on tracks",
-		     32, 0, 32 );
-  TProfile pixbcvsd( "pixbcvsd",
-		     "PIX BC vs depth;depth [mm];<pixel BC>",
-		     80, -0.2, 0.2 );
-  TProfile2D * pixqvsdxdy = new
-    TProfile2D( "pixqvsdxdy",
-		"DUT pixel signal map;height [mm];depth [mm];<pixel signal> [ToT]",
-		80, -0.200, 0.200, 60, -0.150, 0.150 );
-
-  TH1I pixdycHisto( "pixdyc",
-		    "pixel - Telescope dy;pixel - triplet #Deltaxy [mm];pixels",
-		    200, -0.5, 0.5 );
-  TProfile pixdyvsz( "pixdyvsz",
-		     "#Deltay vs z;z [mm];<pixel - triplet #Deltay> [mm]",
-		     200, -10, 10, -0.1, 0.1 );
-  TProfile pixdyvsy( "pixdyvsy",
-		     "#Deltay vs y;track y [mm];<pixel - triplet #Deltay> [mm]",
-		     100, -5, 5, -0.1, 0.1 );
-  TProfile pixdyvsty( "pixdyvsty",
-		      "#Deltay vs #theta_{y};track y slope [mrad];<pixel - triplet #Deltay> [#mum]",
-		      40, -2, 2, -100, 100 );
-  TProfile pixdyvsev( "pixdyvsev", "PIX - Telescope y vs time;time [events];<#Deltay> [mm]",
-		      600, 0, 600*1000, -0.1, 0.1 );
-
-  TH1I roadnpxHisto( "roadnpx",
-		    "pixels in track road;in-road pixels;fiducial tracks",
-		    400,  0.5, 400.5 );
-  TH1I roadncolHisto( "roadncol",
-		      "filled columns in track road;filled columns;tracks",
-		      150, 0.5, 150.5 );
-  TProfile roadncolvscol0( "roadncolvscol0",
-			   "filled columns in track road;first column;filled columns;tracks",
-			   400, 0, 400 );
-
-  TH1I tridHisto( "trid",
-		  "in-time triplet depth;depth [mm];in-time triplets",
-		  80, -0.2, 0.2 );
-  TH1I tridlkHisto( "tridlk",
-		  "in-time triplet depth;depth [mm];in-time triplet hits",
-		  80, -0.2, 0.2 );
-  TProfile pixqvsd( "pixqvsd",
-		    "PIX column signal vs depth [mm];depth [#mum];<column signal> [ToT]",
-		    80, -200, 200 );
-  TProfile2D * pixqvsyd = new
-    TProfile2D( "pixqvsyd",
-		"PIX column signal vs ymod and depth;depth [#mum];y_{track} mod 50 #mum;<column signal [ToT]>",
-		80, -0.2, 0.2, 25, 0, 50 );
-
-  TH1I triymHisto( "triym",
-		   "in-time in-depth triplet y;y [mm];in-time in-depth triplets",
-		   120, -6, 6 );
-  TH1I triymlkHisto( "triymlk",
-		     "in-time in-depth linked triplet y;y [mm];in-time in-depth triplet hits",
-		     120, -6, 6 );
+  TH1I triypcHisto( "triypc",
+		    "triplet y with pulse;triplet y at Diode [mm];triplets with pulse",
+		    120, -6, 6 );
 
   TProfile modlkvst1( "modlkvst1",
 		      "triplet-MOD links vs time;time [s];triplets with MOD links / s",
 		      300, 0, 300, -0.5, 1.5 );
+
   TProfile modlkvst3( "modlkvst3",
 		      "triplet-MOD links vs time;time [s];triplets with MOD links / 10s",
 		      150, 0, 1500, -0.5, 1.5 );
+
   TProfile modlkvst5( "modlkvst5",
 		      "triplet-MOD links vs time;time [s];triplets with MOD links / min",
 		      1100, 0, 66000, -0.5, 1.5 );
+
   TProfile modlkvsev( "modlkvsev",
 		      "triplet-MOD links vs events;events;triplets with MOD links / 1000",
 		      1100, 0, 1.1E6, -0.5, 1.5 );
 
-  TH1I ntrimodHisto( "ntrimod", "triplet - MOD links;triplet - MOD links;events",
-		    11, -0.5, 10.5 );
 
+  TH1I ntrimodHisto( "ntrimod", "triplet - MOD links;triplet - MOD links;events",
+		     11, 0, 11 );
+
+  TH2D Index_Over_Thr( "IOT", "events with Index_Over_Thr",
+		       10000, 0, 10000,200,-1,1 );
+
+
+  TH1I DiodeCharge( "DiodeCharge", "Charge of events with Index_Over_Thr",
+		    125, -30, 220 );
+
+  TH2D * DCX = new TH2D( "DCX",
+			 "Charge 2-D profile in X direction; X(mm); Charge(fC)",
+			 200, -1, 1, 100, -10, 220 );
+
+  TProfile ChargeVsX( "ChargeVsX",
+                      "Charge profile at DUT surface (fC);X(mm)  ;Charge(fC)",
+                      1000, -5, 5, -30, 220 );
+
+  TProfile ChargeVsX1( "ChargeVsX1",
+		       "Charge profile at DUT surface (fC);X(mm)  ;Charge(fC)",
+		       1000, -5, 5, -30, 220 );
+
+  TProfile ChargeVsY( "ChargeVsY",
+		      "Charge profile at DUT surface (fC); Y(mm);Charge(fC)",
+                      400, -5, 5, -30, 220 );
+
+  TProfile2D QVsXYa( "QVsXYa",
+		     "Charge 2-D profiel versus (x,y); X(mm);Y(mm)",
+		     200, -1, 1, 200, -5,5 );
+
+  TProfile2D QVsXY( "QVsXY",
+		    "Charge 2-D profiel versus (x,y); X(mm);Y(mm)",
+		    200, -3, -1, 200, -6,6 );
+
+  TH1I Offset( "Offset", "Baseline Distribution",
+	       256, -128.5, 127.5  );
+
+  TProfile Initial_Charge( "Initial_Charge",
+			   "Initial Charge profile at DUT surface (fC);X(mm);Charge(fC)",
+			   200, -3, -1, 0, 100 );
+
+  TProfile TLUvsDT( "TLUvsDT",
+		    "TLU time difference vs DDT; TLU (us) ;TLU-R&S (us)",
+		    100, 0, 1000, -2, 2 );
+
+  TProfile RSvsDT( "RSvsDT",
+                   "R&S time difference vs DDT; R&S (us) ;TLU-R&S (us)",
+		   10000, 0, 50, -2, 2 );
+
+  TProfile trityyp( "trityyp", "Slope vs Pos; Y(mm); slope_y(rad)",
+		    300, -6, 6,-0.005*f, 0.005*f );
+
+  TH1D    peaktripn("peaktripn","max amplitude of events with zero reconstructed track; adc", 256, -128.5, 127.5 );
+
+  TH1D    peakatdt("peakatdt","max amplitude of events with max index between 800-900 ; adc", 256, -128.5, 127.5 );
+
+  TProfile2D hpulsex( "pulsex","Charge in X direction",
+		      600, -3, 3, 2000, -0.5, 1999.5 );
+
+  TProfile hpulse1( "pulse1", "average pulse;sample;<ADC>", 2000, -0.5, 1999.5 );
+
+  TH1I ntrimodHistoP( "ntrimodp", "triplet - MOD links;triplet - MOD links;events",
+		      11, 0, 11 );
+
+
+  std::vector<int> Event_Vector={};
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // event loop:
 
@@ -1418,6 +1375,9 @@ int main( int argc, char* argv[] )
   }
   uint64_t prevTLU = evTLU0;
 
+  double D_ts0 = 0;
+  double D_prevts = 0;
+
   int iev = 0;
 
   if( fev ) cout << "EU skip " << fev << endl;
@@ -1428,7 +1388,7 @@ int main( int argc, char* argv[] )
 
   int nevA = 0;
   int nevB = 0;
-
+  std::vector<int> v = {};
   do {
 
     evt = reader->GetDetectorEvent();
@@ -1443,16 +1403,16 @@ int main( int argc, char* argv[] )
     t5Histo.Fill( evsec );
     t6Histo.Fill( evsec/3600 );
 
-    double evdt = (evTLU - prevTLU) / fTLU;
-    dtusHisto.Fill( evdt * 1E6 ); // [us]
-    dtmsHisto.Fill( evdt * 1E3 ); // [ms]
+    double dtTLU = (evTLU - prevTLU) / fTLU;
+    dtusHisto.Fill( dtTLU * 1E6 ); // [us]
+    dtmsHisto.Fill( dtTLU * 1E3 ); // [ms]
 
     dt373Histo.Fill( (evTLU - prevTLU)%373 );
     dt374Histo.Fill( (evTLU - prevTLU)%374 );
     dt375Histo.Fill( (evTLU - prevTLU)%375 ); // best
     dt376Histo.Fill( (evTLU - prevTLU)%376 );
     dt377Histo.Fill( (evTLU - prevTLU)%377 );
-    dt375vsdt.Fill( evdt*1E6, (evTLU - prevTLU)%375 ); // linear
+    dt375vsdt.Fill( dtTLU*1E6, (evTLU - prevTLU)%375 ); // linear
 
     prevTLU = evTLU;
 
@@ -1465,13 +1425,13 @@ int main( int argc, char* argv[] )
       ldbg = 1;
 
     if( iev < 10 || ldbg )
-      cout << "edg53  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "edg53 processing  " << run << "." << iev << "  taken " << evsec << endl;
     else if( iev < 100 && iev%10 == 0 )
-      cout << "edg53  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "edg53 processing  " << run << "." << iev << "  taken " << evsec << endl;
     else if( iev < 1000 && iev%100 == 0 )
-      cout << "edg53  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "edg53 processing  " << run << "." << iev << "  taken " << evsec << endl;
     else if( iev%1000 == 0 ) {
-      cout << "edg53  " << run << "." << iev
+      cout << "edg53 processing  " << run << "." << iev
 	   << "  taken " << evsec
 	   << endl;
     }
@@ -1480,7 +1440,6 @@ int main( int argc, char* argv[] )
 
     if( ldbg ) cout << "planes " << sevt.NumPlanes() << endl;
 
-    vector <pixel> pbDUT;
     vector < cluster > cl[9];
 
     for( size_t iplane = 0; iplane < sevt.NumPlanes(); ++iplane ) {
@@ -1499,9 +1458,9 @@ int main( int argc, char* argv[] )
 	  << " hits " << plane.HitPixels()
 	  ;
 
-      int ipl = plane.ID(); // 0 = DUT, 1..6 = Mimosa
+      int ipl = plane.ID(); // 1..6 = Mimosa
 
-      if( ipl < 0 || ipl > 6 ) {
+      if( ipl < 1 || ipl > 6 ) {
 	cout << "event " << iev << " wrong plane number " << ipl << endl;
 	continue;
       }
@@ -1509,8 +1468,6 @@ int main( int argc, char* argv[] )
       hpivot[ipl].Fill( plane.PivotPixel() );
       hnpx[ipl].Fill( plane.HitPixels() );
       hnframes[ipl].Fill( plane.NumFrames() ); // 32
-      if( ipl == iDUT )
-	dutnpxvsev.Fill( iev, plane.HitPixels() );
 
       vector <pixel> pb; // for clustering
 
@@ -1529,11 +1486,6 @@ int main( int argc, char* argv[] )
 	  int iy = plane.GetY(ipix,frm); // row
 	  int tot = plane.GetPixel(ipix,frm); // ToT 0..15
 
-	  if( ipl == iDUT ) {
-	    dutpxbc0Histo.Fill( frm ); // before hot pixel masking
-	    hmap[8]->Fill( ix+0.5, iy+0.5 ); // before masking
-	  }
-
 	  // skip hot pixels:
 
 	  int ipx = ix*ny[ipl] + iy;
@@ -1544,27 +1496,6 @@ int main( int argc, char* argv[] )
 	  px.row = iy; // row
 	  px.tot = tot;
 	  px.frm = frm;
-
-	  if( ipl == iDUT ) {
-
-	    px.tot += 1; // shift from zero
-
-	    if( !fifty ) { // 100x25 from ROC to sensor:
-	      px.col = ix/2; // 100 um
-	      if( ix%2 )
-		px.row = 2*iy + 0; // different from R4S
-	      else
-		px.row = 2*iy + 1; // see ed53 for shallow angle
-	      if( chip0 == 182 || chip0 == 211 || chip0 == 512 ) { // HLL
-		if( ix%2 )
-		  px.row = 2*iy + 1;
-		else
-		  px.row = 2*iy + 0;
-	      }
-
-	    } // not fifty
-
-	  } // DUT
 
 	  pb.push_back(px);
 
@@ -1578,10 +1509,7 @@ int main( int argc, char* argv[] )
 
       // clustering:
 
-      if( ipl == iDUT )
-	pbDUT = pb; // no clustering
-      else
-	cl[ipl] = getClusn( pb ); // Mimosa
+      cl[ipl] = getClusn( pb ); // Mimosa
 
       if( ldbg ) cout << "    clusters " << cl[ipl].size() << endl;
 
@@ -1613,23 +1541,125 @@ int main( int argc, char* argv[] )
     } // eudaq planes
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // DUT:
+    // Diode
+    /*
+      one trigger:
 
-    for( unsigned ipx = 0; ipx < pbDUT.size(); ++ipx ) {
+      8 bytes pre
+      8 bytes timestamp
+      7 bytes pre
+      8000 bytes waveform
+      17 bytes post
+      ----
+      8040
+    */
+    // pre-bytes:
 
-      int col = pbDUT[ipx].col; // sensor
-      int row = pbDUT[ipx].row; // sensor
-      int tot = pbDUT[ipx].tot;
-      int frm = pbDUT[ipx].frm; // [BC]
+    bool ldb = 0;
+    bool ldb2 = 0; // debug flag timestamps
 
-      dutpxcolHisto.Fill( col + 0.5 );
-      dutpxrowHisto.Fill( row + 0.5 );
-      dutpxqHisto.Fill( tot + 0.5 );
-      dutpxbcHisto.Fill( frm + 0.5 );
+    char y;
 
-      dutpxqvsx.Fill( col + 0.5, tot + 0.5 );
-      dutpxqvsxy->Fill( col + 0.5, row + 0.5, tot + 0.5 );
+    for( int k = 0; k < 8; ++k ) {
+      wff.read( ( char * ) &y, sizeof( y ) );
+      if( ldb ) cout << " " << (int) y;
+    }
 
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // Diode time stamp:
+
+    double ts;
+    wff.read( ( char * ) &ts, sizeof( ts ) );
+
+    if( ldb || ldb2 ) cout << ts << " s" << endl;
+
+    if( iev == 0 )
+      D_ts0 = ts; // most negative
+
+    ht1.Fill( ts - D_ts0 );
+    ht2.Fill( ts - D_ts0 );
+
+    if( iev > 0 ) {
+      double dt = ts - D_prevts;
+      hdtus.Fill( dt * 1E6 ); // [us]
+      hdtms.Fill( dt * 1E3 ); // [ms]
+      double ddt = dt - dtTLU; // [s]
+      hddtus.Fill( ddt * 1E6 ); // [us]
+      TLUvsDT.Fill(dtTLU*1E6,ddt*1E6);
+      RSvsDT.Fill(ts - D_ts0,ddt*1E6);
+    }
+
+    D_prevts = ts; // remember
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // more pre-bytes:
+
+    if( ldb ) cout << wff.tellg();
+
+    for( int k = 0; k < 7; ++k ) {
+
+      wff.read( ( char * ) &y, sizeof( y ) );
+      if( ldb ) cout << " " << (int) y;
+    }
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // waveform:
+
+    if( ldb ) cout << wff.tellg();
+
+    int ymin = 128;
+    int kmin = 0;
+    char yy[2000];
+    double Offset1=0;
+    //double Offset2=0;
+    int prebins_start = 600;
+    int prebins_stop = 800;
+
+    bool pulse = 0;
+
+    for( int k = 0; k < 2000; ++k ) { // from xml RecordLength
+
+      wff.read( ( char * ) &y, sizeof( y ) );
+      yy[k] = y;
+      hadc.Fill( y ); // mean 25.66, rms 2.4
+      hwave.Fill( k, y );
+      if( y < ymin ) {
+	ymin = y;
+	kmin = k;
+      }
+    } // k samples
+
+    for (int l=prebins_start; l<prebins_stop; ++l) {
+      Offset1=Offset1+yy[l];
+    }
+
+    Offset1=Offset1/(prebins_stop-prebins_start);
+
+    //Offset2=((Offset1-73)*200*1.58E-3*1E-10*1E15/(50*100)); // unused
+    Offset.Fill(Offset1);
+
+    hpeak.Fill( ymin );
+    hpeakpos.Fill( kmin );
+
+    if( ymin <= Offset1-16) { // pulse
+
+      pulse = 1;
+
+      hpulsepos.Fill( kmin );
+
+      for( int k = 0; k < 2000; ++k ) { // from xml RecordLength
+	hpulse.Fill( k, yy[k] );
+      }
+
+    } // peak
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // post bytes:
+
+    if( ldb ) cout << wff.tellg();
+    for( int k = 0; k < 17; ++k ) {
+      wff.read( ( char * ) &y, sizeof( y ) );
+      if( ldb ) cout << " " << (int) y;
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1870,7 +1900,7 @@ int main( int argc, char* argv[] )
 
       if( ldb ) cout << endl;
 
-      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       // module clustering:
 
       hnpx[iMOD].Fill( pbmod.size() );
@@ -2016,10 +2046,13 @@ int main( int argc, char* argv[] )
 
     ntriHisto.Fill( triplets.size() );
 
+    if (triplets.size()==0) {
+      peaktripn.Fill(ymin);
+    }
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // triplets vs MOD and DUT:
+    // triplets vs MOD:
 
-    int nmdm = 0;
+    int modmatch = 0;
     int ntrimod = 0;
 
     double xcutMOD = 0.15;
@@ -2048,7 +2081,7 @@ int main( int argc, char* argv[] )
 
 	double xmj = triplets[jj].xm;
 	double ymj = triplets[jj].ym;
-	double sxj = triplets[jj].sx;
+	double sxj = triplets[jj].sx; // track slope x
 	double syj = triplets[jj].sy;
 
 	double dz = MODz - triplets[jj].zm;
@@ -2094,10 +2127,8 @@ int main( int argc, char* argv[] )
       double xmodm = fmod( 36.000 + x4m, 0.3 ); // [0,0.3] mm, 2 pixel wide
       double ymodm = fmod(  9.000 + y4m, 0.2 ); // [0,0.2] mm
 
-      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       // triplets vs MOD clusters:
-
-      bool ltrimod = 0;
 
       for( vector<cluster>::iterator c = cl[iMOD].begin(); c != cl[iMOD].end(); ++c ) {
 
@@ -2170,13 +2201,32 @@ int main( int argc, char* argv[] )
 	  //if( iev > 5100200 && crow < 80 ) cout << "link " << crow << " ev " << iev << endl; // A
 
 	  triplets[iA].lk = 1;
-	  nmdm = 1; // we have a MOD-triplet match in this event
+	  modmatch = 1; // we have a MOD-triplet match in this event
 	  ++ntrimod;
-	  ltrimod = 1;
 
 	} // MOD link x and y
 
       } // MOD
+
+    } // triplets
+
+    modlkvst1.Fill( evsec, modmatch ); // MOD yield vs time
+    modlkvst3.Fill( evsec, modmatch );
+    modlkvst5.Fill( evsec, modmatch );
+    modlkvsev.Fill( iev, modmatch );
+    ntrimodHisto.Fill( ntrimod ); // number of in-time triplets per event
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    for( unsigned int iA = 0; iA < triplets.size(); ++iA ) { // iA = upstream
+
+      bool ltrimod = triplets[iA].lk; // triplet has MOD link
+
+      double xmA = triplets[iA].xm;
+      double ymA = triplets[iA].ym;
+      double zmA = triplets[iA].zm;
+      double sxA = triplets[iA].sx;
+      double syA = triplets[iA].sy;
 
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       // tri vs tri: isolation at DUT
@@ -2212,204 +2262,125 @@ int main( int argc, char* argv[] )
       ttdmin2Histo.Fill( ttdmin );
       triplets[iA].ttdmin = ttdmin;
 
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      // intersect inclined track with turned DUT plane:
+
+      double zc = (Nz*dzA - Ny*ymA - Nx*xmA) / (Nx*sxA + Ny*syA + Nz); // from zmA
+      double yc = ymA + syA * zc;
+      double xc = xmA + sxA * zc;
+
+      double dzc = zc + zmA - DUTz; // from DUT z0 [-8,8] mm
+
+      // transform into DUT system: (passive).
+      // large rotations don't commute: careful with order
+
+      double x1 = co*xc - so*dzc; // turn o
+      double y1 = yc;
+      double z1 = so*xc + co*dzc;
+
+      double x2 = x1;
+      double y2 = ca*y1 + sa*z1; // tilt a
+
+      double x3 = cf*x2 + sf*y2; // rot
+      double y3 =-sf*x2 + cf*y2;
+
+      double x4 = x3 - DUTalignx; // shift to mid
+      double y4 = y3 - DUTaligny; // shift to mid
+
+      // x4, y4 are the track coordinates at the DUT [mm], alignment applied
+
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       // triplet vs DUT:
 
-      if( ltrimod ) { // in-time
+      if( pulse && ltrimod ) {  // Diode Find the in time events with amplitude bigger than threshold
 
-	trixcHisto.Fill( xAc );
-	triycHisto.Fill( yAc );
+        tritxpHisto.Fill( sxA );
+        tritypHisto.Fill( syA );
 
-	int nroad = 0;
-	vector <int> roadcol(nx[iDUT]);
+        trixpHisto.Fill( x4 );
+        triypHisto.Fill( y4 );
 
-	vector <int> colq(nx[iDUT]);
+        trixypHisto->Fill( x4, y4 );
+        trixyp1Histo->Fill( xc, yc);
 
-	for( unsigned ipx = 0; ipx < pbDUT.size(); ++ipx ) { // pixels
+        Index_Over_Thr.Fill(iev,x4);
+        double C0=0;
+        int strt =  800;
+        int stop = 1000;
 
-	  int col = pbDUT[ipx].col; // sensor
-	  int row = pbDUT[ipx].row; // sensor
-	  int tot = pbDUT[ipx].tot;
-	  int frm = pbDUT[ipx].frm; // [BC]
+        Event_Vector.push_back(iev);
 
-	  double pz = ( col + 0.5 - nx[iDUT]/2 ) * ptchx[iDUT]; // mm
-	  double py = ( row + 0.5 - ny[iDUT]/2 ) * ptchy[iDUT]; // mm
+        for( int k = strt; k < stop; ++k ) {
+	  C0=((yy[k]-Offset1)*.00158)*10e-11+C0;
+        }
 
-	  pixzyHisto->Fill( pz, py );
+        C0=(C0*1e15/(50*100)*(-1));
 
-	  // transform pixel into telescope system:
+        if((y4 >-2.5) && (y4<1.5) && (fabs(sxA)<1e-3) && (ntrimod<2))  { // cut in y, look at x
 
-	  double x1 = 0; // sensor mid plane
-	  double y1 = cf*py + sf*pz; // rot
-	  double z1 =-sf*py + cf*pz;
+	  DiodeCharge.Fill(C0);
+	  ChargeVsX.Fill(x4,C0);
+	  trixpaHisto.Fill( x4 );
+	  triypaHisto.Fill( y4 );
+	  ntriHistoP.Fill(triplets.size());
 
-	  double x2 = co*x1 - so*z1; // turn x-z
-	  double y2 = y1;
-	  double z2 = so*x1 + co*z1;
 
-	  double x3 = ca*x2 + sa*y1; // tilt y-x
-	  double y3 =-sa*x2 + ca*y2;
-	  double z3 = z2;
-
-	  // track at z3:
-
-	  double dz = z3 + DUTz - zmA; // z of pixel from mid of triplet A
-	  double xA = xmA + sxA * dz; // triplet impact point on DUT
-	  double yA = ymA + syA * dz; // track A at pixel
-
-	  pixdxaHisto.Fill( xA - x3 );
-	  pixsxaHisto.Fill( xA + x3 );
-	  pixdyaHisto.Fill( yA - y3 );
-	  pixsyaHisto.Fill( yA + y3 );
-
-	  double dx = xA - x3 - DUTalignx;
-	  double dy = yA - y3 - DUTaligny;
-
-	  pixdyHisto.Fill( dy );
-	  pixqvsdxdy->Fill( dy, dx, tot );
-
-	  if( fabs( dy ) < 0.07 ) { // track road
-
-	    pixdxcHisto.Fill( dx );
-	    pixdxvsz.Fill( z3, dx ); // tan(turn) = slope
-	    pixdxvsy.Fill( yA, dx ); // tan(turn) = slope
-	    pixdxvsev.Fill( iev, dx );
-
-	    colq[col] += tot;
-
-	    if( fabs( dx ) < 0.150 ) { // depth
-
-	      hroadmap->Fill( col+0.5, row+0.5 );
-	      ++nroad;
-	      ++roadcol[col];
-	      pixbclkHisto.Fill( frm ); // linked
-	      pixbcvsd.Fill( dx, frm ); // timewalk? drift?
-
-	    }
-
-	  } // dy
-
-	  if( fabs( dx ) < 0.150 ) { // depth
-
-	    pixdycHisto.Fill( dy ); // aligny
-	    pixdyvsz.Fill( z3, dy ); // rot
-	    pixdyvsy.Fill( yA, dy ); // tan(tilt) = slope
-	    pixdyvsty.Fill( syA*1E3, dy*1E3 ); // slope = -dz
-	    pixdyvsev.Fill( iev, dy );
-
+	  for( int k = 0; k < 2000; ++k ) { // from xml RecordLength
+            hpulse1.Fill( k, yy[k] );
+            hpulsex.Fill(x4,k, yy[k]);
 	  }
 
-	} // loop pix
-
-	roadnpxHisto.Fill( nroad );
-
-	int ncol = 0;
-	int col0 = nx[iDUT];
-	int col9 = 0;
-	for( int icol = 0; icol < nx[iDUT]; ++icol ) {
-	  if( roadcol[icol] ) {
-	    ++ncol;
-	    if( icol < col0 ) col0 = icol;
-	    if( icol > col9 ) col9 = icol;
-	  }
 	}
 
-	roadncolHisto.Fill( ncol );
-	roadncolvscol0.Fill( col0+0.5, ncol ); // overflows have weight zero
 
-	// get mean depth per column:
+      } // Diode
 
-	for( int col = 128/(2-fifty); col < 264/(2-fifty); ++col ) { // Lin
+      if(  ltrimod ) { //triplets in-time without pulse
 
-	  double depth = 0;
-	  int nd = 0;
-	  bool in = 0;
-	  double ym = yAc; // track y at DUTz
-	  double dymin = 999;
-	  double ymod = 0;
+        Index_Over_Thr.Fill(iev,x4);
+        double C0=0;
+        int strt =  800;
+        int stop = 1000;
 
-	  for( int row = 0; row < 384/(2-fifty); ++row ) {
+        Event_Vector.push_back(iev);
+        ntrimodHistoP.Fill( ntrimod );
 
-	    double pz = ( col + 0.5 - nx[iDUT]/2 ) * ptchx[iDUT]; // mm
-	    double py = ( row + 0.5 - ny[iDUT]/2 ) * ptchy[iDUT]; // mm
+        for( int k = strt; k < stop; ++k ) {
+	  C0=((yy[k]-Offset1)*.00158)*10e-11+C0;
+        }
 
-	    // transform pixel into telescope system:
+        C0=(C0*1e15/(50*100)*(-1));
 
-	    double x1 = 0; // sensor mid plane
-	    double y1 = cf*py + sf*pz; // rot
-	    double z1 =-sf*py + cf*pz;
 
-	    double x2 = co*x1 - so*z1; // turn x-z
-	    double y2 = y1;
-	    double z2 = so*x1 + co*z1;
+	if( fabs(x4) < 0.2 ) { // cut in x, look at y
+	  ChargeVsY.Fill(y4,C0);
+        }
+	if((y4 >-2.5) && (y4<1.5) && (fabs(sxA)<1e-3) && (ntrimod<2)) { // cut in y, look at x
 
-	    double x3 = ca*x2 + sa*y1; // tilt y-x
-	    double y3 =-sa*x2 + ca*y2;
-	    double z3 = z2;
+	  DCX->Fill( x4, C0 );
 
-	    // track at z3:
+	  ChargeVsX1.Fill(x4,C0);
 
-	    double dz = z3 + DUTz - zmA; // z of pixel from mid of triplet A
-	    double xA = xmA + sxA * dz; // triplet impact point on DUT
-	    double yA = ymA + syA * dz; // track A at z(pixel)
 
-	    ymod = fmod( 8.000 + yA, 0.050 );
+        }
 
-	    double dx = xA - x3 - DUTalignx;
-	    double dy = yA - y3 - DUTaligny;
-
-	    if( fabs( dx ) > 0.220 ) continue; // depth
-	    if( fabs( dy ) > 0.100 ) continue; // road
-
-	    depth += dx;
-	    ++nd;
-
-	    if( fabs( dx ) < 0.075 )
-	      in = 1;
-
-	    if( fabs(dy) < fabs(dymin) ) {
-	      dymin = dy;
-	      ym = yA; // track at pixel
-	    }
-
-	  } // rows
-
-	  if( nd ) { // track in depth
-
-	    depth /= nd; // average of rows in this column
-
-	    tridHisto.Fill( depth );
-	    if( roadcol[col] )
-	      tridlkHisto.Fill( depth );
-
-	    pixqvsd.Fill( depth*1e3, colq[col] );
-	    pixqvsyd->Fill( depth*1e3, ymod*1e3, colq[col] );
-
-	  }
-
-	  if( in ) { // track in depth: fiducial
-
-	    triymHisto.Fill( ym );
-	    if( roadcol[col] )
-	      triymlkHisto.Fill( ym ); // check y acceptance
-
-	  }
-
-	} // cols = z along track
+        trix1Histo.Fill(x4);
+        triy1Histo.Fill(y4);
 
       } // in-time
 
     } // loop triplets
 
-    modlkvst1.Fill( evsec, nmdm ); // MOD yield vs time
-    modlkvst3.Fill( evsec, nmdm );
-    modlkvst5.Fill( evsec, nmdm );
-    modlkvsev.Fill( iev, nmdm );
-    ntrimodHisto.Fill( ntrimod );
-
     ++iev;
 
-  } while( reader->NextEvent() && iev < lev );
+  } while( reader->NextEvent() && iev < lev && ! wff.eof() ); // event loop
+
+
+  sort(Event_Vector.begin(),Event_Vector.end());
+  Event_Vector.erase( unique( Event_Vector.begin(), Event_Vector.end() ), Event_Vector.end() );
+
+  std::cout << "The number of events with amplitude higher than threshold (-25 mV) is: " << Event_Vector.size() <<'\n';
+
 
   delete reader;
 

@@ -1501,16 +1501,6 @@ int main( int argc, char* argv[] )
   TH1I difpxbcHisto( "difpxbc",
 		    "Diff pixel BC;Diff pixel BC;Diff pixels",
 		    32, -0.5, 31.5 );
-  TProfile dutpxbcvsx( "dutpxbcvsx",
-		      "DUT pixel BC vs x;column;<pixel BC>",
-		      400, 0, 400, -1, 32 );
-  TProfile2D * dutpxbcvsxy = new
-    TProfile2D( "dutpxbcvsxy",
-		"DUT pixel BC map;column;row;<pixel BC>",
-		400, 0, 400, 192, 0, 192, -1, 32 );
-  TProfile dutpxbcvst5( "dutpxbcvst5",
-			"DUT pixel BC vs time;time [s];<pixel BC>",
-			1100, 0, 66000, -0.5, 31.5 );
 
   TH1I dutpxcol9Histo( "dutpxcol9",
 		      "DUT pixel column after threshold;DUT pixel column;pixels",
@@ -1530,6 +1520,9 @@ int main( int argc, char* argv[] )
   TProfile tridxvsx( "tridxvsx",
 		     "triplet dx vs x;triplet x [mm];<triplet #Deltax> [mm]",
 		     120, -12, 12, -0.05, 0.05 );
+  TProfile trimadxvsx( "trimadxvsx",
+		       "triplet MADx vs x;triplet x [mm];triplet MAD(#Deltax) [#mum]",
+		       120, -12, 12, 0, 50 );
   TProfile tridxvsy( "tridxvsy",
 		     "triplet dx vs y;triplet y [mm];<triplet #Deltax> [mm]",
 		     110, -5.5, 5.5, -0.05, 0.05 );
@@ -1563,10 +1556,13 @@ int main( int argc, char* argv[] )
   TH2I * trixyHisto = new
     TH2I( "trixy", "triplets x-y;x [mm];y [mm];triplets",
 	  240, -12, 12, 120, -6, 6 );
-  TH1I tritxHisto( "tritx", "triplet slope x;slope x [rad];triplets",
-		   100, -0.005*f, 0.005*f );
-  TH1I trityHisto( "trity", "triplet slope y;slope y [rad];triplets",
-		   100, -0.005*f, 0.005*f );
+  TH1I tritxHisto( "tritx", "triplet slope x;slope x [mrad];triplets",
+		   100, -5*f, 5*f );
+  TProfile tritxwvsx( "tritxwvsx",
+		      "triplet slope width vs x;triplet x [mm];MAD(slope_{x}) [mrad]",
+		      240, -12, 12, 0, 5*f );
+  TH1I trityHisto( "trity", "triplet slope y;slope y [mrad];triplets",
+		   100, -5*f, 5*f );
 
   TH1I ntriHisto( "ntri", "triplets;triplets;events", 51, -0.5, 50.5 );
 
@@ -1623,6 +1619,12 @@ int main( int argc, char* argv[] )
 
   // MOD vs triplets:
 
+  TH1I modcolHisto( "modcol", "MOD col;MOD col;MOD cluster", 216, 0, 432 );
+  TH1I modrowHisto( "modrow", "MOD row;MOD row;MOD cluster", 162, 0, 162 );
+
+  TH1I modxHisto( "modx", "MOD x;MOD cluster x [mm];MOD clusters", 216, -32.4, 32.4 );
+  TH1I modyHisto( "mody", "MOD y;MOD cluster y [mm];MOD clusters", 200, -10, 10 );
+
   TH1I ttdminmod1Histo( "ttdminmod1",
 		     "triplet isolation at MOD;triplet at MOD min #Delta_{xy} [mm];triplet pairs",
 		     100, 0, 1 );
@@ -1636,13 +1638,6 @@ int main( int argc, char* argv[] )
   TH1I modydHisto( "modyd",
 		   "triplet at MOD y;triplet y at MOD [mm];triplets",
 		   160, -8, 8 );
-
-  TH1I modxHisto( "modx",
-		  "MOD x;MOD cluster x [mm];MOD clusters",
-		  700, -35, 35 );
-  TH1I modyHisto( "mody",
-		  "MOD y;MOD cluster y [mm];MOD clusters",
-		  200, -10, 10 );
 
   TH1I modsxaHisto( "modsxa",
 		    "MOD + triplet x;MOD cluster + triplet #Sigmax [mm];MOD clusters",
@@ -1715,25 +1710,25 @@ int main( int argc, char* argv[] )
 		"MOD cluster size vs xmod ymod;x track mod 300 [#mum];y track mod 200 [#mum];MOD <cluster size> [pixels]",
 		120, 0, 300, 80, 0, 200, 0, 20 );
 
-  TH1I modlkxdHisto( "modlkxd",
-		     "linked triplet at MOD x;triplet x at MOD [mm];linked triplets",
-		     216, -32.4, 32.4 );
-  TH1I modlkydHisto( "modlkyd",
-		     "linked triplet at MOD y;triplet y at MOD [mm];linked triplets",
-		     160, -8, 8 );
-  TH1I modlkxHisto( "modlkx",
-		    "linked triplet in MOD x;triplet x in MOD [mm];linked triplets",
-		    216, -32.4, 32.4 );
-  TH1I modlkyHisto( "modlky",
-		    "linked triplet in MOD y;triplet y in MOD [mm];linked triplets",
-		    160, -8, 8 );
-
-  TH1I modlkcolHisto( "modlkcol",
+  TH1I modcollkHisto( "modcollk",
 		      "MOD linked col;MOD linked col;linked MOD cluster",
 		      216, 0, 432 );
-  TH1I modlkrowHisto( "modlkrow",
+  TH1I modrowlkHisto( "modrowlk",
 		      "MOD linked row;MOD linked row;linked MOD cluster",
-		      182, 0, 182 );
+		      162, 0, 162 );
+
+  TH1I modxdlkHisto( "modxdlk",
+		     "linked triplet at MOD x;triplet x at MOD [mm];linked triplets",
+		     216, -32.4, 32.4 );
+  TH1I modydlkHisto( "modydlk",
+		     "linked triplet at MOD y;triplet y at MOD [mm];linked triplets",
+		     200, -10, 10 );
+  TH1I modxlkHisto( "modxlk",
+		    "linked triplet in MOD x;triplet x in MOD [mm];linked triplets",
+		    216, -32.4, 32.4 );
+  TH1I modylkHisto( "modylk",
+		    "linked triplet in MOD y;triplet y in MOD [mm];linked triplets",
+		    200, -10, 10 );
 
   TH1I trinfrmlkHisto( "trinfrmlk",
 		     "triplet linked frames;frames;linked triplet cluster",
@@ -1826,13 +1821,13 @@ int main( int argc, char* argv[] )
 			 80, -0.002, 0.002, 0, 0.1 );
   TProfile sixdxvsy( "sixdxvsy",
 		     "six #Deltax vs y;y [mm];<driplet - triplet #Deltax> [mm]",
-		     100, -5, 5, -0.5, 0.5 );
+		     100, -5, 5, -0.1, 0.1 );
   TProfile sixdxvstx( "sixdxvstx",
 		      "six #Deltax vs slope x;slope x [rad];<driplet - triplet #Deltax> [mm]",
-		      100, -0.002, 0.002, -0.5, 0.5 );
+		      100, -0.002, 0.002, -0.1, 0.1 );
   TProfile sixdxvsdtx( "sixdxvsdtx",
 		       "six #Deltax vs #Delta slope x;#Delta slope x [rad];<driplet - triplet #Deltax> [mm]",
-		       100, -0.002, 0.002, -0.5, 0.5 );
+		       100, -0.002, 0.002, -0.1, 0.1 );
   TProfile sixdxvst3( "sixdxvst3",
 		      "sixplet dx vs time;time [s];<sixplet #Deltax> [mm] / 10s",
 		      300, 0, 3000, -0.05, 0.05 );
@@ -1842,16 +1837,16 @@ int main( int argc, char* argv[] )
 
   TProfile sixdyvsx( "sixdyvsx",
 		     "six #Deltay vs x;x [mm];<driplet - triplet #Deltay> [mm]",
-		     200, -10, 10, -0.5, 0.5 );
+		     200, -10, 10, -0.1, 0.1 );
   TProfile sixdyvsy( "sixdyvsy",
 		     "six #Deltay vs y;y [mm];<driplet - triplet #Deltay [mm]",
 		     110, -5.5, 5.5, -0.1, 0.1 );
   TProfile sixdyvsty( "sixdyvsty",
 		      "six #Deltay vs slope y;slope y [rad];<driplet - triplet #Deltay> [mm]",
-		      100, -0.002, 0.002, -0.5, 0.5 );
+		      100, -0.002, 0.002, -0.1, 0.1 );
   TProfile sixdyvsdty( "sixdyvsdty",
 		       "six #Deltay vs #Delta slope y;#Delta slope y [rad];<driplet - triplet #Deltay> [mm]",
-		       100, -0.002, 0.002, -0.5, 0.5 );
+		       100, -0.002, 0.002, -0.1, 0.1 );
   TProfile sixdyvst3( "sixdyvst3",
 		      "sixplet dy vs time;time [s];<sixplet #Deltay> [mm] / 10s",
 		      300, 0, 3000, -0.05, 0.05 );
@@ -2008,8 +2003,8 @@ int main( int argc, char* argv[] )
 			"DUT MAD(#Deltax) vs xmod;x track mod 50 [#mum];MAD(#Deltax) [mm]",
 			50, 0, 50, 0, limx );
   TProfile dutmadxvstx( "dutmadxvstx",
-			"DUT MAD(#Deltax) vs #theta_{x};x track slope [rad];MAD(#Deltax) [mm]",
-			80, -0.002, 0.002, 0, limx );
+			"DUT MAD(#Deltax) vs #theta_{x};x track slope [mrad];MAD(#Deltax) [mm]",
+			80, -2, 2, 0, limx );
   TProfile dutmadxvsq( "dutmadxvsq",
 		       "DUT MAD(#Deltax) vs Q;cluster signal [ToT];MAD(#Deltax) [mm]",
 		       80, 0, 80, 0, limx );
@@ -2716,6 +2711,18 @@ int main( int argc, char* argv[] )
   TH1I dutpxbclk1rHisto( "dutpxbclk1r", "DUT linked 1-row pixel BC;DUT pixel BC;linked pixels",
 			 32, -0.5, 31.5 );
 
+  TProfile dutpxbcvsq( "dutpxbcvsq",
+		      "DUT pixel BC vs q;[ixel charge [ToT];<pixel BC>", 16, 0, 16 );
+  TProfile dutpxbcvsx( "dutpxbcvsx",
+		      "DUT pixel BC vs x;column;<pixel BC>", nbc, 0, nbc );
+  TProfile dutpxbcvsy( "dutpxbcvsy",
+		      "DUT pixel BC vs y;row;<pixel BC>", nbr, 0, nbr );
+  TProfile2D * dutpxbcvsxy = new
+    TProfile2D( "dutpxbcvsxy",
+		"DUT pixel BC map;column;row;<pixel BC>", nbc, 0, nbc, nbr, 0, nbr );
+  TProfile dutpxbcvst5( "dutpxbcvst5",
+			"DUT pixel BC vs time;time [s];<pixel BC>", 1100, 0, 66000 );
+
   TH1I dutpxqbcHisto[32];
   for( int frm = 0; frm < 32; ++frm )
     dutpxqbcHisto[frm] =
@@ -3073,9 +3080,6 @@ int main( int argc, char* argv[] )
 	      linpxbcHisto.Fill( frm );
 	    else
 	      difpxbcHisto.Fill( frm );
-	    dutpxbcvsx.Fill( ix, frm );
-	    dutpxbcvsxy->Fill( ix, iy, frm );
-	    dutpxbcvst5.Fill( evsec, frm ); // long run 34135: not stable
 
 	    int thr = 0;
 
@@ -3102,6 +3106,10 @@ int main( int argc, char* argv[] )
 	      thr = 2; // suppress cross talk
 	    //thr = 3; // suppress cross talk
 	    //thr = 8; // study
+
+	    if( chip0 == 578 )
+	      thr = 1; // no cut
+	    //thr = 2; // suppress cross talk
 
 	    if( px.tot < thr ) continue; // offline threshold
 
@@ -3641,6 +3649,210 @@ int main( int argc, char* argv[] )
 
     }
 
+    if( run == 38095 ) { // dutdxvst2->Fit("pol9")
+
+      double p0 =  -0.00145845;
+      double p1 = -6.12614e-05;
+      double p2 =  2.07746e-06;
+      double p3 = -2.33604e-08;
+      double p4 =  1.32488e-10;
+      double p5 = -4.28366e-13;
+      double p6 =  8.23075e-16;
+      double p7 = -9.28281e-19;
+      double p8 =  5.66396e-22;
+      double p9 = -1.44019e-25;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 38096 ) { // dutdxvst2->Fit("pol9")
+
+      double p0 =    -0.002503;
+      double p1 = -4.63296e-05;
+      double p2 =  1.38021e-06;
+      double p3 = -1.40307e-08;
+      double p4 =  7.59069e-11;
+      double p5 = -2.40585e-13;
+      double p6 =  4.60265e-16;
+      double p7 = -5.22692e-19;
+      double p8 =  3.24234e-22;
+      double p9 = -8.45737e-26;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 38097 ) { // dutdxvst2->Fit("pol9")
+
+      double p0 =  -0.00257178;
+      double p1 =  7.23449e-05;
+      double p2 = -8.85536e-07;
+      double p3 =  7.00554e-09;
+      double p4 = -3.58695e-11;
+      double p5 =  1.23641e-13;
+      double p6 = -2.79799e-16;
+      double p7 =   3.8982e-19;
+      double p8 = -2.99069e-22;
+      double p9 =  9.59883e-26;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 38105 ) { // dutdxvst2->Fit("pol9")
+
+      double p0 =   0.00557853;
+      double p1 = -7.22542e-05;
+      double p2 =  1.15178e-06;
+      double p3 = -1.32007e-08;
+      double p4 =  8.64756e-11;
+      double p5 = -3.33374e-13;
+      double p6 =  7.74128e-16;
+      double p7 =  -1.0657e-18;
+      double p8 =  8.01204e-22;
+      double p9 = -2.53382e-25;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 38106 ) { // dutdxvst2->Fit("pol9")
+
+      double p0 =  0.000339581;
+      double p1 =  8.78933e-05;
+      double p2 = -2.27439e-06;
+      double p3 =  2.23216e-08;
+      double p4 = -1.15775e-10;
+      double p5 =  3.45126e-13;
+      double p6 = -6.04512e-16;
+      double p7 =  6.05458e-19;
+      double p8 =  -3.1325e-22;
+      double p9 =  6.19965e-26;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 38107 ) { // dutdxvst2->Fit("pol9")
+
+      double p0 =   0.00202886;
+      double p1 =  4.13588e-05;
+      double p2 = -1.60627e-06;
+      double p3 =  1.98847e-08;
+      double p4 = -1.23116e-10;
+      double p5 =  4.28409e-13;
+      double p6 = -8.75501e-16;
+      double p7 =   1.0428e-18;
+      double p8 = -6.70107e-22;
+      double p9 =  1.79548e-25;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 38108 ) { // dutdxvst2->Fit("pol9")
+
+      double p0 =   0.00432767;
+      double p1 = -2.93722e-05;
+      double p2 = -7.34686e-07;
+      double p3 =  1.51137e-08;
+      double p4 = -1.16217e-10;
+      double p5 =   4.7268e-13;
+      double p6 =  -1.1088e-15;
+      double p7 =  1.50735e-18;
+      double p8 = -1.10427e-21;
+      double p9 =  3.37592e-25;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 38109 ) { // dutdxvst2->Fit("pol9")
+
+      double p0 =   0.00400614;
+      double p1 =  0.000185384;
+      double p2 = -5.13357e-06;
+      double p3 =  6.24512e-08;
+      double p4 = -4.13974e-10;
+      double p5 =  1.58577e-12;
+      double p6 = -3.60821e-15;
+      double p7 =  4.81435e-18;
+      double p8 = -3.47961e-21;
+      double p9 =  1.05183e-24;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 38111 ) { // dutdxvst2->Fit("pol9")
+
+      double p0 =   0.00202815;
+      double p1 =  2.99177e-05;
+      double p2 = -9.52802e-07;
+      double p3 =  8.64039e-09;
+      double p4 = -4.19191e-11;
+      double p5 =  1.07239e-13;
+      double p6 = -1.23459e-16;
+      double p7 =   8.0915e-22;
+      double p8 =  1.20339e-22;
+      double p9 = -7.35116e-26;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 38112 ) { // dutdxvst2->Fit("pol9")
+
+      double p0 =   0.00260416;
+      double p1 = -0.000136501;
+      double p2 =   2.2008e-06;
+      double p3 = -1.98835e-08;
+      double p4 =  1.02248e-10;
+      double p5 = -3.13804e-13;
+      double p6 =  5.86944e-16;
+      double p7 = -6.58118e-19;
+      double p8 =  4.08061e-22;
+      double p9 = -1.07997e-25;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 38117 ) { // dutdxvst2->Fit("pol9")
+
+      double p0 =   0.00210596;
+      double p1 = -0.000131263;
+      double p2 =  3.78765e-06;
+      double p3 =  -5.2112e-08;
+      double p4 =   3.5484e-10;
+      double p5 =  -1.3473e-12;
+      double p6 =  3.00298e-15;
+      double p7 = -3.90808e-18;
+      double p8 =   2.7495e-21;
+      double p9 = -8.08009e-25;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
+    if( run == 38121 ) { // dutdxvst2->Fit("pol9")
+
+      double p0 =   -0.0018171;
+      double p1 =  6.92937e-06;
+      double p2 =  7.64688e-07;
+      double p3 = -1.17948e-08;
+      double p4 =    8.575e-11;
+      double p5 = -3.52165e-13;
+      double p6 =  8.58283e-16;
+      double p7 = -1.22876e-18;
+      double p8 =  9.53647e-22;
+      double p9 = -3.09386e-25;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+      p0 =  -0.00148988;
+      p1 =  0.000183153;
+      p2 = -4.01971e-06;
+      p3 =  3.72566e-08;
+      p4 = -1.84841e-10;
+      p5 =  5.28721e-13;
+      p6 = -8.80165e-16;
+      p7 =  8.09544e-19;
+      p8 = -3.48618e-22;
+      p9 =   3.8567e-26;
+      DUTaligny = DUTaligny0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // RD53A cross talk correction:
 
@@ -3779,6 +3991,7 @@ int main( int argc, char* argv[] )
 
 	    htridxc.Fill( dxm );
 	    tridxvsx.Fill( xB, dxm );
+	    trimadxvsx.Fill( xB, fabs(dxm)*1e3 );
 	    tridxvsy.Fill( yB, dxm );
 	    tridxvstx.Fill( slpx, dxm );
 	    tridxvst3.Fill( evsec, dxm );
@@ -3816,8 +4029,9 @@ int main( int argc, char* argv[] )
 	  trixHisto.Fill( avx );
 	  triyHisto.Fill( avy );
 	  trixyHisto->Fill( avx, avy );
-	  tritxHisto.Fill( slpx );
-	  trityHisto.Fill( slpy );
+	  tritxHisto.Fill( slpx*1e3 );
+	  tritxwvsx.Fill( avx, fabs(slpx)*1e3 );
+	  trityHisto.Fill( slpy*1e3 );
 
 	} // cl B
 
@@ -3954,8 +4168,15 @@ int main( int argc, char* argv[] )
 
       double ccol = c->col;
       double crow = c->row;
+
+      modcolHisto.Fill( ccol );
+      modrowHisto.Fill( crow );
+
       double modx = ( ccol + 0.5 - nx[iMOD]/2 ) * ptchx[iMOD]; // -33..33 mm
       double mody = ( crow + 0.5 - ny[iMOD]/2 ) * ptchy[iMOD]; // -8..8 mm
+
+      modxHisto.Fill( modx );
+      modyHisto.Fill( mody );
 
       if( ldbmod )
 	cout << "         " << modx << "  " << mody << endl;
@@ -4077,9 +4298,6 @@ int main( int argc, char* argv[] )
 	double q = c->signal;
 	double q0 = q*normm;
 
-	modxHisto.Fill( modx );
-	modyHisto.Fill( mody );
-
 	// residuals for pre-alignment:
 
 	modsxaHisto.Fill( modx + x3m );
@@ -4122,12 +4340,12 @@ int main( int argc, char* argv[] )
 	  modq0Histo.Fill( q0 );
 	  modnpxvsxmym->Fill( xmodm*1E3, ymodm*1E3, c->size );
 
-	  modlkxdHisto.Fill( xd );
-	  modlkydHisto.Fill( yd );
-	  modlkxHisto.Fill( x4m );
-	  modlkyHisto.Fill( y4m );
-	  modlkcolHisto.Fill( ccol );
-	  modlkrowHisto.Fill( crow );
+	  modcollkHisto.Fill( ccol );
+	  modrowlkHisto.Fill( crow );
+	  modxdlkHisto.Fill( xd ); // telescope coordinates
+	  modydlkHisto.Fill( yd );
+	  modxlkHisto.Fill( x4m ); // Mod coordinates
+	  modylkHisto.Fill( y4m );
 
 	  //if( crow > 80 ) cout << "B link " << crow << " ev " << iev << endl;
 	  //if( crow < 80 ) cout << "A link " << crow << " ev " << iev << endl;
@@ -4357,7 +4575,8 @@ int main( int argc, char* argv[] )
 	      chip0 == 520 || chip0 == 524 || chip0 == 529 ||
 	      chip0 == 531 || chip0 == 543 || chip0 == 550 ||
 	      chip0 == 563 || chip0 == 564 ||
-	      chip0 == 719 || chip0 == 793350 || chip0 == 792125 ) {
+	      chip0 == 719 || chip0 == 577 ||chip0 == 578 ||
+	      chip0 == 793350 || chip0 == 792125 ) {
 
 	    x4 = x8;
 	    y4 = y8;
@@ -4512,7 +4731,7 @@ int main( int argc, char* argv[] )
 	  dutmadxvsx.Fill( x4, fabs(dutdx) );
 	  dutmadxvsxm.Fill( xmod*1E3, fabs(dutdx) );
 	  dutmadxvsxm5.Fill( xmod5*1E3, fabs(dutdx) );
-	  dutmadxvstx.Fill( sxA, fabs(dutdx) );
+	  dutmadxvstx.Fill( sxA*1e3, fabs(dutdx) );
 	  dutmadxvsq.Fill( Q0, fabs(dutdx) );
 
 	} // cut y
@@ -4733,12 +4952,24 @@ int main( int argc, char* argv[] )
 	  int totmax = 0;
 	  vector<pixel>::iterator pxmax;
 
+	  bool ldb = 0;
+	  if( ldb )
+	    cout << iev << endl;
+
 	  for( vector<pixel>::iterator px = c->vpix.begin(); px != c->vpix.end(); ++px ) {
 
 	    int icol = px->col; // sensor
 	    int irow = px->row;
 	    int itot = px->tot;
 	    int ifrm = px->frm;
+
+	    if( ldb )
+	      cout
+		<< "  " << icol
+		<< "  " << irow
+		<< "  " << itot
+		<< "  " << ifrm // 7-8 or 9-10
+		<< endl;
 
 	    dutpxcolHisto.Fill( icol + 0.5 ); // Dif: 8-fold pattern
 	    dutpxrowHisto.Fill( irow + 0.5 );
@@ -4756,7 +4987,7 @@ int main( int argc, char* argv[] )
 	    colq[icol] += itot;
 	    rowq[irow] += itot;
 
-	    if( px == c->vpix.begin() ) { // 1st px in readout order
+	    if( px == c->vpix.begin() ) { // 1st px in readout order: cross talk ?
 
 	      dutpxrow1Histo.Fill( irow + 0.5 ); // even-odd pattern in 25x100
 	      dutpxcol1Histo.Fill( icol + 0.5 ); // 8-pattern in 50x50
@@ -4812,13 +5043,21 @@ int main( int argc, char* argv[] )
 	      }
 
 	      dutpxbclkHisto.Fill( ifrm );
-	      dutpxqbcHisto[ifrm].Fill( itot ); // charge per BC
 	      if( c->size == 1 )
 		dutpxbclk1pHisto.Fill( ifrm );
 	      if( c->ncol == 1 )
 		dutpxbclk1cHisto.Fill( ifrm );
 	      if( c->nrow == 1 )
 		dutpxbclk1rHisto.Fill( ifrm );
+
+	      dutpxqbcHisto[ifrm].Fill( itot ); // charge per BC
+	      dutpxbcvsq.Fill( itot+0.5, ifrm );
+
+	      dutpxbcvsx.Fill( icol+0.5, ifrm );
+	      dutpxbcvsy.Fill( irow+0.5, ifrm );
+	      dutpxbcvsxy->Fill( icol+0.5, irow+0.5, ifrm );
+
+	      dutpxbcvst5.Fill( evsec, ifrm ); // long run 34135: not stable
 
 	    } // Lin
 

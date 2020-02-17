@@ -330,12 +330,108 @@
 
     vb21.push_back(vb);
     ef21.push_back(eff);
-    ls21.push_back(100-eff);
+    ls21.push_back(100-eff); // loss = ineff
 
   } // while lines
 
   int n21 = vb21.size();
   cout << "    " << n21 << " runs for chip 521i" << endl;
+
+  //----------------------------------------------------------------------------
+  // chip 542 = FDB150P RD53A100x25 P1 default KAZ 7.4E15 neq/cm^2
+
+  cout << "try to open dat file for c542";
+  ifstream Dstream42( "bias542.dat" );
+  if( !Dstream42 ) {
+    cout << ": failed" << endl;
+    return;
+  }
+  cout << ": succeed" << endl;
+
+  // Read file by lines:
+
+  vector <double> vb42;
+  vector <double> ef42;
+  vector <double> ls42;
+  vector <double> q042;
+
+  while( Dstream42.good() && ! Dstream42.eof() ) {
+
+    string rl;
+    getline( Dstream42, rl ); // read one line  = event into string
+    if( rl.empty() ) continue;
+    if( rl.substr(0,1) == HASH ) // comments start with #
+      continue;
+
+    istringstream strm( rl ); // tokenize string
+
+    double vb;
+    int run;
+    double eff;
+    double q0;
+
+    strm >> vb;
+    strm >> run;
+    strm >> eff;
+    strm >> q0;
+
+    vb42.push_back(vb);
+    ef42.push_back(eff);
+    ls42.push_back(100-eff); // ineff
+    q042.push_back(q0);
+
+  } // while lines
+
+  int n42 = vb42.size();
+  cout << "    " << n42 << " runs for chip 542i" << endl;
+
+  //----------------------------------------------------------------------------
+  // chip 547 FDB150P RD53A 50x50 P2 = open p-stop KaZ 4.4 n_eq p/cm2
+
+  cout << "try to open dat file for c547";
+  ifstream Dstream47( "bias547.dat" );
+  if( !Dstream47 ) {
+    cout << ": failed" << endl;
+    return;
+  }
+  cout << ": succeed" << endl;
+
+  // Read file by lines:
+
+  vector <double> vb47;
+  vector <double> ef47;
+  vector <double> ls47;
+  vector <double> q047;
+
+  while( Dstream47.good() && ! Dstream47.eof() ) {
+
+    string rl;
+    getline( Dstream47, rl ); // read one line  = event into string
+    if( rl.empty() ) continue;
+    if( rl.substr(0,1) == HASH ) // comments start with #
+      continue;
+
+    istringstream strm( rl ); // tokenize string
+
+    double vb;
+    int run;
+    double eff;
+    double q0;
+
+    strm >> vb;
+    strm >> run;
+    strm >> eff;
+    strm >> q0;
+
+    vb47.push_back(vb);
+    ef47.push_back(eff);
+    ls47.push_back(100-eff); // ineff
+    q047.push_back(q0);
+
+  } // while lines
+
+  int n47 = vb47.size();
+  cout << "    " << n47 << " runs for chip 547i" << endl;
 
   //----------------------------------------------------------------------------
   // eff vs bias
@@ -392,14 +488,21 @@
   gi09->Draw("Pc"); // without axis option: overlay
 
   gi21 = new TGraph( n21, &vb21[0], &ls21[0] );
-  gi21->SetMarkerColor(419); // dark green
-  gi21->SetMarkerStyle(21);
+  gi21->SetMarkerColor(413); // green
+  gi21->SetMarkerStyle(22);
   gi21->SetMarkerSize(1.5);
   gi21->Draw("Pc"); // without axis option: overlay
+
+  gi42 = new TGraph( n42, &vb42[0], &ls42[0] );
+  gi42->SetMarkerColor(419); // dark green
+  gi42->SetMarkerStyle(21);
+  gi42->SetMarkerSize(1.5);
+  gi42->Draw("Pc"); // without axis option: overlay
 
   TLegend * ll = new TLegend( 0.34, 0.77, 0.94, 0.89 );
   ll->AddEntry( gi09, "509, 5.2#upoint10^{15} n_{PS}/cm^{2} ", "p" );
   ll->AddEntry( gi21, "521, 5.3#upoint10^{15} n_{Ka}/cm^{2} ", "p" );
+  ll->AddEntry( gi42, "542, 7.4#upoint10^{15} n_{Ka}/cm^{2} ", "p" );
   ll->Draw( "same" );
 
   c1.Print( "bias.pdf" );
@@ -456,8 +559,9 @@
   ge1234->Draw("Pc"); // without axis option: overlay
 
   ge21 = new TGraph( n21, &vb21[0], &ef21[0] );
-  ge21->SetMarkerColor(419); // dark green
-  ge21->SetMarkerStyle(21);
+  ge21->SetLineColor(413); // green
+  ge21->SetMarkerColor(413); // green
+  ge21->SetMarkerStyle(22);
   ge21->SetMarkerSize(1.5);
   ge21->Draw("Pc"); // without axis option: overlay
 
@@ -479,14 +583,14 @@
   //----------------------------------------------------------------------------
   // CERN PS
 
-  heps = new
-    TH1F( "heps",
+  hePS = new
+    TH1F( "hePS",
 	  "RD53A CERN PS;sensor bias [V];RD53A Lin efficiency [%]",
 	  82, 0, 820 ); // axis range
-  heps->SetStats(kFALSE); // no statistics
-  heps->SetMinimum( 80);
-  heps->SetMaximum(100);
-  heps->Draw();
+  hePS->SetStats(kFALSE); // no statistics
+  hePS->SetMinimum( 80);
+  hePS->SetMaximum(100);
+  hePS->Draw();
 
   ge0934->SetMarkerStyle(20);
   ge0934->Draw("Pc"); // without axis option: overlay
@@ -495,11 +599,80 @@
 
   ge11t->Draw("Pc"); // without axis option: overlay
 
-  TLegend * lgndps = new TLegend( 0.3, 0.18, 0.94, 0.40 );
-  lgndps->AddEntry( ge0934, "509 default, 34^{o}, 5.2#upoint10^{15 }n_{PS}/cm^{2} ", "pl" );
-  lgndps->AddEntry( ge1234, "512 bias dot, 34^{o}, 5.6#upoint10^{15 }n_{PS}/cm^{2} ", "pl" );
-  lgndps->AddEntry( ge11t,  "511 bias dot, 30^{o}, 6.6#upoint10^{15 }n_{PS}/cm^{2} ", "pl" );
-  lgndps->Draw( "same" );
+  TLegend * lgndPS = new TLegend( 0.3, 0.18, 0.94, 0.40 );
+  lgndPS->AddEntry( ge0934, "509 default, 34^{o}, 5.2#upoint10^{15 }n_{PS}/cm^{2} ", "pl" );
+  lgndPS->AddEntry( ge1234, "512 bias dot, 34^{o}, 5.6#upoint10^{15 }n_{PS}/cm^{2} ", "pl" );
+  lgndPS->AddEntry( ge11t,  "511 bias dot, 30^{o}, 6.6#upoint10^{15 }n_{PS}/cm^{2} ", "pl" );
+  lgndPS->Draw( "same" );
+
+  c1.Print( "bias.pdf" );
+
+  //----------------------------------------------------------------------------
+  // Ka
+
+  heKa = new
+    TH1F( "heKa",
+	  "RD53A KaZ;sensor bias [V];RD53A Lin efficiency [%]",
+	  82, 0, 820 ); // axis range
+  heKa->SetStats(kFALSE); // no statistics
+  heKa->SetMinimum( 90);
+  heKa->SetMaximum(100);
+  heKa->Draw();
+
+  ge21->Draw("Pc"); // without axis option: overlay
+
+  ge47 = new TGraph( n47, &vb47[0], &ef47[0] );
+  ge47->SetLineColor(84); // dark green
+  ge47->SetMarkerColor(84); // green
+  ge47->SetMarkerStyle(22);
+  ge47->SetMarkerSize(1.5);
+  ge47->Draw("Pc"); // without axis option: overlay
+
+  ge42 = new TGraph( n42, &vb42[0], &ef42[0] );
+  ge42->SetLineColor(419); // dark green
+  ge42->SetMarkerColor(419); // dark green
+  ge42->SetMarkerStyle(23);
+  ge42->SetMarkerSize(1.5);
+  ge42->Draw("Pc"); // without axis option: overlay
+
+  TLegend * lgndKa = new TLegend( 0.4, 0.18, 0.94, 0.40 );
+  lgndKa->AddEntry( ge47, "547: 4.4#upoint10^{15} n_{Ka}/cm^{2} ", "p" );
+  lgndKa->AddEntry( ge21, "521: 5.3#upoint10^{15} n_{Ka}/cm^{2} ", "p" );
+  lgndKa->AddEntry( ge42, "542: 7.4#upoint10^{15} n_{Ka}/cm^{2} ", "p" );
+  lgndKa->Draw( "same" );
+
+  c1.Print( "bias.pdf" );
+
+  //----------------------------------------------------------------------------
+  // Ka charge
+
+  hqKa = new
+    TH1F( "hqKa",
+	  "RD53A KaZ;sensor bias [V];RD53A Lin mean charge [ToT]",
+	  82, 0, 820 ); // axis range
+  hqKa->SetStats(kFALSE); // no statistics
+  hqKa->SetMinimum( 0);
+  hqKa->SetMaximum(15);
+  hqKa->Draw();
+
+  gq47 = new TGraph( n47, &vb47[0], &q047[0] );
+  gq47->SetLineColor(84); // dark green
+  gq47->SetMarkerColor(84); // green
+  gq47->SetMarkerStyle(22);
+  gq47->SetMarkerSize(1.5);
+  gq47->Draw("Pc"); // without axis option: overlay
+
+  gq42 = new TGraph( n42, &vb42[0], &q042[0] );
+  gq42->SetLineColor(419); // dark green
+  gq42->SetMarkerColor(419); // dark green
+  gq42->SetMarkerStyle(23);
+  gq42->SetMarkerSize(1.5);
+  gq42->Draw("Pc"); // without axis option: overlay
+
+  TLegend * lgdqKa = new TLegend( 0.4, 0.18, 0.94, 0.34 );
+  lgdqKa->AddEntry( ge47, "547: 4.4#upoint10^{15} n_{Ka}/cm^{2} ", "p" );
+  lgdqKa->AddEntry( ge42, "542: 7.4#upoint10^{15} n_{Ka}/cm^{2} ", "p" );
+  lgdqKa->Draw( "same" );
 
   c1.Print( "bias.pdf" );
 
@@ -528,16 +701,39 @@
   lgnda->AddEntry( ge21, "521 bias dot, 18^{o}, 5.3#upoint10^{15} n_{Ka}/cm^{2} ", "pl" );
   lgnda->AddEntry( ge1234, "512 bias dot, 34^{o}, 5.6#upoint10^{15 }n_{PS}/cm^{2} ", "pl" );
   lgnda->AddEntry( ge11t,  "511 bias dot, 30^{o}, 6.6#upoint10^{15 }n_{PS}/cm^{2} ", "pl" );
-  //lgnda->Draw( "same" );
+  lgnda->Draw( "same" );
+
+  c1.Print( "bias.pdf" );
+
+  //----------------------------------------------------------------------------
+  // all legend for externals
+
+  hfx = new
+    TH1F( "hfx",
+	  "all;sensor bias [V];RD53A Lin efficiency [%]",
+	  82, 0, 820 ); // axis range
+  hfx->SetStats(kFALSE); // no statistics
+  hfx->SetMinimum( 80);
+  hfx->SetMaximum(100);
+  hfx->Draw();
+
+  ge0934->Draw("Pc"); // without axis option: overlay
+
+  ge21->Draw("Pc"); // without axis option: overlay
+
+  ge1234->Draw("Pc"); // without axis option: overlay
+
+  ge11t->Draw("Pc"); // without axis option: overlay
 
   // legend for externals:
 
-  TLegend * lgndx = new TLegend( 0.3, 0.18, 0.94, 0.40 );
+  TLegend * lgndx = new TLegend( 0.28, 0.18, 0.94, 0.38 );
   lgndx->AddEntry( ge0934, "100x25 no bias dot, 5.2#upoint10^{15 }n_{PS}/cm^{2} ", "pl" );
-  lgndx->AddEntry( ge1234, "100x25 bias dot, 5.6#upoint10^{15 }n_{PS}/cm^{2} ", "pl" );
   lgndx->AddEntry( ge21, "50x50 bias dot, 5.3#upoint10^{15} n_{Ka}/cm^{2} ", "pl" );
+  lgndx->AddEntry( ge1234, "100x25 bias dot, 5.6#upoint10^{15 }n_{PS}/cm^{2} ", "pl" );
   lgndx->AddEntry( ge11t,  "50x50 bias dot, 6.6#upoint10^{15 }n_{PS}/cm^{2} ", "pl" );
   lgndx->Draw( "same" );
+
   c1.Print( "bias.pdf" );
 
   //----------------------------------------------------------------------------

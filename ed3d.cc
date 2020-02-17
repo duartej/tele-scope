@@ -78,7 +78,7 @@ bool kbhit()
 vector <cluster> getClus( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
 {
   // returns clusters with local coordinates
-  // decodePixels should have been called before to fill pixel buffer pb 
+  // decodePixels should have been called before to fill pixel buffer pb
   // simple clusterization
   // cluster search radius fCluCut ( allows fCluCut-1 empty pixels)
 
@@ -107,8 +107,8 @@ vector <cluster> getClus( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
           for( unsigned int p = 0; p < c.vpix.size(); ++p ) { // vpix in cluster so far
             int dr = c.vpix.at(p).row - pb[i].row;
             int dc = c.vpix.at(p).col - pb[i].col;
-            if( (   dr>=-fCluCut) && (dr<=fCluCut) 
-		&& (dc>=-fCluCut) && (dc<=fCluCut) ) {
+            if( dr >= -fCluCut && dr <= fCluCut	&&
+		dc >= -fCluCut && dc <= fCluCut ) {
               c.vpix.push_back(pb[i]);
 	      gone[i] = 1;
               growing = 1;
@@ -275,7 +275,7 @@ int main( int argc, char* argv[] )
     } // while getline
 
     if( found )
-      cout 
+      cout
 	<< "settings for run " << run << ":" << endl
 	<< "  beam " << pbeam << " GeV" << endl
 	<< "  geo file " << geoFileName << endl
@@ -415,6 +415,7 @@ int main( int argc, char* argv[] )
   double scatm = 0.0136 * sqrt(X0m) / pbeam * ( 1 + 0.038*log(X0m) ); // [rad] Mimosa scattering
 
   double kCut = 12 * scatm; // [rad]
+  //double kCut = 5 * scatm; // [rad]
 
   cout << endl << "kinkCut " << kCut*1E3 << " mrad" << endl;
 
@@ -471,7 +472,7 @@ int main( int argc, char* argv[] )
       if( tag.substr(0,1) == hash ) // comments start with #
 	continue;
 
-      if( tag == iteration ) 
+      if( tag == iteration )
 	tokenizer >> aligniteration;
 
       if( tag == plane )
@@ -717,7 +718,7 @@ int main( int argc, char* argv[] )
 
       for( size_t ipix = 0; ipix < pxl.size(); ++ipix ) {
 
-	if( ldbg ) 
+	if( ldbg )
 	  cout << plane.GetX(ipix)
 	       << " " << plane.GetY(ipix)
 	       << " " << plane.GetPixel(ipix) << " "
@@ -794,9 +795,12 @@ int main( int argc, char* argv[] )
 	double ymid = yC - midy[3];
 	xC = xmid - ymid*rotx[3];
 	yC = ymid + xmid*roty[3];
- 
+
 	double slpx = ( xC - xA ) / dz13; // slope x
 	double slpy = ( yC - yA ) / dz13; // slope y
+
+	if( fabs( slpx ) > 0.005 ) continue; // angle cut
+	if( fabs( slpy ) > 0.005 ) continue; // angle cut
 
 	double avx = 0.5 * ( xA + xC ); // mid
 	double avy = 0.5 * ( yA + yC );
@@ -892,7 +896,7 @@ int main( int argc, char* argv[] )
 	double ymid = yC - midy[6];
 	xC = xmid - ymid*rotx[6];
 	yC = ymid + xmid*roty[6];
- 
+
 	double slpx = ( xC - xA ) / dz46; // slope x
 	double slpy = ( yC - yA ) / dz46; // slope y
 
@@ -1065,7 +1069,7 @@ int main( int argc, char* argv[] )
 
 	double xv = 0.5 * ( xvB + xvj );
 	double yv = 0.5 * ( yvB + yvj );
-	    
+
 	// incoming triplet:
 
 	int nmt = 0;

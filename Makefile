@@ -42,6 +42,11 @@ edgDiode: edgDiode.cc
 	$(ROOTLIBS) -L../lib -lEUDAQ
 	@echo 'done: edgDiode'
 
+edg53Diode: edg53Diode.cc
+	g++ $(CXXFLAGS) edg53Diode.cc -o edg53Diode \
+	$(ROOTLIBS) -L../lib -lEUDAQ
+	@echo 'done: edg53Diode'
+
 scope53: scope53.cc
 	g++ $(CXXFLAGS) scope53.cc -o scope53 \
 	$(ROOTLIBS) -L../lib -lEUDAQ

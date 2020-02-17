@@ -61,7 +61,7 @@ void turns()*/
   gStyle->SetHistMinimumZero(); // no zero suppression
 
   //gStyle->SetOptDate();
- 
+
   gROOT->ForceStyle();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -76,8 +76,6 @@ void turns()*/
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
   c1.SetRightMargin(0.05);
-
-  //gPad->Update();// required
 
   string HASH( "#" );
 
@@ -247,6 +245,58 @@ void turns()*/
   cout << n521 << " turns for chip 521" << endl;
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // 547i:
+
+  cout << "try to open turn547.dat";
+  ifstream D547( "turn547.dat" );
+  if( !D547 ) {
+    cout << ": failed" << endl;
+    return;
+  }
+  cout << ": succeed" << endl;
+
+  // Read file by lines:
+
+  vector <double> vt47; // turn
+  vector <double> rx47; // res
+  vector <double> sx47; // sig
+  vector <double> vn47; // ncol
+
+  while( D547.good() && ! D547.eof() ) {
+
+    string rl;
+    getline( D547, rl ); // read one line  = event into string
+    if( rl.empty() ) continue;
+    if( rl.substr(0,1) == HASH ) // comments start with #
+      continue;
+
+    istringstream strm( rl ); // tokenize string
+
+    int run;
+    double trn;
+    double dxc;
+    double col;
+
+    strm >> run;
+    strm >> trn;
+    strm >> dxc;
+    strm >> col;
+
+    vt47.push_back(-trn); // flip sign
+    vn47.push_back(col);
+    rx47.push_back( dxc ); // residual width
+    double tel = 7.3; // telescope
+    if( run >= 38111 ) // larger opening
+      //tel = 9.3; // [mu]
+      tel = 10.4; // [mu]
+    sx47.push_back( sqrt( dxc*dxc - tel*tel ) ); // subtract track
+
+  } // while lines
+
+  int n547 = vt47.size();
+  cout << n547 << " turns for chip 547" << endl;
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // eff vs turn:
 
   TH1F * he = new
@@ -365,26 +415,36 @@ void turns()*/
   TH1F * hs = new
     TH1F( "hs",
 	  "resolution vs turn;turn angle [deg];Lin resolution [#mum]",
-	  37, -6, 31 ); // axis range
+	  49, -10, 39 ); // axis range
   hs->SetStats(kFALSE); // no statistics
   hs->SetMinimum(0);
   hs->SetMaximum(16);
   hs->Draw();
 
   TGraph * gs24 = new TGraph( n524, &vt24[0], &vs24[0] );
+  gs24->SetLineColor(4);
   gs24->SetMarkerColor(4);
   gs24->SetMarkerStyle(20);
   gs24->SetMarkerSize(1.5);
-  gs24->Draw("P"); // without axis option: overlay
+  gs24->Draw("Pc"); // without axis option: overlay
+
+  TGraph * gs47 = new TGraph( n547, &vt47[0], &sx47[0] );
+  gs47->SetLineColor(1);
+  gs47->SetMarkerColor(1);
+  gs47->SetMarkerStyle(21);
+  gs47->SetMarkerSize(1.5);
+  gs47->Draw("Pc"); // without axis option: overlay
 
   TGraph * gs21 = new TGraph( n521, &vt21[0], &sx21[0] );
+  gs21->SetLineColor(kGreen+3);
   gs21->SetMarkerColor(kGreen+3);
   gs21->SetMarkerStyle(21);
   gs21->SetMarkerSize(1.5);
-  gs21->Draw("P"); // without axis option: overlay
+  gs21->Draw("Pc"); // without axis option: overlay
 
-  TLegend * lgs = new TLegend( 0.36, 0.17, 0.93, 0.31 );
+  TLegend * lgs = new TLegend( 0.36, 0.16, 0.93, 0.32 );
   lgs->AddEntry( gs24, "524 fresh, 120 V", "p" );
+  lgs->AddEntry( gs47, "547 4.4#upoint10^{15} n_{Ka}/cm^{2}, 764 V ", "p" );
   lgs->AddEntry( gs21, "521 5.3#upoint10^{15} n_{Ka}/cm^{2}, 775 V ", "p" );
   lgs->Draw( "same" );
 
