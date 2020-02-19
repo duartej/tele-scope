@@ -3695,7 +3695,7 @@ run 36638  501
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Sun 2.6.2019
-# material budget imaging
+# TB21 material budget imaging
 
 geo geo_2019_05f.dat = 0  153  305  326  479  632
 
@@ -3733,7 +3733,7 @@ run 36654
 
 #-------------------------------------------------------------------------------
 # Thu 6.6.2019
-# empty telescope
+# TB21 empty telescope
 
 GeV 4
 geo geo_2019_06a.dat = 0  153  305  330  482.5  635.5
@@ -5315,6 +5315,7 @@ run 37816  500
 turn 15
 modrun 1314
 run 37818  39M over night
+# 33GB
 
 #-------------------------------------------------------------------------------
 # Sat 9.11.2019
@@ -6070,6 +6071,7 @@ Vb -120 V    0  38243  34723      modrun 1664
 #-------------------------------------------------------------------------------
 # 14.2.2020
 # TB24 Azalea
+# yellow collimator Pb insert: 24x12 opening
 
 GeV 3
 
@@ -6123,3 +6125,53 @@ run 38308  252k
 # pos5 IBIAS_DAC 13 131->126
 
 run 38314
+
+#-------------------------------------------------------------------------------
+# 19.2.2020
+# TB24 Azalea
+
+# plan:
+# thr 4
+# plane 1 = pos0
+# 	dac 13 harder
+# 	dac 12 ok
+# 	dac 11 softer
+# 	dac 10 softer
+
+# plane 2 = pos1
+# 	dac 13 softer
+# 	dac 12 softer
+# 	dac 11 softer
+# 	dac 10 ok
+
+# thr 5
+# plane 1 = pos0
+# 	dac 13 harder
+# 	dac 12 ok
+# 	dac 11 softer
+# 	dac 10 softer
+
+# plane 2 = pos1
+# 	dac 13 softer
+# 	dac 12 softer
+# 	dac 11 softer
+# 	dac 10 ok
+
+# thr 6
+# plane 1 = pos0
+# 	dac 13 harder
+# 	dac 12 softer
+# 	dac 11 softer
+# 	dac 10 softer
+
+# plane 2 = pos1
+# 	dac 13 softer
+# 	dac 12 softer
+# 	dac 11 softer
+# 	dac 10 ok
+
+# plane 6 = pos5
+# 	dac 13 ok
+# 	dac 12 ok
+# 	dac 11 harder
+# 	dac 10 harder

@@ -102,7 +102,7 @@ vector<cluster> getClus( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
           for( unsigned int p = 0; p < c.vpix.size(); ++p ) { // vpix in cluster so far
             int dr = c.vpix.at(p).row - pb[i].row;
             int dc = c.vpix.at(p).col - pb[i].col;
-	    //if( (   dr>=-fCluCut) && (dr<=fCluCut) 
+	    //if( (   dr>=-fCluCut) && (dr<=fCluCut)
 	    //&& (dc>=-fCluCut) && (dc<=fCluCut) ) { // allow diagonal
             if( ( abs(dr) <= fCluCut && dc == 0 ) ||
 		( abs(dc) <= fCluCut && dr == 0 ) ) { // only facing neighbours, same resolution
@@ -354,7 +354,7 @@ int main( int argc, char* argv[] )
     } // while getline
 
     if( found )
-      cout 
+      cout
 	<< "settings for run " << run << ":" << endl
 	<< "  beam " << pbeam << " GeV" << endl
 	<< "  geo file " << geoFileName << endl
@@ -780,7 +780,7 @@ int main( int argc, char* argv[] )
 		       Form( "plane %i all pixels per event;all pixels / event;plane %i events", ipl, ipl ),
 		       200, 0, 200 );
     hcol0[ipl] = TH1I( Form( "allcol%i", ipl ),
-		       Form( "plane %i all pix col;col;all plane %i pixels", ipl, ipl ), 
+		       Form( "plane %i all pix col;col;all plane %i pixels", ipl, ipl ),
 		       nx[ipl]/4, 0, nx[ipl] );
     hrow0[ipl] = TH1I( Form( "allrow%i", ipl ),
 		       Form( "plane %i all pix row;row;all plane %i pixels", ipl, ipl ),
@@ -793,7 +793,7 @@ int main( int argc, char* argv[] )
 		      Form( "plane %i cool pixel per event;cool pixels / event;plane %i events", ipl, ipl ),
 		      200, 0, 200 );
     hcol[ipl] = TH1I( Form( "col%i", ipl ),
-		      Form( "plane %i cool pix col;col;cool plane %i pixels", ipl, ipl ), 
+		      Form( "plane %i cool pix col;col;cool plane %i pixels", ipl, ipl ),
 		      nx[ipl]/4, 0, nx[ipl] );
     hrow[ipl] = TH1I( Form( "row%i", ipl ),
 		      Form( "plane %i cool pix row;row;cool plane %i pixels", ipl, ipl ),
@@ -806,7 +806,7 @@ int main( int argc, char* argv[] )
 		      Form( "plane %i cluster per event;cluster;plane %i events", ipl, ipl ),
 		      51, -0.5, 50.5 );
     hccol[ipl] = TH1I( Form( "ccol%i", ipl ),
-		       Form( "plane %i cluster col;col;%i clusters", ipl, ipl ), 
+		       Form( "plane %i cluster col;col;%i clusters", ipl, ipl ),
 		       nx[ipl]/4, 0, nx[ipl] );
     hcrow[ipl] = TH1I( Form( "crow%i", ipl ),
 		       Form( "plane %i cluster row;row;%i clusters", ipl, ipl ),
@@ -814,7 +814,7 @@ int main( int argc, char* argv[] )
     hnpix[ipl] = TH1I( Form( "npix%i", ipl ),
 		       Form( "plane %i cluster size;pixels/cluster;%i clusters", ipl, ipl ),
 		       80, 0.5, 80.5 );
-    hncol[ipl] = TH1I( Form( "ncol%i", ipl ), 
+    hncol[ipl] = TH1I( Form( "ncol%i", ipl ),
 		       Form( "plane %i cluster size x;columns/cluster;%i clusters", ipl, ipl ),
 		       50, 0.5, 50.5 );
     hnrow[ipl] = TH1I( Form( "nrow%i", ipl ),
@@ -985,7 +985,7 @@ int main( int argc, char* argv[] )
     string tri{"tri"};
     string dri{"dri"};
     string tds{tri};
-    if( itd ) 
+    if( itd )
       tds = dri;
     int ipl = 2+3*itd;
 
@@ -1854,7 +1854,7 @@ int main( int argc, char* argv[] )
 
       for( size_t ipix = 0; ipix < pxl.size(); ++ipix ) {
 
-	if( ldbg ) 
+	if( ldbg )
 	  cout << " :"
 	       << " " << plane.GetX(ipix) // col
 	       << " " << plane.GetY(ipix) // row
@@ -1907,7 +1907,7 @@ int main( int argc, char* argv[] )
 
       if( ldbg )
 	cout << " done" << endl << flush;
-      
+
       hnpx[mpl].Fill( pb.size() );
 
       // for clustering:
@@ -2790,7 +2790,7 @@ int main( int argc, char* argv[] )
 		  else if( ncolB == 5 )
 		    htridxc5[itd].Fill( dxm*1E3 ); // 5.59
 		  else
-		    htridxc6[itd].Fill( dxm*1E3 ); // 
+		    htridxc6[itd].Fill( dxm*1E3 ); //
 
 		  if( ncolB == 2 ) {
 
@@ -2803,7 +2803,7 @@ int main( int argc, char* argv[] )
 		    else if( nrowB == 4 )
 		      htridxc24[itd].Fill( dxm*1E3 ); // 2.35
 		    else
-		      htridxc25[itd].Fill( dxm*1E3 ); // 
+		      htridxc25[itd].Fill( dxm*1E3 ); //
 
 		    if( nrowB == 2 ) {
 		      if( npixB == 3 )
@@ -2842,20 +2842,20 @@ int main( int argc, char* argv[] )
 		if( fabs( slpy ) < 0.001 ) {
 
 		  if(      nrowB == 1 )
-		    htridyc1[itd].Fill( dym*1E3 ); // 
+		    htridyc1[itd].Fill( dym*1E3 ); //
 		  else if( nrowB == 2 )
-		    htridyc2[itd].Fill( dym*1E3 ); // 
+		    htridyc2[itd].Fill( dym*1E3 ); //
 		  else if( nrowB == 3 )
-		    htridyc3[itd].Fill( dym*1E3 ); // 
+		    htridyc3[itd].Fill( dym*1E3 ); //
 		  else if( nrowB == 4 )
-		    htridyc4[itd].Fill( dym*1E3 ); // 
+		    htridyc4[itd].Fill( dym*1E3 ); //
 		  else if( nrowB == 5 )
-		    htridyc5[itd].Fill( dym*1E3 ); // 
+		    htridyc5[itd].Fill( dym*1E3 ); //
 		  else
-		    htridyc6[itd].Fill( dym*1E3 ); // 
+		    htridyc6[itd].Fill( dym*1E3 ); //
 
 		  if( goodnrowA && goodnrowB && goodnrowC )
-		    htridycg[itd].Fill( dym*1E3 ); // 
+		    htridycg[itd].Fill( dym*1E3 ); //
 
 		} // slpy
 
@@ -3237,7 +3237,7 @@ int main( int argc, char* argv[] )
 
 	  double xv = 0.5 * ( xvB + xvj );
 	  double yv = 0.5 * ( yvB + yvj );
-	    
+
 	  // incoming triplet:
 
 	  int nmt = 0;
@@ -3309,7 +3309,7 @@ int main( int argc, char* argv[] )
 	    vx.i = jB;
 	    vx.j = jj;
 	    vv.push_back( vx );
-	    
+
 	    // 3rd driplet = scattered e
 
 	    int nmd = 0;
@@ -3705,7 +3705,7 @@ int main( int argc, char* argv[] )
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // alignment fits:
 
-    if( maxiter == aligniteration + 1 ) {      
+    if( maxiter == aligniteration + 1 ) {
       histoFile->Write(); // before fitting
       histoFile->Close();
     }
@@ -3833,8 +3833,8 @@ int main( int argc, char* argv[] )
 	cout << endl << htridxc[itd].GetTitle() << endl;
 	cout << "  Inside  " << ne << " (" << ne/nb << " per bin)" << endl;
 	cout << "  Maximum " << nm << " (factor " << nm/ne*nb << " above mean)" << endl;
-	cout << "  at " << xm << endl;
-	cout << "  fwhm " << fwhmx << endl;
+	cout << "  at " << xm << " mu" << endl;
+	cout << "  fwhm " << fwhmx << " mu" << endl;
 
 	TF1 * fgp0x = new TF1( "fgp0x", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", xm-fwhmx, xm+fwhmx );
 	fgp0x->SetParameter( 0, nm ); // amplitude
@@ -3955,7 +3955,73 @@ int main( int argc, char* argv[] )
 
     // driplet vs triplet:
 
-    if( aligniteration >= 5 && hsixdx.GetMaximum() > 999 ) {
+    if( aligniteration == 5 && hsixdx.GetMaximum() > 999 ) {
+
+      double nb = hsixdx.GetNbinsX();
+      double ne = hsixdx.GetSumOfWeights();
+      double nm = hsixdx.GetMaximum();
+      double fwhmx = GetFWHM( hsixdx );
+      double xm = hsixdx.GetBinCenter( hsixdx.GetMaximumBin() );
+
+      cout << endl << hsixdx.GetTitle() << endl;
+      cout << "  Inside  " << ne << " (" << ne/nb << " per bin)" << endl;
+      cout << "  Maximum " << nm << " (factor " << nm/ne*nb << " above mean)" << endl;
+      cout << "  at " << xm << endl;
+      cout << "  fwhm " << fwhmx << endl;
+
+      TF1 * fgp0x = new TF1( "fgp0x", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", xm-fwhmx, xm+fwhmx );
+      fgp0x->SetParameter( 0, nm ); // amplitude
+      fgp0x->SetParameter( 1, xm );
+      fgp0x->SetParameter( 2, 0.5*fwhmx ); // sigma
+      fgp0x->SetParameter( 3, hsixdx.GetBinContent(1) ); // BG
+      hsixdx.Fit( "fgp0x", "qr" );
+      cout << "Fit Gauss + BG:"
+	   << endl << "  A " << fgp0x->GetParameter(0)
+	   << endl << "mid " << fgp0x->GetParameter(1) << " mm"
+	   << endl << "sig " << fgp0x->GetParameter(2) << " mm"
+	   << endl << " BG " << fgp0x->GetParameter(3)
+	   << endl;
+
+      // dy:
+
+      nb = hsixdy.GetNbinsX();
+      ne = hsixdy.GetSumOfWeights();
+      nm = hsixdy.GetMaximum();
+      double fwhmy = GetFWHM( hsixdy );
+      double ym = hsixdy.GetBinCenter( hsixdy.GetMaximumBin() );
+
+      cout << endl << hsixdy.GetTitle() << endl;
+      cout << "  Inside  " << ne << " (" << ne/nb << " per bin)" << endl;
+      cout << "  Maximum " << nm << " (factor " << nm/ne*nb << " above mean)" << endl;
+      cout << "  at " << ym << endl;
+      cout << "  fwhm " << fwhmy << endl;
+
+      TF1 * fgp0y = new TF1( "fgp0y", "[0]*exp(-0.5*((x-[1])/[2])^2)+[3]", ym-fwhmy, ym+fwhmy );
+      fgp0y->SetParameter( 0, nm ); // amplitude
+      fgp0y->SetParameter( 1, ym );
+      fgp0y->SetParameter( 2, 0.5*fwhmy ); // sigma
+      fgp0y->SetParameter( 3, hsixdy.GetBinContent(1) ); // BG
+      hsixdy.Fit( "fgp0y", "qr" );
+      cout << "Fit Gauss + BG:"
+	   << endl << "  A " << fgp0y->GetParameter(0)
+	   << endl << "mid " << fgp0y->GetParameter(1) << " mm"
+	   << endl << "sig " << fgp0y->GetParameter(2) << " mm"
+	   << endl << " BG " << fgp0y->GetParameter(3)
+	   << endl;
+
+      // update driplet planes:
+
+      for( int ipl = 4; ipl <= 6; ++ipl ) {
+	alignx[ipl] += fgp0x->GetParameter(1); // [mm]
+	aligny[ipl] += fgp0y->GetParameter(1);
+      }
+
+      delete fgp0x;
+      delete fgp0y;
+
+    } // aligniteration
+
+    if( aligniteration >= 6 && hsixdxc.GetMaximum() > 999 ) {
 
       double nb = hsixdxc.GetNbinsX();
       double ne = hsixdxc.GetSumOfWeights();
@@ -3977,8 +4043,8 @@ int main( int argc, char* argv[] )
       hsixdxc.Fit( "fgp0x", "qr" );
       cout << "Fit Gauss + BG:"
 	   << endl << "  A " << fgp0x->GetParameter(0)
-	   << endl << "mid " << fgp0x->GetParameter(1) << " um"
-	   << endl << "sig " << fgp0x->GetParameter(2) << " um"
+	   << endl << "mid " << fgp0x->GetParameter(1) << " mu"
+	   << endl << "sig " << fgp0x->GetParameter(2) << " mu"
 	   << endl << " BG " << fgp0x->GetParameter(3)
 	   << endl;
 
@@ -4004,8 +4070,8 @@ int main( int argc, char* argv[] )
       hsixdyc.Fit( "fgp0y", "qr" );
       cout << "Fit Gauss + BG:"
 	   << endl << "  A " << fgp0y->GetParameter(0)
-	   << endl << "mid " << fgp0y->GetParameter(1) << " um"
-	   << endl << "sig " << fgp0y->GetParameter(2) << " um"
+	   << endl << "mid " << fgp0y->GetParameter(1) << " mu"
+	   << endl << "sig " << fgp0y->GetParameter(2) << " mu"
 	   << endl << " BG " << fgp0y->GetParameter(3)
 	   << endl;
 
@@ -4018,10 +4084,6 @@ int main( int argc, char* argv[] )
 
       delete fgp0x;
       delete fgp0y;
-
-    } // aligniteration
-
-    if( aligniteration >= 6 && hsixdx.GetMaximum() > 999 ) {
 
       // x-y rotation from profiles:
 
