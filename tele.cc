@@ -781,23 +781,23 @@ int main( int argc, char* argv[] )
 		       200, 0, 200 );
     hcol0[ipl] = TH1I( Form( "allcol%i", ipl ),
 		       Form( "plane %i all pix col;col;all plane %i pixels", ipl, ipl ),
-		       nx[ipl]/4, 0, nx[ipl] );
+		       nx[ipl], -0.5, nx[ipl]-0.5 );
     hrow0[ipl] = TH1I( Form( "allrow%i", ipl ),
 		       Form( "plane %i all pix row;row;all plane %i pixels", ipl, ipl ),
-		       ny[ipl]/2, 0, ny[ipl] );
+		       ny[ipl], -0.5, ny[ipl]-0.5 );
     hmap0[ipl] = new TH2I( Form( "map%i", ipl ),
 			   Form( "plane %i map all;col;row;all plane %i pixels", ipl, ipl ),
-			   nx[ipl]/4, 0, nx[ipl], ny[ipl]/2, 0, ny[ipl] );
+			   nx[ipl], -0.5, nx[ipl]-0.5, ny[ipl], -0.5, ny[ipl]-0.5 );
 
     hnpx[ipl] = TH1I( Form( "npx%i", ipl ),
 		      Form( "plane %i cool pixel per event;cool pixels / event;plane %i events", ipl, ipl ),
 		      200, 0, 200 );
     hcol[ipl] = TH1I( Form( "col%i", ipl ),
 		      Form( "plane %i cool pix col;col;cool plane %i pixels", ipl, ipl ),
-		      nx[ipl]/4, 0, nx[ipl] );
+		      nx[ipl], -0.5, nx[ipl]-0.5 );
     hrow[ipl] = TH1I( Form( "row%i", ipl ),
 		      Form( "plane %i cool pix row;row;cool plane %i pixels", ipl, ipl ),
-		      ny[ipl]/2, 0, ny[ipl] );
+		      ny[ipl], -0.5, ny[ipl]-0.5 );
     hbool[ipl] = TH1I( Form( "bool%i", ipl ),
 		       Form( "plane %i before/after pivot;before/after pivot;cool plane %i pixels", ipl, ipl ),
 		       2, -0.4, 1.5 );
@@ -1867,7 +1867,7 @@ int main( int argc, char* argv[] )
 	hcol0[mpl].Fill( ix );
 	hrow0[mpl].Fill( iy );
 	hbool[mpl].Fill( plane.GetPivot(ipix) );
-	hmap0[mpl]->Fill( ix, iy );
+	hmap0[mpl]->Fill( ix, iy ); // with hot pixels
 
 	int ipx = ix * ny[mpl] + iy;
 
@@ -1948,15 +1948,21 @@ int main( int argc, char* argv[] )
 	    << endl;
 
     for( int ipl = 1; ipl <= 6; ++ipl ) {
+
+      hotset[ipl].clear();
+
       hotFile << endl;
       hotFile << "plane " << ipl << endl;
       int nmax = 0;
       int ntot = 0;
       int nhot = 0;
+
       for( map < int, int >::iterator jpx = pxmap[ipl].begin(); jpx != pxmap[ipl].end(); ++ jpx ) {
+
 	int nhit = jpx->second;
 	ntot += nhit;
 	if( nhit > nmax ) nmax = nhit;
+
 	if( nhit > iev/128 ) {
 	  ++nhot;
 	  int ipx = jpx->first;
@@ -1967,8 +1973,13 @@ int main( int argc, char* argv[] )
 		  << setw(5) << iy
 		  << "  " << nhit
 		  << endl;
+
+	  hotset[ipl].insert(ipx);
+
 	}
+
       } // jpx
+
       cout
 	<< "# " << ipl
 	<< ": active " << pxmap[ipl].size()
@@ -4021,7 +4032,7 @@ int main( int argc, char* argv[] )
 
     } // aligniteration
 
-    if( aligniteration >= 6 && hsixdxc.GetMaximum() > 999 ) {
+    if( aligniteration >= 6 && hsixdx.GetMaximum() > 999 ) {
 
       double nb = hsixdxc.GetNbinsX();
       double ne = hsixdxc.GetSumOfWeights();
