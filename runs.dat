@@ -6125,53 +6125,147 @@ run 38308  252k
 # pos5 IBIAS_DAC 13 131->126
 
 run 38314
+# eff6: 91.315 +- 0.05
 
 #-------------------------------------------------------------------------------
-# 19.2.2020
+# Thu 20.2.2020
 # TB24 Azalea
 
-# plan:
 # thr 4
 # plane 1 = pos0
-# 	dac 13 harder
-# 	dac 12 ok
-# 	dac 11 softer
-# 	dac 10 softer
+# 	dac 13 harder von 182 zu 185
+# 	dac 12 ok 111
+# 	dac 11 softer von 157 zu 153
+# 	dac 10 softer von 210 zu 206
 
 # plane 2 = pos1
-# 	dac 13 softer
-# 	dac 12 softer
-# 	dac 11 softer
-# 	dac 10 ok
+# 	dac 13 softer von 156 zu 152
+# 	dac 12 softer von 155 zu 151
+# 	dac 11 softer von 170 zu 166
+# 	dac 10 ok 128
 
+Gev 3
+run 38317 1800 Hz 164K
+
+# - - - - - - - - - - - - - - - - - - -
 # thr 5
 # plane 1 = pos0
-# 	dac 13 harder
-# 	dac 12 ok
-# 	dac 11 softer
-# 	dac 10 softer
+# 	dac 13 harder von 187 zu 190
+# 	dac 12 ok 115
+# 	dac 11 softer von 161 zu 157
+# 	dac 10 softer von 214 zu 210
 
 # plane 2 = pos1
-# 	dac 13 softer
-# 	dac 12 softer
-# 	dac 11 softer
-# 	dac 10 ok
+# 	dac 13 softer von 160 zu 156
+# 	dac 12 softer von 159 zu 155
+# 	dac 11 softer von 174 zu 170
+# 	dac 10 ok 132
 
+run 38318 1843 Hz 276k
+
+# - - - - - - - - - - - - - - - - - - -
 # thr 6
 # plane 1 = pos0
-# 	dac 13 harder
-# 	dac 12 softer
-# 	dac 11 softer
-# 	dac 10 softer
+# 	dac 13 harder von 191 zu 194
+# 	dac 12 softer von 120 zu 116
+# 	dac 11 softer von 166 zu 162
+# 	dac 10 softer von 218 zu 214
 
 # plane 2 = pos1
-# 	dac 13 softer
-# 	dac 12 softer
-# 	dac 11 softer
-# 	dac 10 ok
+# 	dac 13 softer von 164 zu 160
+# 	dac 12 softer von 164 zu 160
+# 	dac 11 softer von 179 zu 175
+# 	dac 10 ok 136
 
 # plane 6 = pos5
 # 	dac 13 ok
 # 	dac 12 ok
-# 	dac 11 harder
-# 	dac 10 harder
+# 	dac 11 harder von 200 zu 202
+# 	dac 10 harder von 215 zu 217
+
+run 38321 1400 Hz weniger Strom im Desy 181K
+# eff6: 89.34 +- 0.09
+
+#-------------------------------------------------------
+# one more iteration:
+
+# thr 4
+# plane 1 = pos0
+# 	dac 13: 185
+# 	dac 12: 111
+# 	dac 11: 153->154
+# 	dac 10: 206->207
+
+GeV 5
+run 38323  800 Hz  plane 2 noisy
+
+# plane 2 = pos1
+# 	dac 13: 152
+# 	dac 12: 151->152
+# 	dac 11: 166->167
+# 	dac 10: 182
+
+run 38324  252k  600 Hz -> 800 Hz
+
+# - - - - - - - - - - - - - - - - - - -
+# thr 5
+# plane 1 = pos0
+# 	dac 13: 190
+# 	dac 12: 115
+# 	dac 11: 157->159
+# 	dac 10: 210->212
+
+# plane 2 = pos1
+# 	dac 13: 156
+# 	dac 12: 155->156
+# 	dac 11: 170->171
+# 	dac 10: 132
+
+# plane 3 = pos2
+# 	dac 11: 153->152
+
+# plane 6 = pos5
+# 	dac 13: 120->121
+# 	dac 12: 157->156
+# 	dac 11: 196
+# 	dac 10: 212
+
+run 38325  800 Hz 251k
+
+# - - - - - - - - - - - - - - - - - - -
+# thr 6
+# plane 1 = pos0
+# 	dac 13: 194->192
+# 	dac 12: 116->117
+# 	dac 11: 162
+# 	dac 10: 214->215
+
+run 38326  252k
+# eff6: 89.336 +- 0.06
+
+#-------------------------------------------------------------------------------
+# Fri 21.2.2020
+# TB24 Azalea
+
+GeV 3  1.8 kHz
+# thr 6
+# high stat: dead pixels?
+
+run 38331  995k
+run 38332  12.5M
+# ../bin/EURunsplitter.exe -d data -o 38332 -n 38333 -e 995100
+run 38333  995k
+run 38334  995k
+run 38335  995k
+run 38336  995k
+run 38337  995k
+run 38338  995k
+run 38339  995k
+run 38340  995k
+run 38341  995k
+run 38342  995k
+run 38343  995k
+run 38344  995k
+run 38345  579k
+
+# hadd tele38332.root  tele38331.root  tele38333.root  tele38334.root  tele38335.root  tele38336.root  tele38337.root  tele38338.root  tele38339.root  tele38340.root  tele38341.root  tele38342.root  tele38343.root  tele38344.root  tele38345.root

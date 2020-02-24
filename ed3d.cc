@@ -411,13 +411,23 @@ int main( int argc, char* argv[] )
 
   geoFile.close();
 
+  double dz = zz[3] - zz[2];
+
+  double kres = sqrt(6)/dz*3.5e-3; // [rad] from hit resolution
+
   double X0m = 0.9E-3; // Mimosa and air
   double scatm = 0.0136 * sqrt(X0m) / pbeam * ( 1 + 0.038*log(X0m) ); // [rad] Mimosa scattering
 
-  double kCut = 12 * scatm; // [rad]
-  //double kCut = 5 * scatm; // [rad]
+  double ksig = sqrt( kres*kres + scatm*scatm );
 
-  cout << endl << "kinkCut " << kCut*1E3 << " mrad" << endl;
+  double kCut = 3 * sqrt(2) * ksig; // [rad]
+
+  cout
+    << endl << "kinkres " << kres*1E3 << " mrad"
+    << endl << "scatter " << scatm*1E3 << " mrad"
+    << endl << "kinksig " << ksig*1E3 << " mrad"
+    << endl << "kinkCut " << kCut*1E3 << " mrad"
+    << endl;
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // alignment:
@@ -632,13 +642,11 @@ int main( int argc, char* argv[] )
   c1->SetLeftMargin( 0.08 );
   c1->SetRightMargin( 0.03 );
 
-  //gPad->Update();
-
-  double dz = zz[6] - zz[1];
+  double lz = zz[6] - zz[1];
 
   TH3I xyzview( "",
 		"display;x [mm];z [mm];y [mm]",
-		110, -11, 11, 120, -0.1*dz, 1.1*dz, 120, -6, 6 );
+		110, -11, 11, 120, -0.1*lz, 1.1*lz, 120, -6, 6 );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // event loop:
