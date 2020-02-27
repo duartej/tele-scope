@@ -1632,12 +1632,26 @@ int main( int argc, char* argv[] )
 		     "triplet isolation at MOD;triplet at MOD min #Delta_{xy} [mm];triplet pairs",
 		     150, 0, 15 );
 
-  TH1I modxdHisto( "modxd",
+  TH1I trixmHisto( "trixm",
 		   "triplet at MOD x;triplet x at MOD [mm];triplets",
 		   216, -32.4, 32.4 );
-  TH1I modydHisto( "modyd",
+  TH1I triymHisto( "triym",
 		   "triplet at MOD y;triplet y at MOD [mm];triplets",
 		   160, -8, 8 );
+
+  TH1I trixmodHisto( "trixmod",
+		     "triplet with MOD x;triplet x at MOD [mm];triplet-Mod links",
+		     216, -32.4, 32.4 );
+  TH1I triymodHisto( "triymod",
+		     "triplet with MOD y;triplet y at MOD [mm];triplet Mod- links",
+		     160, -8, 8 );
+
+  TH1I modmindxHisto( "modmindx",
+		      "min MOD - triplet x;min MOD cluster - triplet #Deltax [mm];MOD clusters",
+		      200, -0.5, 0.5 );
+  TH1I modmindyHisto( "modmindy",
+		      "min MOD - triplet y;min MOD cluster - triplet #Deltay [mm];MOD clusters",
+		      200, -0.5, 0.5 );
 
   TH1I modsxaHisto( "modsxa",
 		    "MOD + triplet x;MOD cluster + triplet #Sigmax [mm];MOD clusters",
@@ -1665,6 +1679,9 @@ int main( int argc, char* argv[] )
   TProfile moddxvsy( "moddxvsy",
 		     "MOD #Deltax vs y;y track [mm];<cluster - triplet #Deltax> [mm]",
 		     160, -8, 8, -2.5, 2.5 );
+  TProfile modmadxvsy( "modmadxvsy",
+		       "MOD MAD #Deltax vs y;y track [mm];<cluster - triplet MAD #Deltax> [mm]",
+		       160, -8, 8, 0, 0.5 );
   TProfile moddxvstx( "moddxvstx",
 		      "MOD #Deltax vs #theta_{x};x track slope [rad];<cluster - triplet #Deltax> [mm]",
 		      80, -0.002, 0.002, -2.5, 2.5 );
@@ -1687,6 +1704,9 @@ int main( int argc, char* argv[] )
   TProfile moddyvsy( "moddyvsy",
 		     "MOD #Deltay vs y;y track [mm];<cluster - triplet #Deltay> [mm]",
 		     160, -8, 8, -0.5, 0.5 );
+  TProfile modmadyvsy( "modmadyvsy",
+		       "MOD MAD#Deltay vs y;y track [mm];<cluster - triplet MAD #Deltay> [mm]",
+		       160, -8, 8, 0, 0.25 );
   TProfile moddyvsty( "moddyvsty",
 		      "MOD #Deltay vs #theta_{y};y track slope [rad];<cluster - triplet #Deltay> [mm]",
 		      80, -0.002, 0.002, -0.5, 0.5 );
@@ -4159,7 +4179,7 @@ int main( int argc, char* argv[] )
 
     ndriHisto.Fill( driplets.size() );
 
-    // debug for Mod sync:
+    // Mod:
 
     if( ldbmod )
       cout << iev << endl;
@@ -4181,7 +4201,55 @@ int main( int argc, char* argv[] )
       if( ldbmod )
 	cout << "         " << modx << "  " << mody << endl;
 
-    }
+      double mindy = 99;
+      double mindx = 99;
+
+      for( unsigned int iA = 0; iA < triplets.size(); ++iA ) { // iA = upstream
+
+	double xmA = triplets[iA].xm;
+	double ymA = triplets[iA].ym;
+	double zmA = triplets[iA].zm;
+	double sxA = triplets[iA].sx;
+	double syA = triplets[iA].sy;
+
+	// intersect inclined track with tilted MOD plane:
+
+	double zB = MODz - zmA; // z MOD from mid of triplet
+	double zd = (Nzm*zB - Nym*ymA - Nxm*xmA) / (Nxm*sxA + Nym*syA + Nzm); // from zmB
+	double yd = ymA + syA * zd;
+	double xd = xmA + sxA * zd;
+
+	double dzd = zd + zmA - MODz; // from MOD z0 [-8,8] mm
+
+	// transform into MOD system: (passive).
+	// large rotations don't commute: careful with order
+
+	double x1m = com*xd - som*dzd; // turn o
+	double y1m = yd;
+	double z1m = som*xd + com*dzd;
+
+	double x2m = x1m;
+	double y2m = cam*y1m + sam*z1m; // tilt a
+
+	double x3m = cfm*x2m + sfm*y2m; // rot
+	double y3m =-sfm*x2m + cfm*y2m;
+
+	double x4m =-x3m + MODalignx; // shift to mid
+	double y4m = y3m + MODaligny; // invert y, shift to mid
+
+	double moddx = modx - x4m;
+	double moddy = mody - y4m;
+	if( fabs(moddx) < fabs(mindx) )
+	  mindx = moddx;
+	if( fabs(moddy) < fabs(mindy) )
+	  mindy = moddy;
+
+      } // tri
+
+      modmindxHisto.Fill( mindx );
+      modmindyHisto.Fill( mindy );
+
+    } // Mod
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // triplets vs MOD and DUT:
@@ -4257,8 +4325,8 @@ int main( int argc, char* argv[] )
       double yd = ymA + syA * zd;
       double xd = xmA + sxA * zd;
 
-      modxdHisto.Fill( xd );
-      modydHisto.Fill( yd );
+      trixmHisto.Fill( xd );
+      triymHisto.Fill( yd );
 
       double dzd = zd + zmA - MODz; // from MOD z0 [-8,8] mm
 
@@ -4317,6 +4385,7 @@ int main( int argc, char* argv[] )
 	  moddycHisto.Fill( moddy );
 	  moddyvsx.Fill( -x3m, moddy ); // for rot
 	  moddyvsy.Fill( y2m, moddy ); // for tilt
+	  modmadyvsy.Fill( y2m, fabs(moddy) );
 	  moddyvsty.Fill( syA, moddy );
 	  moddyvst5.Fill( evsec, moddy );
 
@@ -4327,6 +4396,7 @@ int main( int argc, char* argv[] )
 	  moddxcHisto.Fill( moddx );
 	  moddxvsx.Fill( -x1m, moddx ); // for turn
 	  moddxvsy.Fill( y3m, moddx ); // for rot
+	  modmadxvsy.Fill( y3m, fabs(moddx) );
 	  moddxvstx.Fill( sxA, moddx );
 	  moddxvst5.Fill( evsec, moddx );
 
@@ -4370,6 +4440,11 @@ int main( int argc, char* argv[] )
 
       if( ldbmod )
 	cout << endl;
+
+      if( ltrimod ) {
+	trixmodHisto.Fill( xd );
+	triymodHisto.Fill( yd );
+      }
 
       double zA = DUTz - zmA; // z DUT from mid of triplet
       //double xA = xmA + sxA * zA; // triplet impact point on DUT
