@@ -5991,84 +5991,255 @@ chip 578 = FTH150P RD53A 100x25 P1 default on UZh card
 
 geo geo_2019_12i.dat = 0  120 240  334 444 554  for 100x25
 
-threshold: 860e
-KRUM_CURR_LIN : 20
-Vthreshold_LIN : 340
+#threshold: 860e
+#KRUM_CURR_LIN : 20
+#Vthreshold_LIN : 340
 
-Vb -120 V, 420 nA    -14  38210  512      modrun 1632
-Vb -120 V, 420 nA    -13  38211  500      modrun 1633
-Vb -120 V, 420 nA    -12  38212  500      modrun 1634
-Vb -120 V, 420 nA    -11  38213  501      modrun 1635
-Vb -120 V, 420 nA    -10  38214  500      modrun 1636
-Vb -120 V, 420 nA    -9  38215  563      modrun 1637
-Vb -120 V, 420 nA    -8  38216  501      modrun 1638
-Vb -120 V, 420 nA    -7  38217  500      modrun 1639
-Vb -120 V, 420 nA    -6  38218  501      modrun 1640
-Vb -120 V, 420 nA    -5  38219  503      modrun 1641
+# Vb -120 V, 420 nA    -14  38210  512      modrun 1632
+# Vb -120 V, 420 nA    -13  38211  500      modrun 1633
+# Vb -120 V, 420 nA    -12  38212  500      modrun 1634
+# Vb -120 V, 420 nA    -11  38213  501      modrun 1635
+# Vb -120 V, 420 nA    -10  38214  500      modrun 1636
+# Vb -120 V, 420 nA    -9  38215  563      modrun 1637
+# Vb -120 V, 420 nA    -8  38216  501      modrun 1638
+# Vb -120 V, 420 nA    -7  38217  500      modrun 1639
+# Vb -120 V, 420 nA    -6  38218  501      modrun 1640
+# Vb -120 V, 420 nA    -5  38219  503      modrun 1641
 
 geo geo_2019_12j.dat = 0  120 240  313 423 533  for 100x25
 
-Vb -120 V
-threshold 860e
-Vthreshold_LIN : 340
-KRUM_CURR_LIN 20
+# Vb -120 V
+#threshold 860e
+#Vthreshold_LIN : 340
+#KRUM_CURR_LIN 20
+
 turn 0
 modrun 1642
 run 38220  500
 
-KRUM_CURR_LIN : 24
+#KRUM_CURR_LIN : 24
 
-Vb 120 V
+# Vb 120 V
 modrun 1643
 run 38221  501  99.98
 
-Vb 100 V    0  38222  501      modrun 1644
-Vb  80 V    0  38223  500      modrun 1645
-Vb  60 V    0  38224  515      modrun 1646
-Vb  40 V    0  38225  501      modrun 1647
-Vb  20 V     0  38227  500      modrun 1649
-Vb  10 V    0  38228  509      modrun 1650
-Vb   5 V    0  38229  500      modrun 1651
+# Vb 100 V    0  38222  501      modrun 1644
+# Vb  80 V    0  38223  500      modrun 1645
+# Vb  60 V    0  38224  515      modrun 1646
+# Vb  40 V    0  38225  501      modrun 1647
+# Vb  20 V     0  38227  500      modrun 1649
+# Vb  10 V    0  38228  509      modrun 1650
+# Vb   5 V    0  38229  500      modrun 1651
 
-threshold: 1000e
-Vthreshold_LIN : 343
-KRUM_CURR_LIN : 24
-Vb 120 V
+#threshold: 1000e
+#Vthreshold_LIN : 343
+#KRUM_CURR_LIN : 24
+# Vb 120 V
+
 modrun 1652
 run 38230  500
 
-Vb 100 V    0  38231  503      modrun 1653
-Vb  80 V    0  38232  501      modrun 1654
-Vb  60 V      0  38233  500      modrun 1655
-Vb  40 V    0  38235  501      modrun 1656
-Vb  20 V    0  38236  500      modrun 1657
-Vb  10 V    0  38237  500      modrun 1658
-Vb   5 V    0  38238  500      modrun 1659
-Vb   0 V    0  38239  502      modrun 1660
+# Vb 100 V    0  38231  503      modrun 1653
+# Vb  80 V    0  38232  501      modrun 1654
+# Vb  60 V      0  38233  500      modrun 1655
+# Vb  40 V    0  38235  501      modrun 1656
+# Vb  20 V    0  38236  500      modrun 1657
+# Vb  10 V    0  38237  500      modrun 1658
+# Vb   5 V    0  38238  500      modrun 1659
+# Vb   0 V    0  38239  502      modrun 1660
 
-Vb 120 V
-threshold: 1140e
-Vthreshold_LIN : 346
+# Vb 120 V
+#threshold: 1140e
+#Vthreshold_LIN : 346
 modrun 1661
 run 38240  517
 
-threshold: 1270e
-Vthreshold_LIN : 349
+#threshold: 1270e
+#Vthreshold_LIN : 349
 modrun 1662
 run 38241  500
 
-threshold: 1400e
-Vthreshold_LIN : 352
+#threshold: 1400e
+#Vthreshold_LIN : 352
 modrun 1663
 run 38242  512  99.90
 
-Overnight
-threshold: 990e
-Vthreshold_LIN : 343
-KRUM_CURR_LIN : 20
-Vb -120 V    0  38243  34723      modrun 1664
+#Overnight
+#threshold: 990e
+#Vthreshold_LIN : 343
+#KRUM_CURR_LIN : 20
+# Vb -120 V
+modrun 1664
+run  38243  34723
 
-#-------------------------------------------------------------------------------
+#===============================================================================
+# Feb 2020
+# TB21 Datura
+# yellow collimator Pb insert: 20x10 opening
+
+geo geo_2020_01a.dat #  0 19 38 58 78 98
+
+GeV 5  530 Hz
+
+# thr 6
+run 38244  472k  tridx 4.04  ntri 8.0
+# uses 4.8 GB RAM
+
+# thr 5
+run 38245  445k  tridx 4.05
+
+# thr 4
+run 38246  1103k  tridx 4.09  ntri 8.42
+
+# thr 6
+GeV 1  1140 Hz
+run 38247  252k  tridx 4.62
+
+GeV 1.2  1170 Hz
+run 38248  252k  tridx 4.49
+
+GeV 1.6  1440 Hz
+run 38249  252k  tridx 4.32
+
+GeV 2.4
+run 38250  281k  tridx 4.15
+
+geo geo_2020_01b.dat #  0 74 148 3*74 4*74 370
+
+GeV 5
+run 38251  335k  tridx 4.61  ntri 7.1
+
+GeV 2.4
+run 38252  253k  tridx 5.89  ntri 13.9
+
+GeV 1.6
+run 38253  256k  tridx 7.31  ntri 11.3
+
+GeV 1.2
+run 38254  253k  tridx 8.72  ntri 8.6
+
+GeV 1.0
+run 38255  253k  tridx 9.81  ntri 7.7
+
+geo geo_2020_01c.dat #  0 153  305  455  607  759
+
+GeV 5
+run 38256  251k
+# corkscrew:
+# exdyvsx1->Fit("pol1")  1.89241
+# exdyvsx2->Fit("pol1")  1.13302
+# exdyvsx3->Fit("pol1")  0.328347
+# exdyvsx4->Fit("pol1")  0.446686
+# exdyvsx5->Fit("pol1")  1.24607
+# exdyvsx6->Fit("pol1")  1.87041
+
+# set all roty to zero:
+# exdyvsx1->Fit("pol1")  7.60286
+# exdyvsx2->Fit("pol1")  4.99641
+# exdyvsx3->Fit("pol1")  0.966926
+# exdyvsx4->Fit("pol1")  2.68868
+# exdyvsx5->Fit("pol1") 11.5383
+# exdyvsx6->Fit("pol1")  6.82748
+
+# set all rotx, roty to zero:
+# exdyvsx1->Fit("pol1")  7.419  -7.44481
+# exdyvsx2->Fit("pol1")  4.782  -4.67494
+# exdyvsx3->Fit("pol1")  0.691  -0.534147
+# exdyvsx4->Fit("pol1")  2.668  -2.72093
+# exdyvsx5->Fit("pol1") 11.652 -11.5826
+# exdyvsx6->Fit("pol1")  6.902  -6.81448
+
+# apply rot manually: too much
+# exdyvsx1->Fit("pol1") -7.39173
+# exdyvsx2->Fit("pol1") -4.59492
+# exdyvsx3->Fit("pol1") -1.58302
+# exdyvsx4->Fit("pol1") -1.28245
+# exdyvsx5->Fit("pol1") -3.9212
+# exdyvsx6->Fit("pol1") -6.63931
+
+# apply half rot manually: good
+# then 4 iterations for flat sixdxvsy
+# exdxvsy1->Fit("pol1") 0.935059
+# exdxvsy2->Fit("pol1") 0.550368
+# exdxvsy3->Fit("pol1") 0.266475
+# exdxvsy4->Fit("pol1") 0.0220381
+# exdxvsy5->Fit("pol1") 0.267545
+# exdxvsy6->Fit("pol1") 0.706935
+# tridx 6.4
+
+GeV 2.4  Justin
+run 38257  283k  tridx 10.5
+run 38258  158k  tridx 10.6
+
+GeV 1.6
+run 38259  152k  tridx 14.5
+
+GeV 1.2
+run 38260  158k  COPY
+
+GeV 1.0
+run 38261  152k  COPY
+
+#===============================================================================
+# Feb 2020
+# TB22 Duranta
+# yellow collimator no Pb insert
+
+geo geo_2020_01d.dat #  0 20 40 60 80 99
+
+GeV 2.4 450 Hz (wire problem?)
+
+# thr 6  hot 20-72
+run 38262  203k  ntri 15
+
+# thr 5
+run 38263  101k
+
+# TriggerMask 1 (was 3) 1.7 kHz
+GeV 5  375 Hz  ntri 6.8
+
+# thr 4
+run 38265  
+x: 13 | 12  | 11 | 10
+pos0 dac 10: 116->114
+pos0 dac 11: 101-> 99
+pos0 dac 12:  57-> 55
+pos0 dac 13: 148->146
+
+pos1 dac 10: 119->116
+pos1 dac 11: 178->176
+pos1 dac 12: 206->204
+pos1 dac 13: 127->126
+
+pos2 dac 10: 118->114
+pos2 dac 11: 150->146
+
+pos4 dac 10: 157->155
+pos4 dac 11: 162->160
+pos4 dac 12: 139->136
+pos4 dac 13: 137->135
+
+pos5 dac 10: 161->159
+pos5 dac 11: 141->139
+pos5 dac 12: 171->169
+pos5 dac 13: 129->127
+
+run 38266  hot 400-800
+
+pos0 dac 10: 116->112
+
+pos4 dac 10: 155->155
+pos4 dac 11: 160->159
+pos4 dac 12: 136->137
+pos4 dac 13: 135->135
+
+run 38267  250k
+
+# thr 6 at 5 GeV for Dannheim
+
+run 38268  
+
+#===============================================================================
 # 14.2.2020
 # TB24 Azalea
 # yellow collimator Pb insert: 24x12 opening
@@ -6269,3 +6440,774 @@ run 38344  995k
 run 38345  579k
 
 # hadd tele38332.root  tele38331.root  tele38333.root  tele38334.root  tele38335.root  tele38336.root  tele38337.root  tele38338.root  tele38339.root  tele38340.root  tele38341.root  tele38342.root  tele38343.root  tele38344.root  tele38345.root
+
+#-------------------------------------------------------------------------------
+# Tue 25.2.2020: RD53A in TB24 Azalea
+
+# Mimosa thr 4
+
+GeV 5
+geo geo_2020_02b.dat #  0  120  240  403  524  647
+
+run 38342
+
+chip 563 FTH150P RD53A 100x25 P1 default design, Birmingham 1E16 n_eq/cm2
+
+#  PA_IN_BIAS_LIN   : 350
+#  FC_BIAS_LIN      : 20
+#  KRUM_CURR_LIN    : 29
+#  LDAC_LIN         : 185
+#  COMP_LIN         : 110
+#  REF_KRUM_LIN     : 300
+#  Vthreshold_LIN   : 385  ~ 1215 e +- 148
+#  Noise: 113 e +- 14
+
+# bias 800, 430 uA rising to 470 uA
+
+tilt 0
+turn 0
+fifty 0
+rot90 0
+
+modrun 1669
+run 38366  250k
+
+modrun 1670
+run 38367  510k
+
+# KRUM_CURR_LIN : 20
+modrun 1673
+run 38370  514k
+
+# KRUM_CURR_LIN : 29
+
+# bias 700, 360uA
+
+modrun 1674
+run 38371  98.4
+
+# bias 600, 280uA
+modrun 1675
+run 38372  241
+
+bias 600, 286uA
+modrun 1678
+run 38375  270
+
+bias 500, 220uA
+Module delay: 12 -> 4 ns
+modrun 1679  good yield
+run 38376  123
+
+# bias 500, 215uA
+modrun 1680  good yield  lost sync after 337k
+run 38377  553  95.4
+
+# bias 600, 277uA
+modrun 1681  triycmod triangle
+run 38378
+
+# bias 700   348uA
+modrun 1682
+run 38379  457
+
+# try D4294: no hits, low bias current 3 uA at 150 V hall light on
+
+# over night:
+# bias 800  430uA
+modrun 1684
+run 38392  29126
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Wed 26.2.2020
+
+# bias 400  156 uA
+modrun 1691
+run 38401  500
+
+# bias 300  109 uA
+modrun 1692
+run 38402  500
+
+# bias 200  66 uA
+modrun 1693
+run 38403
+
+# EDIT school: move entire telescope 150 mm out and in
+# new DTB
+# bias 800
+modrun 1696
+run 38405  100
+
+# Ref Mod D4186
+# delay 4 ns
+modrun 1699
+run 38408  90k
+
+# delay 12 ns
+modrun 1700  39%
+run 38409  90k
+
+# delay 18 ns
+modrun 1701  26%
+run 38410  90k
+
+# reboot Windows
+# power cycle Mod DTB
+# delay 4 ns
+modrun 1705  yield 69%
+run 38414  90k
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# bias scan again:
+
+# Vb 800  463 uA  hot 200
+modrun 1707  70%
+run 38416  500  99.285  q0 9.14
+
+# Vb 700  382 uA  hot 179
+modrun 1708
+run 38417  500  98.85  q0 8.46
+
+# Vb 650  333 uA  hot 131
+modrun 1709
+run 38418  500  98.43  q0 8.05
+# RD53A stops 392k
+
+# Vb 600  293 uA  hot 161
+modrun 1710  70%
+run 38419  502  97.94  q0 7.66
+
+# Vb 550  252 uA  hot 148
+modrun 1711
+run 38420  556  96.96  q0 7.185
+
+# Vb 500  220 uA  hot 127
+modrun 1713
+run 38422  502  95.83  q0 6.70
+
+# Vb 450  190 uA  hot 89
+modrun 1714  yld 70%
+run 38423  504  94.32  q0 6.26
+
+# Vb 400  160 uA  hot 48
+modrun 1715
+run 38424  503  92.49  q0 5.886
+
+# Vb 300  110 uA  hot 17
+modrun 1716
+run 38425  502  85.25  q0 4.985
+
+# Vb 200  66 uA  hot 11
+modrun 1717
+run 38426  505  62.0  q0 4.266
+
+# over night:
+# Vb 800  460 uA  hot 178
+modrun 1718
+run 38427  33930
+# on TB4: 50 GB
+# RD53A until 7818000  taken 11797.6  modlk 721  eff 99.2823
+# scope53m -l 7818000 38427
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Thu 27.2.2020
+
+# Vb 750  402 uA  hot 168
+modrun 1719
+run 38428  282
+
+modrun 1720
+run 38429  515  99.25  q0 8.88
+
+# Vthreshold_LIN : 380 ~ 911 +-100 e
+# noise: 117 +- 15 e
+
+# bias scan at lower threshold:
+
+# Vb 800  442 uA  hot 314
+modrun 1721
+run 38430  500  99.71  q0 9.96
+
+# Vb 700  352 uA  hot 214
+modrun 1722
+run 38431  504  99.52  q0 9.17
+
+# Vb 600  279 uA  hot 206
+modrun 1723
+run 38432  501  99.12  q0 8.345
+
+# Vb 550  244 uA  hot 203
+modrun 1724
+run 38433  521  98.81  q0 7.875
+
+# Vb 500  214 uA  hot 192
+modrun 1725
+run 38434  514  98.25  q0 7.394
+
+# moved the telescope out of the beam for the EDIT school
+
+# Vb 750  416 uA  hot 304
+modrun 1727
+run 38436  500  99.54  q0 9.377
+# RD53A: 332k
+
+# Vb 650  341 uA  hot 252
+modrun 1728
+run 38437  289  99.23  q0 8.58
+# RD53A: 282k
+
+modrun 1729  hot 250
+run 38438  507  99.20  q0 8.59
+
+# Vb 450  203 uA  hot 186
+modrun 1730
+run 38439  504  97.00  q0 6.74
+
+# Vb 400  169 uA  hot 124
+modrun 1731
+run 38440  508  95.55  q0 6.23
+
+# Vb 300  117 uA  hot 101
+modrun 1732
+run 38441  506  90.165 q0 5.32
+
+# Vb 200  71 uA  hot 93
+modrun 1733
+run 38442  502  73.03  q0 4.465
+
+# Vb 350  140 uA  hot 101
+modrun 1734
+run 38443  536  93.36  q0 5.77
+
+# Vb 250  93 uA  hot 100
+modrun 1735
+run 38444  505  87.22  q0 4.87
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+chip 564 FTH150P RD53A 50x50 P1 default design, Birmingham 5E15 n_eq/cm2
+
+fifty 1
+tilt 0
+turn 0
+rot90 0
+
+geo geo_2020_02c.dat #  0  120  240  403  524  647 for 50x50
+
+# Direct powering
+# VDDA = 1.2 V, VDDD 1.3 V, Iref = 4 uA bit 10
+
+Chiller -30 degrees
+Peltiers 3.8 A
+
+# FC_BIAS_LIN      : 20
+# KRUM_CURR_LIN    : 29
+# LDAC_LIN         : 185
+# COMP_LIN         : 110
+# REF_KRUM_LIN     : 300
+# Vthreshold_LIN   : 360 ~ 1030 +- 142 e
+# noise: 78 +- 12 e
+
+# fhlrcazalea:/data2/cms2020
+
+# Vb 800 V  161 uA
+modrun 1737
+run 38445  500
+
+# over night:
+# Vb 800 V  131 uA  hot 45
+modrun 1738
+run 38446  38660
+# 66 GB
+# hangs: scope53m  38446.13686000  taken 20615.1  modlk 720  eff 99.7738
+# scope53m -l 13686000 38446
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Fri 28.2.2020 continue 564
+
+# Vb 700 V  113 uA
+modrun 1739
+run 38447  500  eff 99.8%
+
+# Vb 600 V   98 uA
+modrun 1740
+run 38448  500  eff 99.8%
+
+# Vb 500 V   84 uA
+modrun 1741
+run 38449  500  eff 99.2%
+
+# Vb 450 V   78 uA
+modrun 1742
+run 38450  500  eff 98.3%
+
+# Vb 400 V   71 uA
+modrun 1743
+run 38451  500  eff 96.6%
+
+# Vb 350 V   63 uA
+modrun 1744
+run 38452  500  eff 93.9%
+
+# Vb 300 V   56 uA
+modrun 1745
+run 38453  500  eff 90.2%
+
+# Vb 250 V   48 uA
+modrun 1746
+run 38454  500  eff 85.1%
+
+# Vb 200 V   41 uA
+modrun 1747
+run 38455  500  eff 78.4%
+
+# Vb 150 V   34 uA
+modrun 1748
+run 38456  500  eff 65.0%
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# turn scan at 800 V:
+# Vb 800 V, Ib 139 uA
+
+geo geo_2020_02d.dat  #  0  120  240  472  593  711 for 50x50
+
+# GBL ex120.113 for 5 GeV: 9.0 um
+
+turn 40
+modrun 1756
+run 38466  500
+
+turn 38
+modrun 1757
+run 38467  500
+
+turn 36
+modrun 1758
+run 38468  500
+
+turn 34
+modrun 1759
+run 38469  500
+
+turn 32
+modrun 1760
+run 38470  570
+
+turn 30
+modrun 1761
+run 38471  500
+
+turn 28
+modrun 1762
+run 38472  500
+
+turn 26
+modrun 1763
+run 38473  500
+
+turn 24
+modrun 1764
+run 38474  500
+
+turn 23
+modrun 1765
+run 38475  500
+
+turn 20  (22)
+modrun 1766
+run 38476  515  dxcq 12.9
+
+turn 21
+modrun 1767
+run 38477  500
+
+turn 18  (20)
+modrun 1768
+run 38478  500
+
+turn 19
+modrun 1769
+run 38479  500
+
+turn 18
+modrun 1770
+run 38480  500
+
+turn 17
+modrun 1771
+run 38481  500
+
+turn 15
+modrun 1772
+run 38482  500
+
+turn 13
+modrun 1773
+run 38483  502
+
+turn 11
+modrun 1774
+run 38484
+
+turn 9
+modrun 1775
+run 38485  501
+
+turn 7
+modrun 1776
+run 38486  502
+
+turn 5
+modrun 1777
+run 38487  502
+
+turn 3
+modrun 1778
+run 38488  504
+
+turn 1
+modrun 1779
+run 38489  501
+
+turn -1
+modrun 1780
+run 38490  502
+
+turn -3
+modrun 1781
+run 38491  502
+
+turn 20 (22)
+
+# Vthreshold_LIN   : 355  hot 87
+modrun 1782
+run 38492  dxcq 12.8
+
+# Vthreshold_LIN   : 350  hot 730
+modrun 1783
+run 38493
+
+# Vthreshold_LIN   : 355
+# KRUM_CURR_LIN    : 12
+modrun 1784
+run 38494  dxc 13.1
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Sat 29.2.2020 continue 564
+# Vthreshold_LIN   : 355
+# threshold = 1012 e
+
+turn 0
+
+geo geo_2020_02c.dat #  0  120  240  403  524  647 for 50x50
+
+# Vb 800 V  125 uA  hot 101
+modrun 1787
+run 38498  527  99.89  q0 10.91
+
+# Vb 700 V  107 uA  hot 95
+modrun 1788
+run 38499  509  99.88  q0 10.04
+
+# Vb 600 V   95 uA  hot 98
+modrun 1789
+run 38500  511  99.83  q0 9.16
+
+# Vb 500 V   82 uA  hot 100
+modrun 1790  yld 79%
+run 38501  507  99.65  q0 7.89
+
+# Vb 450 V   77 uA  hot 90
+modrun 1791
+run 38502  500  99.16  q0 7.04
+
+# Vb 400 V   70 uA  hot 92
+modrun 1792
+run 38503  516  98.22  q0 6.32
+
+# Vb 350 V   62 uA  hot 88
+modrun 1793  yld 79%
+run 38504  504  96.54  q0 5.71
+
+# Vb 300 V   54 uA  hot 78
+modrun 1794
+run 38505  508  93.405 q0 5.093
+
+# Vb 250 V   47 uA  hot 77
+modrun 1795  yld 79%
+run 38506  527  89.39  q0 4.657
+
+# Vb 200 V   40 uA  hot 86
+modrun 1796  yld 79% -> 39%
+run 38507  618  82.85  q0 4.326
+
+# Vb 150 V   33 uA  hot 82
+modrun 1797  yld 39%
+run 38508  546  73.97  q0 3.855
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Sun 1.3.2020
+
+chip 565 FTH150P RD53A 100x25 P1 default design, Birmingham 5E15 n_eq/cm2
+
+# PA_IN_BIAS_LIN   : 350
+# FC_BIAS_LIN      : 20
+# KRUM_CURR_LIN    : 29
+# LDAC_LIN         : 185
+# COMP_LIN         : 110
+# REF_KRUM_LIN     : 300
+# Vthreshold_LIN   : 360 ~ 938 +- 88 e
+# noise: 99 +- 16 e
+
+fifty 0
+turn 0
+rot90 0
+
+geo geo_2020_02b.dat #  0  120  240  403  524  647 for 100x25
+
+# Vb 800 V  151 uA  hot 297
+modrun 1812  yld 79%
+run 38524  535  99.795  q0 10.625
+
+# Vb 800 V  157 uA
+modrun 1813
+run 38525  503  99.81  q0 10.65
+
+# Vb 700 V  131 uA  hot 281
+modrun 1814
+run 38526  503  99.754  q0 9.73
+
+# Vb 600 V  113 uA  hot 257
+modrun 1815
+run 38527  502  99.725  q0 8.674
+
+# Vb 500 V   98 uA  hot 258
+modrun 1816
+run 38528  503  99.49  q0 7.29
+
+# Vb 450 V   89 uA  hot 247
+modrun 1817
+run 38529  526  99.16  q0 6.546
+
+# Vb 400 V   78 uA  hot 226
+modrun 1818
+run 38530  502  98.64  q0 5.936
+
+# Vb 350 V   71 uA
+#modrun 1819
+#run 38531  250  98.62
+# RD53A until 173k
+
+# Vb 350 V   70 uA
+#modrun 1820
+#run 38532  418
+# RD53A until 316k
+
+# Vb 350 V   69 uA  hot 189
+modrun 1821
+run 38533  256  97.69  q0 5.38
+
+# Vb 350 V   69 uA  hot 176
+modrun 1822
+run 38534  259  97.74  q0 5.416
+
+# Vb 300 V   60 uA  hot 198
+modrun 1823
+run 38535  502  96.12  q0 4.90
+
+# Vb 250 V   52 uA  hot 201
+modrun 1824
+run 38536  502  93.47  q0 4.41
+
+# Vb 200 V   44 uA  hot 217
+modrun 1825
+run 38537  503  88.78  q0 3.936
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Mon 2.3.2020
+# Zh card: 2 x 10 kOhm series resistor on the bias line: beware the voltage drop!
+
+chip 578 FTH150P RD53A 100x25 P1 default design, KaZ 5E15 n_eq/cm2
+
+# PA_IN_BIAS_LIN   : 350
+# FC_BIAS_LIN      : 20
+# KRUM_CURR_LIN    : 29
+# LDAC_LIN         : 185
+# COMP_LIN         : 110
+# REF_KRUM_LIN     : 300
+# Vthreshold_LIN   : 355 ~ 1304 +- 128 e
+# noise: 94 +- 11 e
+
+rot90 0
+fifty 0
+turn 0
+tilt 0
+
+geo geo_2020_02b.dat #  0  120  240  403  524  647 for 100x25
+
+modrun 1841
+run 38552  41
+
+# Vb 200 V   50 uA  hot 290
+modrun 1843
+run 38554  179
+
+# adj x, y
+
+modrun 1846
+run 38557  151  98.6
+
+# adj x, y
+
+# Vb 100 V   30 uA  hot 333
+modrun 1848
+run 38559  502  94.76  q0 5.64
+
+# Vb 150 V  36 uA  hot 327
+modrun 1849
+run 38560  502  97.67  q0 6.67
+
+# Vb 200 V  45 uA  hot 320
+modrun 1850
+run 38561  502  98.75  q0 7.57
+
+# Vb 250 V  50 uA  hot 320
+modrun 1851
+run 38562  503  99.19  q0 8.51
+
+# Vb 300 V  55 uA  hot 330
+modrun 1852
+run 38563  505  99.39  q0 9.52
+
+# Vb 350 V  60 uA  hot 334
+modrun 1853
+run 38564  503  99.47  q0 10.54
+
+# Vb 400 V  65 uA  hot 319
+modrun 1854
+run 38565  502  99.53  q0 11.32
+
+modrun 1855
+run 38566  997  99.49  q0 11.39
+
+# Vb 450 V  69 uA  hot 310
+modrun 1861
+run 38572  512  99.576 q0 11.93
+
+# Vb 500 V  73 uA  hot 297
+modrun 1862
+run 38573  501  99.62  q0 12.37
+
+# Vb 550 V  76 uA  hot 308
+modrun 1863
+run 38574  502  99.62  q0 12.76
+
+# Vb 600 V  80 uA  hot 302
+modrun 1864
+run 38575  522  99.64  q0 13.06
+
+# DEAD AT 630 V
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Tue 3.3.2020
+
+chip 577 FDB150P RD53A 100x25 P1 default design, KaZ 1E16 n_eq/cm2 on Zh card
+
+# PA_IN_BIAS_LIN   : 350
+# FC_BIAS_LIN      : 20
+# KRUM_CURR_LIN    : 29
+# LDAC_LIN         : 185
+# COMP_LIN         : 110
+# REF_KRUM_LIN     : 300
+# Vthreshold_LIN   : 361 ~  1163 +- 117 e
+# noise: 119 +- 17 e
+
+# same geo 2020_02b for 100x25
+
+# Vb 100 V   50 uA  hot 620 (cut 1%)
+modrun 1866
+run 38580  503  76.45  q0 4.10
+
+# Vb 150 V   63 uA  hot 606
+modrun 1867
+run 38581  519  88.32  q0 4.732
+
+# Vb 200 V   76 uA  hot 551
+modrun 1868
+run 38582  506  92.29  q0 5.302
+
+# Vb 250 V   90 uA  hot 540
+modrun 1869
+run 38583  501  95.49  q0 5.847
+
+# Vb 300 V  103 uA  hot 561
+modrun 1870
+run 38584  503  96.88  q0 6.363
+
+# Vb 350 V  118 uA  hot 559
+modrun 1871
+run 38585  502  97.81  q0 6.883
+
+# Vb 375 V  126 uA  hot 480
+modrun 1872
+run 38586  504  98.20  q0 7.108
+
+# Vb 400 V  134 uA  hot 408
+modrun 1873
+run 38587  505  98.48  q0 7.356
+
+# Vthreshold_LIN   : 370 ~ 1590 +- 142 e
+modrun 1874
+run 38588  500
+
+# Vthreshold_LIN   : 380 ~ 2136 +- 128 e
+modrun 1875
+run 38589  507
+
+# KRUM_CURR_LIN    : 24
+# Vthreshold_LIN   : 361 ~ 1159 +- 118 e
+modrun 1876
+run 38590  519  98.45  q0 8.59
+
+# KRUM_CURR_LIN    : 29
+# Vthreshold_LIN   : 361 ~  1220 +- 121 e
+# noise: 121 +- 18 e
+
+# Vb 450 V  142 uA  hot 283
+modrun 1885
+run 38599  502  99.05  q0 8.003
+
+# Vb 475 V  149 uA  hot 233 (cut 1%)
+modrun 1886
+run 38600  3145  99.215 q0 8.21
+# RD53A until 2424000
+
+# Vb 475 V  149 uA  hot 220
+modrun 1887
+run 38601  501  99.21  q0 8.185
+
+# Vb 500 V  155 uA  hot 260
+modrun 1888
+run 38602  503  99.30  q0 8.50
+
+# Vb 525 V  160 uA  hot 287
+modrun 1889
+run 38603  503  99.34  q0 8.794
+
+# Vb 550 V  170 uA  hot 267
+modrun 1890
+run 38604  503  99.435 q0 9.032
+
+# Vb 575 V  177 uA  hot 293
+modrun 1891
+run 38605  504  99.47  q0 9.29
+
+# Vb 600 V  184 uA  hot 248
+modrun 1892
+run 38606  501  99.545 q0 9.47
+
+# Vb 625 V  199 uA  hot 355
+modrun 1893
+run 38607  503  99.48  q0 9.78
+
+# tripped @ 642V

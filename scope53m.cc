@@ -785,6 +785,11 @@ int main( int argc, char* argv[] )
   double qwid = 1.5; // [ToT] for Moyal in 150 um from x fitmoyal5.C+("linq0")
   double qxmax = 0.04; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
 
+  if( chip0 == 563 ) { // 1E16
+    qwid = 1;
+    qxmax = 0.135;
+  }
+
   int iDUT = 0; // eudaq
 
   int DUTaligniteration = 0;
@@ -930,6 +935,11 @@ int main( int argc, char* argv[] )
   if( run >= 37782 ) { // fresh HPK KRUM_CURR_LIN 29 Nov 2019
     qL = 11;
     qR = 25;
+  }
+
+  if( run >= 38445 ) { // 564i
+    qL =  5;
+    qR = 14;
   }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3873,6 +3883,34 @@ int main( int argc, char* argv[] )
 
     }
 
+    if( run == 38446 ) { // dutdxvst5->Fit("pol9")
+
+      double p0 =  0.000672108;
+      double p1 = -4.43748e-06;
+      double p2 =  1.58843e-09;
+      double p3 = -3.63893e-13;
+      double p4 =  5.97706e-17;
+      double p5 = -7.05132e-21;
+      double p6 =  5.61676e-25;
+      double p7 =  -2.7949e-29;
+      double p8 =  7.75382e-34;
+      double p9 = -9.10656e-39;
+      DUTalignx = DUTalignx0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+      p0 = -0.000411821;
+      p1 =  1.66084e-06;
+      p2 = -7.27193e-10;
+      p3 =   2.1882e-13;
+      p4 = -4.84624e-17;
+      p5 =  7.15116e-21;
+      p6 = -6.52794e-25;
+      p7 =  3.50708e-29;
+      p8 = -1.01324e-33;
+      p9 =   1.2123e-38;
+      DUTaligny = DUTaligny0 + p0 + ( p1 + ( p2 + ( p3 + ( p4 + ( p5 + ( p6 + ( p7 + ( p8 + p9 * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec ) * evsec;
+
+    }
+
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // RD53A cross talk correction:
 
@@ -4649,7 +4687,7 @@ int main( int argc, char* argv[] )
 	      chip0 == 501 || chip0 == 504 ||
 	      chip0 == 520 || chip0 == 524 || chip0 == 529 ||
 	      chip0 == 531 || chip0 == 543 || chip0 == 550 ||
-	      chip0 == 563 || chip0 == 564 ||
+	      //chip0 == 563 || chip0 == 564 ||  double assignment
 	      chip0 == 719 || chip0 == 577 ||chip0 == 578 ||
 	      chip0 == 793350 || chip0 == 792125 ) {
 
@@ -5408,11 +5446,11 @@ int main( int argc, char* argv[] )
 	  if( y4 < -2.1 ) fidy = 0; // packman cutout
 	}
 	if( chip0 == 504 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 509 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 509 && run >= 35150 && run <= 99999 ) { // straight Syn
@@ -5421,7 +5459,7 @@ int main( int argc, char* argv[] )
 	  if( x4 > -3.7 ) fidx = 0;
 	}
 	if( chip0 == 524 && run < 34090 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 524 ) { // straight Lin+Diff
@@ -5441,19 +5479,19 @@ int main( int argc, char* argv[] )
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 1470 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 1472 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 512 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 511 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 511 && run >= 35677 && run <= 99999 ) { // straight Sync
@@ -5462,7 +5500,7 @@ int main( int argc, char* argv[] )
 	  if( x4 > -3.7 ) fidx = 0;
 	}
 	if( chip0 == 182 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 182 && run >= 35722 && run <= 99999 ) { // straight Sync
@@ -5487,7 +5525,7 @@ int main( int argc, char* argv[] )
 	}
 	if( chip0 == 521 && run >= 35873 && run <= 99999 ) { // straight Lin
 	  fidx = 1;
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 521 && run >= 35917 && run <= 99999 ) { // straight Sync
@@ -5497,11 +5535,11 @@ int main( int argc, char* argv[] )
 	}
 	if( chip0 == 334 && run >= 35965 && run <= 99999 ) { // straight Lin
 	  fidx = 1;
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 543 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 512 && run >= 36124 && run <= 99999 ) { // Sync
@@ -5510,16 +5548,16 @@ int main( int argc, char* argv[] )
 	  if( x4 > -3.7 ) fidx = 0;
 	}
 	if( chip0 == 515 || chip0 == 516 || chip0 == 529 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( run >= 36524 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0;
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( run >= 37621 && run <= 37635 ) { // FBK Nov 2019
-	  if( x4 >  3.2 ) fidx = 0; // Lin from 136
-	  if( x4 < -3.2 ) fidx = 0;
+	  if( x4 >  3.1 ) fidx = 0; // Lin from 136
+	  if( x4 < -3.1 ) fidx = 0;
 	}
 
 	if( rot90 ) { // rot90 Lin
@@ -5527,7 +5565,7 @@ int main( int argc, char* argv[] )
 	  if( x4 < -4.7 ) fidx = 0;
 	  fidy = 1;
 	  if( y4 >  3.5 ) fidy = 0;
-	  if( y4 < -3.2 ) fidy = 0;
+	  if( y4 < -3.1 ) fidy = 0;
 	}
 
 	// from track x, y (at DUT) to sensor col, row:

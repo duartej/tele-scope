@@ -516,11 +516,13 @@ int main( int argc, char* argv[] )
   // add resolution:
 
   double dzt = zz[2] - zz[1];
-  scatm += 0.005 / dzt;
+  double kres = sqrt(6)/dzt * 3.5e-3; // [rad] kink from hit resolution
 
-  cout << endl << "kink width " << scatm*1E3 << " mrad" << endl;
+  double ksig = sqrt( kres*kres + scatm*scatm );
 
-  double tricut = 3 * scatm; // [rad]
+  cout << endl << "kink " << ksig*1E3 << " mrad" << endl;
+
+  double tricut = 3 * sqrt(2) * ksig; // [rad]
 
   cout << endl << "kinkCut " << tricut*1E3 << " mrad" << endl;
 
@@ -930,6 +932,7 @@ int main( int argc, char* argv[] )
   TProfile tridxvsx[2];
   TProfile tridxvsy[2];
   TProfile tridxvsxm[2];
+  TProfile trimadxvsx[2];
   TProfile trimadxvsxm[2];
   TProfile2D * trimadxvsxmym[2];
   TProfile tridxvstx[2];
@@ -1142,6 +1145,12 @@ int main( int argc, char* argv[] )
 			       Form( "%splet dx vs xmod;%splet xB mod 36.8 [#mum];<%splets #Deltax> [#mum]",
 				     tds.c_str(), tds.c_str(), tds.c_str() ),
 			       74, 0, 2*ptchx[ipl]*1E3, -50, 50 );
+    trimadxvsx[itd] =
+      TProfile( Form( "%smadxvsx", tds.c_str() ),
+		Form( "%splet MAD(#Deltax) vs xd;%splet xB;%splet MAD(#Deltax) [#mum]",
+		      tds.c_str(), tds.c_str(), tds.c_str() ),
+		100, -midx[ipl], midx[ipl], 0, 50 );
+
     trimadxvsxm[itd] =
       TProfile( Form( "%smadxvsxm", tds.c_str() ),
 		Form( "%splet MAD(#Deltax) vs xmod;%splet xB mod 36.8;%splet MAD(#Deltax) [#mum]",
@@ -1386,8 +1395,10 @@ int main( int argc, char* argv[] )
   TH1I hexdxc[9];
   TH1I hexdyc[9];
 
+  TProfile exdxvsx[9];
   TProfile exdxvsy[9];
   TProfile exdyvsx[9];
+  TProfile exdyvsy[9];
 
   TProfile exdxvstx[9];
   TProfile exdyvsty[9];
@@ -1410,12 +1421,18 @@ int main( int argc, char* argv[] )
 			Form( "ex dy %i;dy tri - plane %i [#mum];triplet - cluster pairs", ipl, ipl ),
 			200, -200*ff, 200*ff );
 
+    exdxvsx[ipl] = TProfile( Form( "exdxvsx%i", ipl ),
+			     Form( "ex dx vs x %i;x at %i [mm];<#Deltax> [#mum]", ipl, ipl ),
+			     100, -midx[ipl], midx[ipl], -200*ff, 200*ff );
     exdxvsy[ipl] = TProfile( Form( "exdxvsy%i", ipl ),
 			     Form( "ex dx vs y %i;y at %i [mm];<#Deltax> [#mum]", ipl, ipl ),
 			     100, -midy[ipl], midy[ipl], -200*ff, 200*ff );
     exdyvsx[ipl] = TProfile( Form( "exdyvsx%i", ipl ),
 			     Form( "ex dy vs x %i;x at %i [mm];<#Deltay> [#mum]", ipl, ipl ),
 			     100, -midx[ipl], midx[ipl], -200*ff, 200*ff );
+    exdyvsy[ipl] = TProfile( Form( "exdyvsy%i", ipl ),
+			     Form( "ex dy vs y %i;y at %i [mm];<#Deltay> [#mum]", ipl, ipl ),
+			     100, -midy[ipl], midy[ipl], -200*ff, 200*ff );
 
     exdxvstx[ipl] =
       TProfile( Form( "exdxvstx%i", ipl ),
@@ -2101,6 +2118,7 @@ int main( int argc, char* argv[] )
       tridxvsx[itd].Reset();
       tridxvsy[itd].Reset();
       tridxvsxm[itd].Reset();
+      trimadxvsx[itd].Reset();
       trimadxvsxm[itd].Reset();
       trimadxvsxmym[itd]->Reset();
       tridxvstx[itd].Reset();
@@ -2179,11 +2197,13 @@ int main( int argc, char* argv[] )
       hexdx[ipl].Reset();
       hexdy[ipl].Reset();
       hexdxc[ipl].Reset();
+      exdxvsx[ipl].Reset();
       exdxvsy[ipl].Reset();
       exdxvstx[ipl].Reset();
       exmadxvstx[ipl].Reset();
       hexdyc[ipl].Reset();
       exdyvsx[ipl].Reset();
+      exdyvsy[ipl].Reset();
       exdyvsty[ipl].Reset();
       exmadyvsty[ipl].Reset();
 
@@ -2763,6 +2783,7 @@ int main( int argc, char* argv[] )
 
 		tridxvsxm[itd].Fill( xmod2*1E3, dxm*1E3 );
 
+		trimadxvsx[itd].Fill( xm, fabs(dxm)*1E3 );
 		trimadxvsxm[itd].Fill( xmod2*1E3, fabs(dxm)*1E3 );
 		trimadxvsxmym[itd]->Fill( xmod2*1E3, ymod2*1E3, fabs(dxm)*1E3 );
 		trimadxvstx[itd].Fill( slpx*1E3, fabs(dxm)*1E3 ); // U-shape
@@ -3094,6 +3115,7 @@ int main( int argc, char* argv[] )
 	    hexdy[ipl].Fill( dy*1E3 );
 	    if( fabs( dy ) < 0.5 ) {
 	      hexdxc[ipl].Fill( dx*1E3 );
+	      exdxvsx[ipl].Fill( xC, dx*1E3 );
 	      exdxvsy[ipl].Fill( yC, dx*1E3 );
 	      exdxvstx[ipl].Fill( sxA*1E3, dx*1E3 );
 	      exmadxvstx[ipl].Fill( sxA*1E3, fabs(dx)*1E3 );
@@ -3101,6 +3123,7 @@ int main( int argc, char* argv[] )
 	    if( fabs( dx ) < 0.5 ) {
 	      hexdyc[ipl].Fill( dy*1E3 );
 	      exdyvsx[ipl].Fill( xC, dy*1E3 );
+	      exdyvsy[ipl].Fill( yC, dy*1E3 );
 	      exdyvsty[ipl].Fill( syA*1E3, dy*1E3 );
 	      exmadyvsty[ipl].Fill( syA*1E3, fabs(dy)*1E3 );
 	    }
@@ -3151,6 +3174,7 @@ int main( int argc, char* argv[] )
 	    hexdy[ipl].Fill( dy*1E3 );
 	    if( fabs( dy ) < 0.5 ) {
 	      hexdxc[ipl].Fill( dx*1E3 );
+	      exdxvsx[ipl].Fill( xC, dx*1E3 );
 	      exdxvsy[ipl].Fill( yC, dx*1E3 );
 	      exdxvstx[ipl].Fill( sxB*1E3, dx*1E3 );
 	      exmadxvstx[ipl].Fill( sxB*1E3, fabs(dx)*1E3 );
@@ -3158,6 +3182,7 @@ int main( int argc, char* argv[] )
 	    if( fabs( dx ) < 0.5 ) {
 	      hexdyc[ipl].Fill( dy*1E3 );
 	      exdyvsx[ipl].Fill( xC, dy*1E3 );
+	      exdyvsy[ipl].Fill( yC, dy*1E3 );
 	      exdyvsty[ipl].Fill( syB*1E3, dy*1E3 );
 	      exmadyvsty[ipl].Fill( syB*1E3, fabs(dy)*1E3 );
 	    }
