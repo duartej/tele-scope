@@ -12,6 +12,13 @@
 // uses hot_33485.dat from tele
 // uses alignDUT_33485.dat
 // uses alignMOD_33485.dat
+//
+// ##########################################
+// Adding DUT calibration (RD53A with BDAQ53)
+// and other improvements
+//
+// J. Duarte-Campderros (IFCA, Jun 2020)
+//
 
 #include "eudaq/FileReader.hh"
 #include "eudaq/PluginManager.hh"
@@ -23,11 +30,17 @@
 #include <TProfile.h>
 #include <TProfile2D.h>
 #include <TF1.h>
+#include <TGraphErrors.h>
+#include <TKey.h>
 
 #include <sstream> // stringstream
 #include <fstream> // filestream
 #include <set>
 #include <cmath>
+#include <functional>
+#include <unordered_map>
+#include <stdexcept>
+#include <memory>
 
 using namespace std;
 using namespace eudaq;
@@ -115,6 +128,68 @@ struct CellRelatedHistos
     TProfile2D * linqxvsxmym = nullptr;
     TProfile2D * effvsxmym = nullptr;
 };
+
+// To be use. Get all the cuts here, prepare a constructor
+// or a parser to get the cuts from outside
+struct Cut
+{
+    unsigned int bcidmin = 9;
+    unsigned int bcidmax = 10;
+};
+
+Cut cuts;
+
+//------------------------------------------------------------------------------
+// The function returns the calibration functions for each pixel, where the 
+// pixel is identified by the channel: i_col * NumberRows + i_row
+// x= col, y = row
+// Calibration response function: https://cds.cern.ch/record/2649493/files/CLICdp-Note-2018-008.pdf
+// ToT( vcal ) = a vcal + b - \frac{c}{vcal-t}
+// Inverse: 
+// vcal (ToT ) = (a*t + ToT -b +sqrt((b+a*t-ToT)^2+4*a*c))/(2*a)
+// The actual function
+int __calcurve(float a,float b,float c,float t, int ToT)
+{ 
+   return std::round((a*t + ToT -b + std::sqrt(std::pow(b+a*t-ToT,2.0)+4.0*a*c))/(2.*a));
+}
+
+std::unordered_map<int,std::function<int(int)> > calibration(const std::string & calibration_file, int ntotal_rows)
+{
+  using namespace std::placeholders;  // for _1, _2, _3...
+
+  std::cout << "Processing gain calibration file: " << calibration_file << std::endl;
+  // ASCII text file
+  std::ifstream f(calibration_file);
+  if( ! f.is_open() )
+  {
+     throw std::runtime_error(std::string("Invalid file gain: '")+calibration_file+std::string("'"));
+  }
+  
+  // FIXME -- Check valid format
+  //
+  // FIXME -- Check col-row present??
+  
+  int col,row;
+  float a,b,c,t;
+
+  std::unordered_map<int,std::function<int(int)> >response_vec;
+  // Can I get the number of lines, using wc for instance?
+  //response_vec.reserve(nlines);
+  // Assuming every line is well-formed and consist in
+  // col row a b c t
+  while(f >> col >> row >> a >> b >> c >> t)
+  {
+     // FIXME Extract channel from a generic function, to be sure is the same everywhere
+     const int channel = col*ntotal_rows + row;
+     // The function
+     response_vec.emplace( channel,std::bind(__calcurve,a,b,c,t,_1) );      
+    
+     //std::cout << "Calibration curve for col:" << col << " row: " << row 
+     //	<< ":: a= " << a <<" b= " << b << " c= " << c << " t= " << t << std::endl;
+  }
+  
+  return response_vec;
+}
 
 //------------------------------------------------------------------------------
 vector <cluster> getClusn( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
@@ -388,6 +463,7 @@ int main( int argc, char* argv[] )
   double DUTtilt = 0.5;
   double DUTturn = 0.5; // small turn will not be aligned
   double qwid = 1.5; // The sigma estimated from the Moyal distribution: fitmoyal5('linq0')
+  std::string gain_filename_dut;
   int chip0 = 501;
   int fifty = 0; // default is 100x25
   int rot90 = 0; // default is straight
@@ -412,6 +488,7 @@ int main( int argc, char* argv[] )
     string GeV( "GeV" );
     string CHIP( "chip" );
     string QWID( "qsigma_moyal" );
+    std::string GAIN_DUT("gain_dut");
     string TURN( "turn" );
     string TILT( "tilt" );
     string FIFTY( "fifty" );
@@ -452,6 +529,11 @@ int main( int argc, char* argv[] )
 
       if( tag == TILT ) {
 	tokenizer >> DUTtilt;
+	continue;
+      }
+      
+      if( tag == GAIN_DUT ) {
+	tokenizer >> gain_filename_dut;
 	continue;
       }
 
@@ -496,6 +578,7 @@ int main( int argc, char* argv[] )
 	<< "  nominal DUT turn " << DUTturn << " deg" << endl
 	<< "  nominal DUT tilt " << DUTtilt << " deg" << endl
 	<< "  DUT chip " << chip0 << endl
+        << "  DUT gain file " << gain_filename_dut << std::endl
 	<< "  Estimated sigma (from charge global dist.) " << qwid << endl
 	<< "  fifty " << fifty << endl
 	<< "  rot90 " << rot90 << endl
@@ -848,7 +931,8 @@ int main( int argc, char* argv[] )
   const double wt = atan(1.0) / 45.0; // pi/180 deg
 
   //double qwid = 1.5; // [ToT] for Moyal in 150 um from x fitmoyal5.C+("linq0")
-  double qxmax = 0.04; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff ??
+  //double qxmax = 0.04; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff ??
+  double qxmax = 0.7; // = exp(-80/150) in Vcal units, exp(-800/1500) in ecal units
 
   int iDUT = 0; // eudaq
 
@@ -1390,7 +1474,42 @@ int main( int argc, char* argv[] )
   const double normm = cos( MODturn*wt ) * cos( MODtilt*wt ); // length of Nz
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // DUT gain:
+  int nrows_in_dut = ny[iDUT];
+  if( !fifty ) 
+  {
+     //nrows_in_dut = 2*ny[iDUT];
+     nrows_in_dut = 384;
+  }
+  auto calibration_curves = calibration(gain_filename_dut,nrows_in_dut);
+  std::cout << "Loaded calibration curves for DUT. Active pixels: " 
+	<< calibration_curves.size() << std::endl;
+  histoFile.cd();
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // book histos:
+  int qnbins = 16;
+  double qvalmax = 16;
+  double qscale = 1.0;
+  std::string qunit("ToT");
+  
+  // FIXME: if vcal or electrons or ToT --> from runs.dat (or calibration)  
+  std::string charge_units("elec");
+  if( charge_units == "elec" )
+  {
+     qnbins  = 1000;
+     qvalmax = 80000;
+     qscale  = 1500;
+     qunit = "Electrons";
+  }
+  else if( charge_units == "vcal" )
+  { 
+     qnbins  = 1000;
+     qvalmax = 8000;
+     qscale  = 150;
+     qunit = "V_{cal}";
+  }
+
 
   double f = 4.8/pbeam;
 
@@ -1502,21 +1621,21 @@ int main( int argc, char* argv[] )
 
   TH1I synpxqHisto( "synpxq",
 		    "Sync pixel signal;Sync pixel signal [ToT];Sync pixels",
-		    16, 0, 16 );
+		    qnbins, 0, qvalmax );
   TH1I linpxqHisto( "linpxq",
 		    "Lin pixel signal;Lin pixel signal [ToT];Lin pixels",
-		    16, 0, 16 );
+		    qnbins, 0, qvalmax );
   TH1I difpxqHisto( "difpxq",
 		    "Diff pixel signal;Diff pixel signal [ToT];Diff pixels",
-		    16, 0, 16 );
+		    qnbins, 0, qvalmax );
 
   TProfile dutpxqvsx( "dutpxqvsx",
 		      "DUT pixel signal vs x;column;<pixel signal> [ToT]",
-		      400, 0, 400, 0, 16 );
+		      400, 0, 400, 0, qvalmax );
   TProfile2D * dutpxqvsxy = new
     TProfile2D( "dutpxqvsxy",
 		"DUT pixel signal map;column;row;<pixel signal> [ToT]",
-		400, 0, 400, 192, 0, 192, 0, 16 );
+		400, 0, 400, 192, 0, 192, 0, qvalmax );
 
   TH1I dutpxbcHisto( "dutpxbc",
 		     "DUT pixel BC;DUT pixel BC;DUT pixels without masking",
@@ -2224,16 +2343,16 @@ int main( int argc, char* argv[] )
 
   TH1I linqHisto( "linq",
 		  "LIN linked clusters;LIN cluster signal [ToT];linked LIN clusters",
-		  80, 0, 80 );
+		  100, 0, 80*qscale );
   TH1I linq0Histo( "linq0",
 		   "LIN linked clusters;LIN normal cluster signal [ToT];linked LIN clusters",
-		   80, 0, 80 );
+		   500, 0, 80*qscale );
   TProfile linqxvsx( "linqxvsx",
 		    "LIN cluster signal vs x;x track [mm];LIN <cluster signal> [ToT]",
 		    200, -10, 10, 0, qxmax );
   TProfile linqxvsy( "linqxvsy",
 		    "LIN cluster signal vs y;y track [mm];LIN <cluster signal> [ToT]",
-		    100, -5, 5, 0, qxmax );
+		    500, -5, 5, 0, qxmax );
   TProfile2D * linqxvsxy = new
     TProfile2D( "linqxvsxy",
 		"LIN cluster signal vs xy;x track [mm];y track [mm];LIN <cluster signal> [ToT]",
@@ -2466,23 +2585,23 @@ int main( int argc, char* argv[] )
 
   TH1I dutpxqHisto( "dutpxq",
 		     "DUT pixel signal;DUT pixel signal [ToT];linked pixels",
-		     16, 0, 16 );
+		     qnbins, 0, qvalmax );
   TH1I dutpxqbeamHisto( "dutpxqbeam",
 		     "DUT beam pixel signal;DUT pixel signal [ToT];linked beam pixels",
-		     16, 0, 16 );
+		     qnbins, 0, qvalmax );
   TH1I dutpxq1Histo( "dutpxq1",
 		     "DUT 1-col pixel signal;DUT pixel signal [ToT];linked 1-col pixels",
-		     16, 0, 16 );
+		     qnbins, 0, qvalmax );
   TH1I dutpxq2Histo( "dutpxq2",
 		     "DUT 2-col pixel signal;DUT pixel signal [ToT];linked 2-col pixels",
-		     16, 0, 16 );
+		     qnbins, 0, qvalmax );
 
   TH1I dutpxqeveHisto( "dutpxqeve",
 		       "DUT even pixel signal;DUT pixel signal [ToT];linked even pixels",
-		       16, 0, 16 );
+		       qnbins, 0, qvalmax );
   TH1I dutpxqoddHisto( "dutpxqodd",
 		       "DUT odd pixel signal;DUT pixel signal [ToT];linked odd pixels",
-		       16, 0, 16 );
+		       qnbins, 0, qvalmax );
 
   TH1I dutpxdcolHisto( "dutpxdcol",
 		       "DUT pixel dcol;DUT pixel dcol;linked subsequent pixels",
@@ -2495,32 +2614,32 @@ int main( int argc, char* argv[] )
 		       11, -5.5, 5.5 );
   TH2I dutpxqqHisto( "dutpxqq",
 		     "DUT pixel correlation;DUT pixel signal [ToT];DUT pixel signal [ToT];linked pixels",
-		     16, 0, 16, 16, 0, 16 );
+		     qnbins, 0, qvalmax, qnbins, 0, qvalmax );
   TH2I dutpxqq0Histo( "dutpxqq0",
 		      "DUT even-odd row correlation;DUT pixel signal [ToT];DUT pixel signal [ToT];linked even-odd row pixels",
-		      16, 0, 16, 16, 0, 16 );
+		     qnbins, 0, qvalmax, qnbins, 0, qvalmax );
   TH2I dutpxqq1Histo( "dutpxqq1",
 		      "DUT odd-even row correlation;DUT pixel signal [ToT];DUT pixel signal [ToT];linked odd-even row pixels",
-		      16, 0, 16, 16, 0, 16 );
+		     qnbins, 0, qvalmax, qnbins, 0, qvalmax );
   TH1I dutpxq1eveHisto( "dutpxq1eve",
 			"DUT 1-col even row 1st pixel signal;DUT pixel signal [ToT];linked 1-col even row 1st pixels",
-			16, 0, 16 );
+			qnbins, 0, qvalmax );
   TH1I dutpxq1oddHisto( "dutpxq1odd",
 			"DUT 1-col odd row 1st pixel signal;DUT pixel signal [ToT];linked 1-col odd row 1st pixels",
-			16, 0, 16 );
+			qnbins, 0, qvalmax );
   TH1I dutpxq2eveHisto( "dutpxq2eve",
 			"DUT 1-col even row 2nd pixel signal;DUT pixel signal [ToT];linked 1-col even row 2nd pixels",
-			16, 0, 16 );
+			qnbins, 0, qvalmax );
   TH1I dutpxq2oddHisto( "dutpxq2odd",
 			"DUT 1-col odd row 2nd pixel signal;DUT pixel signal [ToT];linked 1-col odd row 2nd pixels",
-			16, 0, 16 );
+			qnbins, 0, qvalmax );
 
   TH1I linpxqmaxHisto( "linpxqmax",
 		     "Lin max pixel signal;Lin max pixel signal [ToT];Lin linked pixels",
-		     16, 0, 16 );
+			qnbins, 0, qvalmax );
   TH1I linpxq2ndHisto( "linpxq2nd",
 		     "Lin 2nd pixel signal;Lin 2nd pixel signal [ToT];Lin linked pixels",
-		     16, 0, 16 );
+			qnbins, 0, qvalmax );
 
   TH1I dutcolszHisto( "dutcolsz", "DUT column size;DUT column size [rows];columns inside linked clusters",
 		      20, 0.5, 20.5 );
@@ -2623,10 +2742,10 @@ int main( int argc, char* argv[] )
 
   TH1I linqseedHisto( "linqseed",
 		      "LIN seed row signal;LIN seed row signal [ToT];linked LIN clusters",
-		      16, 0, 16 );
+		      qnbins, 0, qvalmax );
   TH1I linqpairHisto( "linqpair",
 		      "LIN pair row signal;LIN pair row signal [ToT];linked LIN clusters",
-		      16, 0, 16 );
+		      qnbins, 0, qvalmax );
 
   TProfile linqseedvsym( "linqseedvsym",
 		      "LIN seed row signal vs ymod;y track mod 50 [#mum];1-col LIN <seed row signal> [ToT]",
@@ -2727,7 +2846,7 @@ int main( int argc, char* argv[] )
     dutpxqbcHisto[frm] =
       TH1I( Form( "dutpxqbc%i", frm ),
 	    Form( "DUT pixel signal in BC %i;DUT pixel signal in BC %i [ToT];linked pixels", frm, frm ),
-	    16, 0, 16 );
+	    qnbins, 0, qvalmax );
 
   TH1I dutnlkHisto( "dutnlk", "DUT links per track;DUT links;in-time fiducial tracks",
 		 11, -0.5, 10.5 );
@@ -3068,11 +3187,45 @@ int main( int argc, char* argv[] )
 	  if( ipl == iDUT ) {
 	    dutpxbcmHisto.Fill( frm ); // after hot pixel masking
 	  }
+	  
+          // skip out-of-frame DUT pixels (the BC-ID) 
+          // BUT Need a mechanism to avoid lost of efficiency!!
+          //if( ipl == iDUT && ( frm < cuts.bcidmin || frm > cuts.bcidmax ) ) {
+          //  continue;
+          //}
+
 
 	  pixel px;
 	  px.col = ix; // ROC col
 	  px.row = iy; // row
-	  px.tot = tot;
+          if( ipl == iDUT )
+          {
+             int pcol = ix;
+             int prow = iy;
+	     if( !fifty ) 
+	     {  // 100x25 from ROC to sensor:
+	        pcol = ix/2; // 100 um
+
+	        if( ix%2 == 1 ) 
+                {
+                    prow = 2*iy + 1; //
+                }
+	        else
+                {
+                    prow = 2*iy + 0;
+                }
+             }
+             int thechan = pcol*nbr+prow;
+             if(calibration_curves.find(thechan) == calibration_curves.end())
+             { 
+                continue;
+             }
+             px.tot = calibration_curves[thechan](tot);
+          }
+          else
+          {
+              px.tot = tot;
+          }
 	  px.frm = frm;
 	  px.pivot = plane.GetPivot(ipix,frm);
 
