@@ -1,0 +1,28 @@
+
+Sep 2020:
+scope53m.cc only for Lin section: removed 733 lines, mostly plotting
+
+--------------------------------------------------------------------------------
+new tags in runs.dat:
+threshold 0
+offline DUT pixel threshold [TOT]: zero (and 1) = no threshold, 2 or 3 suppress crosstalk
+
+minBC  7
+maxBC 12
+first and last bunch crossing for honest efficiency
+(suppress out-of-time noise)
+(look at peak in linpxbc: all pixels)
+
+qL 10  cut around Landau peak for best efficiency, from dutmadxvsq
+qR 22  varies with KRUM_CURR_LIN, thickness, irradiation
+
+bricked for bricked 100x25
+
+--------------------------------------------------------------------------------
+modified hot.C
+simply do
+.x hot.C+
+defaults are "map8" and hotcut 0.01 (1% occupancy)
+the number of events in the file is taken from the t1 histogram
+paste pixel list into new file hotDUT_39500.dat
+will be used by scope53m 39500
