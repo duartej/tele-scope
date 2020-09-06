@@ -2,7 +2,7 @@
 // Daniel Pitzl, May 2018
 // hot pixels from map
 
-// .x hot.C+("map7")
+// .x hot.C+
 // .x hot.C+("map8",9999)  RD53
 
 #include "TDirectory.h"
@@ -24,7 +24,7 @@ struct pixel
 };
 
 //------------------------------------------------------------------------------
-void hot( string hs, int hotcut = 999 )
+void hot( string hs = "map8", double hotcut = 0.01 )
 {
   cout << hs;
 
@@ -36,10 +36,22 @@ void hot( string hs, int hotcut = 999 )
   }
 
   cout << "  " << h2->GetTitle() << endl;
+  cout << "entries " << h2->GetEntries() << endl;
+
+  // get standard time histo:
+
+  TH1I * ht = (TH1I*)gDirectory->Get( "t1" );
+
+  if( ht == NULL ) {
+    cout << "t1 does not exist in" << gDirectory->GetName() << endl;
+    return;
+  }
+
+  int nev = ht->GetEntries();
 
   // frequency:
 
-  double z9 = 1.02*h2->GetMaximum();
+  double z9 = 1.02 * h2->GetMaximum();
   if( z9 < 1.1 ) z9 = 1.1;
 
   TH1I * h1 = new
@@ -47,14 +59,17 @@ void hot( string hs, int hotcut = 999 )
 	  Form( "%s;hits/pixel;pixels",h2->GetZaxis()->GetTitle( ) ),
 	  200, 0, z9 );
 
+  // log x scale:
+
   const double log10 = log(10);
 
   TH1I * hl = new
     TH1I( "frel",
 	  Form( "%s;log_{10}(hits/pixel);pixels",h2->GetZaxis()->GetTitle( ) ),
 	  100, 0, log(z9)/log10 );
+  hl->GetXaxis()->SetTitleOffset(1.4);
 
-  multiset <pixel> pxset;
+  multiset <pixel> pxset; // sorted by occupancy
 
   for( int ii = 1; ii <= h2->GetNbinsX(); ++ii )
 
@@ -62,15 +77,16 @@ void hot( string hs, int hotcut = 999 )
 
       int n = ( h2->GetBinContent(ii,jj) + 0.1 );
 
-      if( n ) { // active
-	h1->Fill( n );
+      h1->Fill( n );
+      pixel px{ ii-1, jj-1, n };
+      pxset.insert(px);
+
+      if( n ) // active
 	hl->Fill( log( n ) / log10 );
+      else
+	hl->Fill( -1 );
 
-	pixel px{ ii-1, jj-1, n };
-	pxset.insert(px);
-      }
-
-    }
+    } // jj
 
   int nhot = 0;
   for( auto px = pxset.begin(); px != pxset.end(); ++px ) {
@@ -80,12 +96,12 @@ void hot( string hs, int hotcut = 999 )
 	 << "  " << px->cnt
 	 << endl;
     ++nhot;
-    if( px->cnt <= hotcut ) break;
+    if( px->cnt <= hotcut*nev ) break;
   }
 
-  cout << "hot " << nhot << " above " << hotcut << endl;
-
-  cout << "active " << pxset.size() << endl;
+  cout << endl << "events: " << nev
+       << endl << "hot: " << nhot << " above " << hotcut*nev << " (" << 100*hotcut << "%)"
+       << endl;
 
   h1->Draw();
   cout << "freq" << endl;
