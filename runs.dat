@@ -27,6 +27,7 @@ qR 22  varies with KRUM_CURR_LIN, thickness, irradiation
 # straight:
 rot90 0
 fifty 0
+bricked 0
 modrun 0
 
 tilt 0.5
@@ -9374,6 +9375,7 @@ geo geo_2020_09b.dat  0  120  239  369  521  673 for 100x25
 
 rot90 1
 fifty 0
+bricked 1
 GeV 5.2
 turn 0
 
@@ -9460,3 +9462,4 @@ run 39648  500
 turn -16
 modrun 2810
 run 39649  500
+

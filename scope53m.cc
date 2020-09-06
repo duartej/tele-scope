@@ -351,8 +351,9 @@ int main( int argc, char* argv[] )
   int threshold{0}; // offline DUT pixel threshold [TOT]: zero (and 1) = no threshold, 2 or 3 suppress crosstalk
   int minBC{0}; // cut out-of-time noise for honest efficiency
   int maxBC{31}; // look at linpxbc
-  int fifty{0}; // default is 100x25
-  int rot90{0}; // default is straight
+  bool fifty{0}; // default is 100x25
+  int bricked{0};
+  bool rot90{0}; // default is straight
   int modrun{0};
 
   ifstream runsFile( "runs.dat" );
@@ -381,6 +382,7 @@ int main( int argc, char* argv[] )
     string TURN( "turn" );
     string TILT( "tilt" );
     string FIFTY( "fifty" );
+    string BRICKED( "bricked" );
     string ROT90( "rot90" );
     bool found{0};
 
@@ -441,6 +443,11 @@ int main( int argc, char* argv[] )
 	continue;
       }
 
+      if( tag == BRICKED ) {
+	tokenizer >> bricked;
+	continue;
+      }
+
       if( tag == ROT90 ) {
 	tokenizer >> rot90;
 	continue;
@@ -477,17 +484,20 @@ int main( int argc, char* argv[] )
 
     if( found )
       cout
-	<< "  beam " << pbeam << " GeV" << endl
+	<< "  DUT chip " << chip0 << endl
+	<< "  modrun " << modrun << endl
 	<< "  geo file " << geoFileName << endl
 	<< "  nominal DUT turn " << DUTturn << " deg" << endl
 	<< "  nominal DUT tilt " << DUTtilt << " deg" << endl
-	<< "  DUT chip " << chip0 << endl
-	<< "  DUT pixel threshold " << threshold << endl
+	<< "  DUT pixel threshold " << threshold << " ToT" << endl
 	<< "  DUT min BC " << minBC << endl
 	<< "  DUT max BC " << maxBC << endl
+	<< "  DUT qL " << qL << " ToT" << endl
+	<< "  DUT qR " << qR << " ToT" << endl
 	<< "  fifty " << fifty << endl
+	<< "  bricked " << bricked << endl
 	<< "  rot90 " << rot90 << endl
-	<< "  modrun " << modrun << endl
+	<< "  beam " << pbeam << " GeV" << endl
 	;
     else {
       cout << "run " << run << " not found in runs.dat" << endl;
@@ -822,7 +832,7 @@ int main( int argc, char* argv[] )
   }
 
   int clflag{1}; // default contiguous next-neighbour clustering
-  if( chip0 == 606 ) clflag = -1; // bricked
+  if( bricked ) clflag = -1; // bricked
 
   int iDUT = 0; // eudaq
 
