@@ -1,9 +1,9 @@
 
-// Daniel Pitzl, May 2019
-// telescope efficiency plots
+// Daniel Pitzl, Feb 2020
+// telescope efficiency 2019-2020
 
-// root -l tele35862.root
-// .x teleff.C
+// root -l
+// .x teleff4.C
 
 {
   // quer canvas:
@@ -68,56 +68,46 @@
 
   c1->Print( "teleff.pdf[", "pdf" ); // [ opens file
 
-  c1->Divide( 3, 2, 0, 0 ); // zero margin
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  gPad->Update();
+  c1->Divide( 2, 2, 0, 0 ); // zero margin
+
+  //TFile * f19 = TFile::Open("tele38303.root"); // thr 4 2019
+  //TFile * f19 = TFile::Open("tele38304.root"); // thr 5 2019
+  TFile * f19 = TFile::Open("tele38305.root"); // thr 6 2019
 
   c1->cd(1); // top left
-  //gPad->SetTopMargin(0.12);
-  //gPad->SetLeftMargin(0.18);
   gStyle->SetTitleX( 0.62 ); // global title
   gStyle->SetTitleSize(0.24);
   gPad->SetTickx(); // no ticks
   gPad->SetTicks(0,0); // no opposite ticks
-  eff1vsx->SetLabelOffset( 0.03, "y" );
-  eff1vsx->SetLabelSize( 0.05, "y" );
-  eff1vsx->GetYaxis()->SetTitle("efficiency");
-  eff1vsx->GetYaxis()->SetTitleSize(0.05);
-  eff1vsx->SetLineWidth(3);
-  eff1vsx->SetMinimum(0.8);
-  eff1vsx->SetMaximum(1.0);
-  eff1vsx->Draw();
+  eff4vsx->SetLabelOffset( 0.03, "y" );
+  eff4vsx->SetLabelSize( 0.05, "y" );
+  eff4vsx->GetYaxis()->SetTitle("efficiency");
+  eff4vsx->GetYaxis()->SetTitleSize(0.05);
+  eff4vsx->SetLineColor(923); // gray
+  eff4vsx->SetLineWidth(3);
+  eff4vsx->SetMinimum(0.8);
+  eff4vsx->SetMaximum(1.0);
+  eff4vsx->Draw();
   cout << gPad->GetWNDC() << "  " << gPad->GetHNDC() << endl;
 
-  c1->cd(2); // top mid
-  //gPad->SetTopMargin(0.12);
+  c1->cd(2); // top right
   gStyle->SetTitleX( 0.52 ); // global title
-  gPad->SetTickx();
-  gPad->SetTicky();
   gPad->SetTicks(0,0); // no opposite ticks
-  eff2vsx->SetLineWidth(3);
-  eff2vsx->SetMinimum(0.8);
-  eff2vsx->SetMaximum(1.0);
-  eff2vsx->Draw();
+  eff6vsx->SetLineColor(923); // gray
+  eff6vsx->SetLineWidth(3);
+  eff6vsx->SetMinimum(0.8);
+  eff6vsx->SetMaximum(1.0);
+  eff6vsx->Draw();
   cout << gPad->GetWNDC() << "  " << gPad->GetHNDC() << endl;
 
-  c1->cd(3); // top right
-  //gPad->SetTopMargin(0.12);
-  gStyle->SetTitleX( 0.52 ); // global title
-  //gPad->SetRightMargin(0.03);
-  //gPad->SetTickx();
-  //gPad->SetTicky();
-  gPad->SetTicks(0,0); // no opposite ticks
-  eff3vsx->SetLineWidth(3);
-  eff3vsx->SetMinimum(0.8);
-  eff3vsx->SetMaximum(1.0);
-  eff3vsx->Draw();
-  cout << gPad->GetWNDC() << "  " << gPad->GetHNDC() << endl;
+  //TFile * f20 = TFile::Open("tele38324.root"); // thr 4 2020
+  //TFile * f20 = TFile::Open("tele38325.root"); // thr 5 2020
+  TFile * f20 = TFile::Open("tele38326.root"); // thr 6 2020
 
-  c1->cd(4); // bottom left
-  //gPad->SetLeftMargin(0.18);
+  c1->cd(3); // bottom left
   gStyle->SetTitleX( 0.62 ); // global title
-  //gPad->SetBottomMargin(0.15);
   gPad->SetTicks(0,0); // no opposite ticks
   eff4vsx->SetLabelOffset( 0.03, "y" );
   eff4vsx->SetLabelSize( 0.05, "y" );
@@ -126,44 +116,30 @@
   eff4vsx->SetLabelSize( 0.05, "x" );
   eff4vsx->GetXaxis()->SetTitleSize(0.05);
   eff4vsx->GetXaxis()->CenterTitle(1);
+  eff4vsx->SetLineColor(419); // dark green
   eff4vsx->SetLineWidth(3);
   eff4vsx->SetMinimum(0.8);
   eff4vsx->SetMaximum(1.0);
   eff4vsx->Draw(); // with axes
   cout << gPad->GetWNDC() << "  " << gPad->GetHNDC() << endl;
 
-  c1->cd(5); // bottom mid
+  c1->cd(4); // bottom right
   gStyle->SetTitleX( 0.52 ); // global title
-  //gPad->SetBottomMargin(0.15);
-  gPad->SetTicky();
-  gPad->SetTicks(0,0); // no opposite ticks
-  eff5vsx->SetLabelSize( 0.05, "x" );
-  eff5vsx->GetXaxis()->SetTitleSize(0.05);
-  eff5vsx->GetXaxis()->CenterTitle(1);
-  eff5vsx->SetLineWidth(3);
-  eff5vsx->SetMinimum(0.8);
-  eff5vsx->SetMaximum(1.0);
-  eff5vsx->Draw(); // ticksx
-  cout << gPad->GetWNDC() << "  " << gPad->GetHNDC() << endl;
-
-  c1->cd(6); // bottom right
-  gStyle->SetTitleX( 0.52 ); // global title
-  //gPad->SetRightMargin(0.03);
-  //gPad->SetBottomMargin(0.15);
   gPad->SetTicky();
   gPad->SetTicks(0,0); // no opposite ticks
   eff6vsx->SetLabelSize( 0.05, "x" );
   eff6vsx->GetXaxis()->SetTitleSize(0.05);
   eff6vsx->GetXaxis()->CenterTitle(1);
+  eff6vsx->SetLineColor(419); // dark green
   eff6vsx->SetLineWidth(3);
   eff6vsx->SetMinimum(0.8);
   eff6vsx->SetMaximum(1.0);
   eff6vsx->Draw(); // ticksx
   cout << gPad->GetWNDC() << "  " << gPad->GetHNDC() << endl;
 
-  c1->Print( "teleff.pdf" );
+  c1->Print( "teleff4.pdf" );
 
-  c1->Print( "teleff.pdf]" ); // ] closes file
-  cout << "evince teleff.pdf" << endl;
+  c1->Print( "teleff4.pdf]" ); // ] closes file
+  cout << "evince teleff4.pdf" << endl;
 
 }

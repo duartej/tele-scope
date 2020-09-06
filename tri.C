@@ -1,16 +1,10 @@
 
-// Daniel Pitzl, Jun 2019
-// scattering CFK
-// root -l scat6.C
-
-#include <TCanvas.h>
-#include <TGraph.h>
-#include <TGraphErrors.h>
-#include <TH1.h>
-#include <TF1.h>
+// Daniel Pitzl, Mar 2020
+// Datura triplet residuals vs p
+// root -l tri.C
 
 //------------------------------------------------------------------------------
-//void scat6()
+//void tri()
 {
   // set styles:
 
@@ -68,22 +62,20 @@
   //              topleft x, y, width x, y
   TCanvas c1( "c1", "c1", 0, 0, 813, 837 );
 
-  c1.Print( "scat6.pdf[", "pdf" ); // [ opens file
+  c1.Print( "tri.pdf[", "pdf" ); // [ opens file
 
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
   c1.SetRightMargin(0.05);
-
-  gPad->Update();// required
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // read data:
 
   string HASH( "#" );
 
-  cout << "try to open scat6.dat";
-  ifstream D6( "scat6.dat" );
-  if( !D6 ) {
+  cout << "try to open tri.dat";
+  ifstream Dt( "tri.dat" );
+  if( !Dt ) {
     cout << ": failed" << endl;
     return;
   }
@@ -91,99 +83,101 @@
 
   // Read file by lines:
 
-  vector <double> vd;
-  vector <double> v12;
-  vector <double> v08;
-  vector <double> ve;
+  vector <double> vp;
+  vector <double> v20;
+  vector <double> v74;
+  vector <double> vep;
+  vector <double> ver;
 
-  while( D6.good() && ! D6.eof() ) {
+  while( Dt.good() && ! Dt.eof() ) {
 
     string rl;
-    getline( D6, rl ); // read one line  = event into string
+    getline( Dt, rl ); // read one line  = event into string
     if( rl.empty() ) continue;
     if( rl.substr(0,1) == HASH ) // comments start with #
       continue;
 
     istringstream strm( rl ); // tokenize string
 
-    double d;
-    double t08;
-    double t12;
+    double p;
+    double r20;
+    double r74;
 
-    strm >> d;
-    strm >> t12;
-    strm >> t08;
+    strm >> p;
+    strm >> r20;
+    strm >> r74;
 
-    vd.push_back(d);
-    v08.push_back(t08);
-    v12.push_back(t12);
-    ve.push_back(0.001*t12); // error
+    vp.push_back(p);
+    v20.push_back(r20);
+    v74.push_back(r74);
+    vep.push_back(0.15); // error
+    ver.push_back(0.10); // error
 
   } // while lines
 
-  int n6 = vd.size();
-  cout << "read " << n6 << " data lines" << endl;
+  int np = vp.size();
+  cout << "read " << np << " data lines" << endl;
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // plot:
 
-  TH1F * ht = new
-    TH1F( "ht",
-	  "scattering in CFK;CFK thickness [mm];RMS scattering angle [mrad]",
-	  3, 0, 3 ); // axis range
-  ht->SetStats(kFALSE); // no statistics
-  ht->SetMinimum(0);
-  ht->SetMaximum(1.6);
-  //ht->SetNdivisions( -504, "y" );
-  ht->Draw();
+  TH1F * hr = new
+    TH1F( "hr",
+	  "Datura triplet residual;beam momentum [GeV];triplet residual [#mum]",
+	  6, 0, 6 ); // axis range
+  hr->SetStats(kFALSE); // no statistics
+  hr->SetMinimum( 0);
+  hr->SetMaximum(11);
+  //hr->SetNdivisions( -504, "y" );
+  hr->Draw();
 
-  TGraphErrors * g08 = new TGraphErrors( n6, &vd[0], &v08[0], 0, &ve[0] );
-  g08->SetMarkerColor(4);
-  g08->SetMarkerStyle(20);
-  g08->SetMarkerSize(1.2);
+  TGraphErrors * g20 = new TGraphErrors( np, &vp[0], &v20[0], &vep[0], &ver[0] );
+  g20->SetMarkerColor(4);
+  g20->SetMarkerStyle(20);
+  g20->SetMarkerSize(1.2);
 
-  TF1 * H08 = new
-    TF1( "H08", "sqrt([0]*[0]+pow(13.6/0.84*sqrt(x/[1])*(1+0.038*log((x+0.001)/[1])),2))", 0, 3 );
-  H08->SetNpx(500);
-  H08->SetLineWidth(2);
-  H08->SetParameter( 0, 0.5 );
-  H08->SetParameter( 1, 360 ); // X0 [mm]
-  H08->SetLineColor(kCyan);
-  //H08->Draw("same");
+  TF1 * f20 = new
+    TF1( "f20", "sqrt([0]/x*[0]/x+1.5*[1]*[1])", 0.5, 6 );
+  f20->SetNpx(500);
+  f20->SetLineWidth(2);
+  f20->SetParameter( 0, 5 );
+  f20->SetParameter( 1, 3.6 );
+  f20->SetLineColor(kCyan);
+  //f20->Draw("same");
 
-  cout << "Highland fit 0.8 GeV:" << endl;
-  g08->Fit( "H08", "r" );
-  g08->Draw("P"); // without axis option: overlay
+  cout << endl << "fit 20 mm:" << endl;
+  g20->Fit( "f20", "r" );
+  g20->Draw("P"); // without axis option: overlay
 
-  TGraphErrors * g12 = new TGraphErrors( n6, &vd[0], &v12[0], 0, &ve[0] );
-  g12->SetMarkerColor(2);
-  g12->SetMarkerStyle(21);
-  g12->SetMarkerSize(1.2);
+  TGraphErrors * g74 = new TGraphErrors( np, &vp[0], &v74[0], &vep[0], &ver[0] );
+  g74->SetMarkerColor(2);
+  g74->SetMarkerStyle(21);
+  g74->SetMarkerSize(1.2);
 
-  TF1 * H12 = new
-    TF1( "H12", "sqrt([0]*[0]+pow(13.6/1.2*sqrt(x/[1])*(1+0.038*log((x+0.001)/[1])),2))", 0, 3 );
-  H12->SetNpx(500);
-  H12->SetLineWidth(2);
-  H12->SetParameter( 0, 0.4 );
-  H12->SetParameter( 1, 360 ); // X0 [mm]
-  H12->SetLineColor(kMagenta);
-  //H12->Draw("same");
+  TF1 * f74 = new
+    TF1( "f74", "sqrt([0]/x*[0]/x+1.5*[1]*[1])", 0.5, 6 );
+  f74->SetNpx(500);
+  f74->SetLineWidth(2);
+  f74->SetParameter( 0, 11 );
+  f74->SetParameter( 1, 3.5 );
+  f74->SetLineColor(kMagenta);
+  //f74->Draw("same");
 
-  cout << "Highland fit 1.2 GeV:" << endl;
-  g12->Fit( "H12", "r" );
-  g12->Draw("P"); // without axis option: overlay
+  cout << endl << "fit 74 mm:" << endl;
+  g74->Fit( "f74", "r" );
+  g74->Draw("P"); // without axis option: overlay
 
   TLegend * lgnd = new TLegend( 0.70, 0.17, 0.93, 0.32 );
-  lgnd->AddEntry( g08, "0.8 GeV", "p" );
-  lgnd->AddEntry( g12, "1.2 GeV", "p" );
+  lgnd->AddEntry( g74, "74 mm", "p" );
+  lgnd->AddEntry( g20, "20 mm", "p" );
   lgnd->Draw( "same" );
 
-  c1.Print( "scat6.pdf" );
+  c1.Print( "tri.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "scat6.pdf]" ); // ] closes file
-  cout << "evince scat6.pdf" << endl;
+  c1.Print( "tri.pdf]" ); // ] closes file
+  cout << "evince tri.pdf" << endl;
 
 }

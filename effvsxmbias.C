@@ -41,8 +41,6 @@
   gStyle->SetHistMinimumZero(); // no zero suppression
 
   //gStyle->SetOptDate();
- 
-  gROOT->ForceStyle();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // square canvas:
@@ -50,7 +48,7 @@
   TCanvas c1( "c1", "c1", 0, 0, 813, 837 );
   //                 to get fCw 800 fCh 800
 
-  c1.Print( "effvsxmbias.ps[", "Portrait" ); // [ opens file
+  c1.Print( "effvsxmbias.pdf[", "pdf" ); // [ opens file
 
   gStyle->SetPaperSize( 18, 27 );
 
@@ -119,15 +117,12 @@
 
   lgnd->Draw( "same" );
 
-  c1.Print( "effvsxmbias.ps" );
+  c1.Print( "effvsxmbias.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "effvsxmbias.ps]" ); // ] closes file
-  int ierr;
-  ierr = system( "ps2pdf effvsxmbias.ps" );
-  ierr = system( "rm -f  effvsxmbias.ps" );
+  c1.Print( "effvsxmbias.pdf]" ); // ] closes file
   cout << "evince effvsxmbias.pdf" << endl;
 
 }

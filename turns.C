@@ -62,16 +62,12 @@ void turns()*/
 
   //gStyle->SetOptDate();
 
-  gROOT->ForceStyle();
-
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // square canvas:
   //                topleft x, y, width x, y
   TCanvas c1( "c1", "c1", 635, 246, 813, 837 );
 
-  c1.Print( "turns.ps[", "Portrait" ); // [ opens file
-
-  gStyle->SetPaperSize( 18, 27 );
+  c1.Print( "turns.pdf[", "pdf" ); // [ opens file
 
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
@@ -325,7 +321,7 @@ void turns()*/
   lge->AddEntry( ge11, "511 6.6#upoint10^{15} n_{PS}/cm^{2}, 750 V ", "p" );
   lge->Draw( "same" );
 
-  c1.Print( "turns.ps" );
+  c1.Print( "turns.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // ncol vs turn:
@@ -365,7 +361,7 @@ void turns()*/
   lgn->AddEntry( gn11, "511 6.6#upoint10^{15} n_{PS}/cm^{2}, 750 V ", "p" );
   lgn->Draw( "same" );
 
-  c1.Print( "turns.ps" );
+  c1.Print( "turns.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // q vs turn:
@@ -407,7 +403,7 @@ void turns()*/
   lgq->AddEntry( gq11, "511 6.6#upoint10^{15} n_{PS}/cm^{2}, 750 V ", "p" );
   lgq->Draw( "same" );
 
-  c1.Print( "turns.ps" );
+  c1.Print( "turns.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // sig vs turn
@@ -448,15 +444,12 @@ void turns()*/
   lgs->AddEntry( gs21, "521 5.3#upoint10^{15} n_{Ka}/cm^{2}, 775 V ", "p" );
   lgs->Draw( "same" );
 
-  c1.Print( "turns.ps" );
+  c1.Print( "turns.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "turns.ps]" ); // ] closes file
-  int ierr;
-  ierr = system( "ps2pdf turns.ps" );
-  ierr = system( "rm -f  turns.ps" );
+  c1.Print( "turns.pdf]" ); // ] closes file
   cout << "evince turns.pdf" << endl;
 
 }

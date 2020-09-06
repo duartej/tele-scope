@@ -56,17 +56,13 @@
   gStyle->SetHistMinimumZero(); // no zero suppression
 
   //gStyle->SetOptDate();
- 
-  gROOT->ForceStyle();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // square canvas:
   //              topleft x, y, width x, y
   TCanvas c1( "c1", "c1", 0, 0, 813, 837 );
 
-  c1.Print( "even.ps[", "Portrait" ); // [ opens file
-
-  gStyle->SetPaperSize( 18, 27 );
+  c1.Print( "even.pdf[", "pdf" ); // [ opens file
 
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
@@ -130,12 +126,12 @@
   gr->SetMarkerSize(1.5);
   gr->Draw("P"); // without axis option: overlay
 
-  c1.Print( "even.ps" );
+  c1.Print( "even.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // even vs thr:
 
-  he = new 
+  he = new
     TH1F( "he",
 	  "even rowmin;threshold [e];even row cluster starts [%]",
 	  16, 0, 1550 ); // axis range
@@ -157,15 +153,12 @@
   ge->SetMarkerSize(1.5);
   ge->Draw("P"); // without axis option: overlay
 
-  c1.Print( "even.ps" );
+  c1.Print( "even.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "even.ps]" ); // ] closes file
-  int ierr;
-  ierr = system("ps2pdf even.ps");
-  ierr = system("rm -f  even.ps");
+  c1.Print( "even.pdf]" ); // ] closes file
   cout << "evince even.pdf" << endl;
 
 }

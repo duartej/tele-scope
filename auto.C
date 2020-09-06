@@ -1,10 +1,10 @@
 
-// Daniel Pitzl, Jun 2018
-// RD53A resolution vs threshold
-// root -l resvsthr.C
+// Daniel Pitzl, Dec 2018
+// RD53A Syyyyyyyn eff vs aut-zero frequency
+// root -l auto.C
 
 //------------------------------------------------------------------------------
-//void resvsthr()
+//void auto()
 {
   // set styles:
 
@@ -56,86 +56,61 @@
   gStyle->SetHistMinimumZero(); // no zero suppression
 
   //gStyle->SetOptDate();
+ 
+  gROOT->ForceStyle();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // square canvas:
   //                topleft x, y, width x, y
   TCanvas c1( "c1", "c1", 635, 246, 813, 837 );
 
-  c1.Print( "resvsthr.pdf[", "pdf" ); // [ opens file
+  c1.Print( "auto.ps[", "Portrait" ); // [ opens file
+
+  gStyle->SetPaperSize( 18, 27 );
 
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
   c1.SetRightMargin(0.05);
 
-  gPad->Update();// required
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // RD53A 509 Syn:
+
+  const Int_t n = 5;
+  // run            35168 35177 35178 35179 35180
+  Float_t frq[n] = {   80,  160,  400,  240,  320 }; // [us] autozero
+  Float_t eff[n] = { 92.7, 95.7, 93.2, 96.8, 95.6 }; // 
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // RD53A 504 Lin:
+  // eff vs freq:
 
-  const Int_t n = 7;
+  heff = new 
+    TH1F( "heff",
+	  "efficiency;Sync auto-zero gap [#mus];efficiency [%]",
+	  42, 0, 420 ); // axis range
+  heff->SetStats(kFALSE); // no statistics
+  heff->SetMinimum( 80);
+  heff->SetMaximum(100);
+  heff->Draw();
 
-  // run            33348 33470 33471 33472 33480 33481
-  Float_t cur[n] = {   10,   50,   40,   30,   20,   60 }; // KRUM_CURR_LIN
-  Float_t res[n] = { 9.13, 6.94, 6.86, 6.74, 6.74, 6.98 }; // [um] dxc
+  geff = new TGraph( n, frq, eff );
+  geff->SetMarkerColor(2);
+  geff->SetMarkerStyle(20);
+  geff->SetMarkerSize(1.5);
+  geff->Draw("P"); // without axis option: overlay
 
-  Float_t sig[n];
-  for( int i = 0; i < n; ++i ) {
-    sig[i] = sqrt( res[i]*res[i] - 4.7*4.7 ); // subtract track
-  }
-
-  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // col vs cur:
-
-  hcol = new
-    TH1F( "hcol",
-	  "cluster size;cureshold [DAC];cluster size [columns]",
-	  98, 300, 398 ); // axis range
-  hcol->SetStats(kFALSE); // no statistics
-  hcol->SetMinimum(1);
-  hcol->SetMaximum(2);
-  hcol->Draw();
-
-  gc = new TGraph( n, cur, col );
-  gc->SetMarkerColor(4);
-  gc->SetMarkerStyle(22);
-  gc->SetMarkerSize(1.5);
-  gc->Draw("P"); // without axis option: overlay
-
-  TLegend * lgc = new TLegend( 0.3, 0.2, 0.9, 0.3 );
-  lgc->AddEntry( gc, "504 RD53A 50x150, turn 17^{o}", "p" );
-  lgc->Draw( "same" );
-
-  c1.Print( "resvscur.pdf" );
-
-  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // res vs cur:
-
-  hcur = new
-    TH1F( "hcur",
-	  "pixel resolution;cureshold [DAC];hit resolution [#mum]",
-	  98, 300, 398 ); // axis range
-  hcur->SetStats(kFALSE); // no statistics
-  hcur->SetMinimum( 0);
-  hcur->SetMaximum(10);
-  hcur->Draw();
-
-  gr = new TGraph( n, cur, sig );
-  gr->SetMarkerColor(4);
-  gr->SetMarkerStyle(20);
-  gr->SetMarkerSize(1.5);
-  gr->Draw("P"); // without axis option: overlay
-
-  TLegend * lgnd = new TLegend( 0.3, 0.2, 0.9, 0.3 );
-  lgnd->AddEntry( gr, "504 RD53A 50x150, turn 17^{o}", "p" );
+  TLegend * lgnd = new TLegend( 0.4, 0.2, 0.93, 0.3 );
+  lgnd->AddEntry( geff, "RD53A Sync, 8#upoint10^{15} p/cm^{2} ", "p" );
   lgnd->Draw( "same" );
 
-  c1.Print( "resvscur.pdf" );
+  c1.Print( "auto.ps" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "resvscur.pdf]" ); // ] closes file
-  cout << "evince resvscur.pdf" << endl;
+  c1.Print( "auto.ps]" ); // ] closes file
+  int ierr;
+  ierr = system("ps2pdf auto.ps");
+  ierr = system("rm -f  auto.ps");
+  cout << "acroread auto.pdf" << endl;
 
 }

@@ -62,17 +62,13 @@
   gStyle->SetHistMinimumZero(); // no zero suppression
 
   //gStyle->SetOptDate();
- 
-  gROOT->ForceStyle();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // square canvas:
   //              topleft x, y, width x, y
   TCanvas c1( "c1", "c1", 0, 0, 813, 837 );
 
-  c1.Print( "scat13.ps[", "Portrait" ); // [ opens file
-
-  gStyle->SetPaperSize( 18, 27 );
+  c1.Print( "scat13.pdf[", "pdf" ); // [ opens file
 
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
@@ -182,15 +178,12 @@
   lgnd->AddEntry( g24, "2.4 GeV", "p" );
   lgnd->Draw( "same" );
 
-  c1.Print( "scat13.ps" );
+  c1.Print( "scat13.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "scat13.ps]" ); // ] closes file
-  int ierr;
-  ierr = system( "ps2pdf scat13.ps" );
-  ierr = system( "rm -f  scat13.ps" );
+  c1.Print( "scat13.pdf]" ); // ] closes file
   cout << "evince scat13.pdf" << endl;
 
 }

@@ -44,17 +44,13 @@
   if( ieee )
     gStyle->SetOptDate(0);
 
-  gROOT->ForceStyle();
-
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // square canvas:
   //              topleft x, y, width x, y
   TCanvas c1( "c1", "c1", 0, 0, 813, 837 );
   //                 to get fCw 800 fCh 800
 
-  c1.Print( "effvsxm2.ps[", "Portrait" ); // [ opens file
-
-  gStyle->SetPaperSize( 18, 27 );
+  c1.Print( "effvsxm2.pdf[", "pdf" ); // [ opens file
 
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
@@ -159,15 +155,12 @@
 
   lgnd->Draw( "same" );
 
-  c1.Print( "effvsxm2.ps" );
+  c1.Print( "effvsxm2.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "effvsxm2.ps]" ); // ] closes file
-  int ierr;
-  ierr = system( "ps2pdf effvsxm2.ps" );
-  ierr = system( "rm -f  effvsxm2.ps" );
+  c1.Print( "effvsxm2.pdf]" ); // ] closes file
   cout << "evince effvsxm2.pdf" << endl;
 
 }

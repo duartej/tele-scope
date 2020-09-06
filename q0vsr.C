@@ -41,8 +41,6 @@
   gStyle->SetHistMinimumZero(); // no zero suppression
 
   //gStyle->SetOptDate();
- 
-  gROOT->ForceStyle();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // square canvas:
@@ -50,9 +48,7 @@
   TCanvas c1( "c1", "c1", 635, 246, 813, 837 );
   //                 to get fCw 800 fCh 800
 
-  c1.Print( "q0vsr.ps[", "Portrait" ); // [ opens file
-
-  gStyle->SetPaperSize( 18, 27 );
+  c1.Print( "q0vsr.pdf[", "pdf" ); // [ opens file
 
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
@@ -140,15 +136,12 @@
 
   lgnd->Draw( "same" );
 
-  c1.Print( "q0vsr.ps" );
+  c1.Print( "q0vsr.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "q0vsr.ps]" ); // ] closes file
-  int ierr;
-  ierr = system( "ps2pdf q0vsr.ps" );
-  ierr = system( "rm -f  q0vsr.ps" );
+  c1.Print( "q0vsr.pdf]" ); // ] closes file
   cout << "evince q0vsr.pdf" << endl;
 
 }

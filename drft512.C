@@ -1,7 +1,7 @@
 
 // Daniel Pitzl, Apr 2019
 
-// drft-on ToT vs depth
+// edge-on ToT vs depth
 
 // root -l drft512.C
 
@@ -43,7 +43,7 @@
   gStyle->SetHistMinimumZero(); // no zero suppression
 
   //gStyle->SetOptDate();
- 
+
   gROOT->ForceStyle();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -52,9 +52,7 @@
   TCanvas c1( "c1", "c1", 0, 0, 813, 837 );
   //                 to get fCw 800 fCh 800
 
-  c1.Print( "drft512.ps[", "Portrait" ); // [ opens file
-
-  gStyle->SetPaperSize( 18, 27 );
+  c1.Print( "drft512.pdf[", "pdf" ); // [ opens file
 
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
@@ -67,7 +65,7 @@
   // 800 V:
 
   TFile * f800 = TFile::Open( "edg53_36109.root" );
-  dutbcvsd->SetTitle( "RD53 512 (1#upoint10^{16 }p/cm^{2}) drft-on" );
+  dutbcvsd->SetTitle( "RD53 512 (1#upoint10^{16 }p/cm^{2}) edge-on" );
   dutbcvsd->GetYaxis()->SetNdivisions(-502);
   dutbcvsd->SetMinimum(18);
   dutbcvsd->SetMaximum(20);
@@ -126,15 +124,12 @@
 
   lgnd->Draw( "same" );
 
-  c1.Print( "drft512.ps" );
+  c1.Print( "drft512.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "drft512.ps]" ); // ] closes file
-  int ierr;
-  ierr = system( "ps2pdf drft512.ps" );
-  ierr = system( "rm -f  drft512.ps" );
+  c1.Print( "drft512.pdf]" ); // ] closes file
   cout << "evince drft512.pdf" << endl;
 
 }

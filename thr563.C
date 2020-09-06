@@ -61,17 +61,13 @@ void thr563()
   gStyle->SetHistMinimumZero(); // no zero suppression
 
   //gStyle->SetOptDate();
- 
-  gROOT->ForceStyle();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // square canvas:
   //                topleft x, y, width x, y
   TCanvas c1( "c1", "c1", 635, 246, 813, 837 );
 
-  c1.Print( "thr563.ps[", "Portrait" ); // [ opens file
-
-  gStyle->SetPaperSize( 18, 27 );
+  c1.Print( "thr563.pdf[", "pdf" ); // [ opens file
 
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
@@ -155,7 +151,7 @@ void thr563()
   gr->SetMarkerSize(1.5);
   gr->Draw("Pc"); // without axis option: overlay
 
-  c1.Print( "thr563.ps" );
+  c1.Print( "thr563.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // sig vs thr
@@ -176,15 +172,12 @@ void thr563()
   gs->SetMarkerSize(1.5);
   gs->Draw("Pc"); // without axis option: overlay
 
-  c1.Print( "thr563.ps" );
+  c1.Print( "thr563.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "thr563.ps]" ); // ] closes file
-  int ierr;
-  ierr = system( "ps2pdf thr563.ps" );
-  ierr = system( "rm -f  thr563.ps" );
+  c1.Print( "thr563.pdf]" ); // ] closes file
   cout << "evince thr563.pdf" << endl;
 
 }

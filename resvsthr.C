@@ -56,17 +56,13 @@
   gStyle->SetHistMinimumZero(); // no zero suppression
 
   //gStyle->SetOptDate();
- 
-  gROOT->ForceStyle();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // square canvas:
   //                topleft x, y, width x, y
   TCanvas c1( "c1", "c1", 635, 246, 813, 837 );
 
-  c1.Print( "resvsthr.ps[", "Portrait" ); // [ opens file
-
-  gStyle->SetPaperSize( 18, 27 );
+  c1.Print( "resvsthr.pdf[", "pdf" ); // [ opens file
 
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
@@ -84,7 +80,6 @@
   Float_t col[n] = { 1.741, 1.662, 1.603, 1.549, 1.634, 1.701, 1.575 }; // columns
   Float_t res[n] = {  6.65,  7.17,  7.87,  8.68,  7.53,  6.90,  8.29 }; // [um] dxc
 
-
   Float_t dth[n];
   for( int i = 0; i < n; ++i )
     dth[i] = thr[i] - 300; // baseline
@@ -97,7 +92,7 @@
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // col vs thr:
 
-  hcol = new 
+  hcol = new
     TH1F( "hcol",
 	  "cluster size;threshold [DAC];cluster size [columns]",
 	  98, 300, 398 ); // axis range
@@ -116,12 +111,12 @@
   lgc->AddEntry( gc, "504 RD53A 50x150, turn 17^{o}", "p" );
   lgc->Draw( "same" );
 
-  c1.Print( "resvsthr.ps" );
+  c1.Print( "resvsthr.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // res vs thr:
 
-  hthr = new 
+  hthr = new
     TH1F( "hthr",
 	  "pixel resolution;threshold [DAC];hit resolution [#mum]",
 	  98, 300, 398 ); // axis range
@@ -140,15 +135,12 @@
   lgnd->AddEntry( gr, "504 RD53A 50x150, turn 17^{o}", "p" );
   lgnd->Draw( "same" );
 
-  c1.Print( "resvsthr.ps" );
+  c1.Print( "resvsthr.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "resvsthr.ps]" ); // ] closes file
-  int ierr;
-  ierr = system("ps2pdf resvsthr.ps");
-  ierr = system("rm -f  resvsthr.ps");
-  cout << "acroread resvsthr.pdf" << endl;
+  c1.Print( "resvsthr.pdf]" ); // ] closes file
+  cout << "evince resvsthr.pdf" << endl;
 
 }

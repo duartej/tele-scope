@@ -43,8 +43,6 @@
   gStyle->SetHistMinimumZero(); // no zero suppression
 
   //gStyle->SetOptDate();
- 
-  gROOT->ForceStyle();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // square canvas:
@@ -52,9 +50,7 @@
   TCanvas c1( "c1", "c1", 0, 0, 813, 837 );
   //                 to get fCw 800 fCh 800
 
-  c1.Print( "edge512.ps[", "Portrait" ); // [ opens file
-
-  gStyle->SetPaperSize( 18, 27 );
+  c1.Print( "edge512.pdf[", "pdf" ); // [ opens file
 
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
@@ -125,15 +121,12 @@
 
   lgnd->Draw( "same" );
 
-  c1.Print( "edge512.ps" );
+  c1.Print( "edge512.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "edge512.ps]" ); // ] closes file
-  int ierr;
-  ierr = system( "ps2pdf edge512.ps" );
-  ierr = system( "rm -f  edge512.ps" );
+  c1.Print( "edge512.pdf]" ); // ] closes file
   cout << "evince edge512.pdf" << endl;
 
 }

@@ -62,22 +62,16 @@ void turn524()
 
   //gStyle->SetOptDate();
 
-  gROOT->ForceStyle();
-
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // square canvas:
   //                topleft x, y, width x, y
   TCanvas c1( "c1", "c1", 635, 246, 813, 837 );
 
-  c1.Print( "turn524.ps[", "Portrait" ); // [ opens file
-
-  gStyle->SetPaperSize( 18, 27 );
+  c1.Print( "turn524.pdf[", "pdf" ); // [ opens file
 
   c1.SetBottomMargin(0.15);
   c1.SetLeftMargin(0.15);
   c1.SetRightMargin(0.05);
-
-  gPad->Update();// required
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // read data:
@@ -192,7 +186,7 @@ void turn524()
   lgnd->AddEntry( gql, "524 Lin ", "p" );
   lgnd->Draw( "same" );
 
-  c1.Print( "turn524.ps" );
+  c1.Print( "turn524.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // npx vs turn
@@ -212,7 +206,7 @@ void turn524()
   gn->SetMarkerSize(1.5);
   gn->Draw("P"); // without axis option: overlay
 
-  c1.Print( "turn524.ps" );
+  c1.Print( "turn524.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // sig vs turn
@@ -232,15 +226,12 @@ void turn524()
   gs->SetMarkerSize(1.5);
   gs->Draw("P"); // without axis option: overlay
 
-  c1.Print( "turn524.ps" );
+  c1.Print( "turn524.pdf" );
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done:
 
-  c1.Print( "turn524.ps]" ); // ] closes file
-  int ierr;
-  ierr = system( "ps2pdf turn524.ps" );
-  ierr = system( "rm -f  turn524.ps" );
+  c1.Print( "turn524.pdf]" ); // ] closes file
   cout << "evince turn524.pdf" << endl;
 
 }
