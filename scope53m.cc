@@ -35,29 +35,30 @@ using namespace eudaq;
 struct pixel {
   int col;
   int row;
-  int tot;
-  int frm;
-  bool pivot;
+  int tot;    // pixel charge
+  int frm;    // frame or bunch crossing
+  bool pivot; // Mimosa
 };
 
 struct cluster {
-  vector <pixel> vpix; // Armin Burgmeier: list
-  int size;
-  int ncol, nrow, minf, maxf;
-  double col, row;
-  int signal;
-  double mindxy;
+  vector <pixel> vpix; // pixelsin the cluster
+  int size;            // number of pixels (redundant with vpix.size())
+  int ncol, nrow;      // number of columns and rows
+  int minbc, maxbc;    // earliest and latest pixel bunch cross (clock ticks)
+  double col, row;     // center of gravity
+  int signal;          // cluster ToT = sum of pixel ToT
+  double mindxy;       // isolation from next cluster
 };
 
 struct triplet {
-  double xm;
-  double ym;
-  double zm;
-  double sx;
-  double sy;
-  bool lk;
-  double ttdmin;
-  unsigned iA;
+  double xm; // mid x [mm]
+  double ym; // mid y [mm]
+  double zm; // mid z [mm]
+  double sx; // slope in x [rad]
+  double sy; // slope in y [rad]
+  bool lk;       // link flag
+  double ttdmin; // distance to next track
+  unsigned iA;   // Mimosa cluster index
   unsigned iB;
   unsigned iC;
 };
@@ -130,8 +131,8 @@ vector <cluster> getClusn( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
     int maxx = 0;
     int miny = 999;
     int maxy = 0;
-    int minf = 999;
-    int maxf = 0;
+    int minbc = 999;
+    int maxbc = 0;
 
     for( vector<pixel>::iterator p = c.vpix.begin(); p != c.vpix.end(); ++p ) {
 
@@ -144,8 +145,8 @@ vector <cluster> getClusn( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
       if( p->col < minx ) minx = p->col;
       if( p->row > maxy ) maxy = p->row;
       if( p->row < miny ) miny = p->row;
-      if( p->frm > maxf ) maxf = p->frm;
-      if( p->frm < minf ) minf = p->frm;
+      if( p->frm > maxbc ) maxbc = p->frm;
+      if( p->frm < minbc ) minbc = p->frm;
 
     }
 
@@ -156,8 +157,8 @@ vector <cluster> getClusn( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
     c.signal = sumnn;
     c.ncol = maxx-minx+1;
     c.nrow = maxy-miny+1;
-    c.minf = minf;
-    c.maxf = maxf;
+    c.minbc = minbc;
+    c.maxbc = maxbc;
     c.mindxy = 999;
 
     vc.push_back(c); // add cluster to vector
@@ -236,8 +237,8 @@ vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
     int maxx = 0;
     int miny = 999;
     int maxy = 0;
-    int minf = 999;
-    int maxf = 0;
+    int minbc = 999;
+    int maxbc = 0;
 
     for( vector<pixel>::iterator p = c.vpix.begin(); p != c.vpix.end(); ++p ) {
 
@@ -255,8 +256,8 @@ vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
       if( p->col < minx ) minx = p->col;
       if( p->row > maxy ) maxy = p->row;
       if( p->row < miny ) miny = p->row;
-      if( p->frm > maxf ) maxf = p->frm;
-      if( p->frm < minf ) minf = p->frm;
+      if( p->frm > maxbc ) maxbc = p->frm;
+      if( p->frm < minbc ) minbc = p->frm;
 
     }
 
@@ -275,8 +276,8 @@ vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
     c.signal = sumQ;
     c.ncol = maxx-minx+1;
     c.nrow = maxy-miny+1;
-    c.minf = minf;
-    c.maxf = maxf;
+    c.minbc = minbc;
+    c.maxbc = maxbc;
     c.mindxy = 999;
 
     vc.push_back(c); // add cluster to vector
@@ -341,13 +342,18 @@ int main( int argc, char* argv[] )
   cout << endl;
 
   string geoFileName( "geo.dat" );
-  double pbeam = 4.8;
-  double DUTtilt = 0.5;
-  double DUTturn = 0.5; // small turn will not be aligned
-  int chip0 = 501;
-  int fifty = 0; // default is 100x25
-  int rot90 = 0; // default is straight
-  int modrun = 0;
+  double pbeam{4.8};
+  double DUTtilt{0.5};
+  double DUTturn{0.5}; // small turn will not be aligned
+  int chip0{501};
+  double qL{10}; // cutaround Landau peak for best resolution
+  double qR{22};
+  int threshold{0}; // offline DUT pixel threshold [TOT]: zero (and 1) = no threshold, 2 or 3 suppress crosstalk
+  int minBC{0}; // cut out-of-time noise for honest efficiency
+  int maxBC{31}; // look at linpxbc
+  int fifty{0}; // default is 100x25
+  int rot90{0}; // default is straight
+  int modrun{0};
 
   ifstream runsFile( "runs.dat" );
 
@@ -367,11 +373,16 @@ int main( int argc, char* argv[] )
     string GEO( "geo" );
     string GeV( "GeV" );
     string CHIP( "chip" );
+    string THRESHOLD( "threshold" );
+    string QL{"qL"};
+    string QR{"qR"};
+    string MINBC{"minBC"};
+    string MAXBC{"maxBC"};
     string TURN( "turn" );
     string TILT( "tilt" );
     string FIFTY( "fifty" );
     string ROT90( "rot90" );
-    bool found = 0;
+    bool found{0};
 
     while( ! runsFile.eof() ) {
 
@@ -435,6 +446,31 @@ int main( int argc, char* argv[] )
 	continue;
       }
 
+      if( tag == QL ) {
+	tokenizer >> qL;
+	continue;
+      }
+
+      if( tag == QR ) {
+	tokenizer >> qR;
+	continue;
+      }
+
+      if( tag == THRESHOLD ) {
+	tokenizer >> threshold;
+	continue;
+      }
+
+      if( tag == MINBC ) {
+	tokenizer >> minBC;
+	continue;
+      }
+
+      if( tag == MAXBC ) {
+	tokenizer >> maxBC;
+	continue;
+      }
+
       // anything else on the line and in the file gets ignored
 
     } // while getline
@@ -446,6 +482,9 @@ int main( int argc, char* argv[] )
 	<< "  nominal DUT turn " << DUTturn << " deg" << endl
 	<< "  nominal DUT tilt " << DUTtilt << " deg" << endl
 	<< "  DUT chip " << chip0 << endl
+	<< "  DUT pixel threshold " << threshold << endl
+	<< "  DUT min BC " << minBC << endl
+	<< "  DUT max BC " << maxBC << endl
 	<< "  fifty " << fifty << endl
 	<< "  rot90 " << rot90 << endl
 	<< "  modrun " << modrun << endl
@@ -878,92 +917,6 @@ int main( int argc, char* argv[] )
   const double Nz =-ca*co;
 
   const double norm = cos( DUTturn*wt ) * cos( DUTtilt*wt ); // length of Nz
-
-  // cuts around Landau peak for best resolution (look at dutmadyvsq)
-
-  double qL = 10; // 33483
-  double qR = 20;
-
-  if( run >= 33314 && run <= 33333 ) { // 501  KRUM_CURR 10
-    qL = 15;
-    qR = 29;
-  }
-
-  if( run >= 33475 && run <= 33483 ) { // 504  KRUM_CURR 30
-    qL = 10;
-    qR = 20;
-  }
-
-  if( run >= 34001 ) { // 524  KRUM_CURR 32
-    qL =  7;
-    qR = 20;
-  }
-
-  if( run >= 35424 ) { // 1470  100 um irrad 5E15 neq/cm2 Ka
-    qL =  3;
-    qR = 10;
-  }
-
-  if( run >= 35630 ) { // 511i
-    qL =  4;
-    qR = 13;
-  }
-
-  if( run >= 35665 ) { // 511i KRUM_CURR_LIN : 16
-    qL =  7;
-    qR = 20;
-  }
-
-  if( run >= 37621 ) { // fresh FBK 3D Nov 2019
-    qL =  9;
-    qR = 20;
-  }
-
-  if( run >= 37747 ) { // fresh HPK KRUM_CURR_LIN 29 Nov 2019
-    qL = 10;
-    qR = 20;
-  }
-
-  if( run >= 37764 ) { // fresh HPK KRUM_CURR_LIN 20 Nov 2019
-    qL = 12;
-    qR = 25;
-  }
-
-  if( run >= 37782 ) { // fresh HPK KRUM_CURR_LIN 29 Nov 2019
-    qL = 11;
-    qR = 25;
-  }
-
-  if( run >= 38445 ) { // 564i
-    qL =  5;
-    qR = 14;
-  }
-
-  if( run >= 39478 ) { // Sep 2020 fresh Krummenacher 20
-    qL = 12;
-    qR = 25;
-  }
-
-  if( run >= 39606 ) { // Sep 2020 bricked 606 Krummenacher 29
-    qL = 10;
-    qR = 22;
-  }
-
-  int minBC =  7; // 38989
-  int maxBC = 14;
-
-  if( run <= 38243 ) { // Dec 2019
-    minBC =  6;
-    maxBC = 12;
-  }
-
-  if( chip0 == 509 ) {
-    minBC =  6;
-    maxBC = 13;
-  }
-
-  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // DUT dead pixels:
 
   set <int> deadset;
 
@@ -2043,10 +1996,13 @@ int main( int argc, char* argv[] )
 		    "short cluster track at DUT y;track y at DUT [mm];short cluster tracks",
 		    120, -6, 6 );
 
-  TH1I linbcHisto( "linbc",
-		   "DUT cluster BC;DUT cluster BC;DUT clusters on tracks",
+  TH1I minbcHisto( "minbc",
+		   "DUT cluster min BC;DUT cluster min BC;DUT clusters on tracks",
 		   32, -0.5, 31.5 );
-  TH1I linnbcHisto( "linnbc",
+  TH1I maxbcHisto( "maxbc",
+		   "DUT cluster max BC;DUT cluster max BC;DUT clusters on tracks",
+		   32, -0.5, 31.5 );
+  TH1I nbcHisto( "linnbc",
 		    "DUT cluster nBC;DUT cluster nBC;DUT clusters on tracks",
 		    30, 0.5, 30.5 );
 
@@ -2800,7 +2756,7 @@ int main( int argc, char* argv[] )
 
 	    dutpxcol0Histo.Fill( ix + 0.5 );
 
-	    px.tot += 1; // shift from zero
+	    px.tot += 1; // shift from zero: for COG clustering
 
 	    if( ix < 128 )
 	      cout << "pixel in Sync section: ignored" << endl;
@@ -2814,29 +2770,7 @@ int main( int argc, char* argv[] )
 
 	    linpxbcHisto.Fill( frm );
 
-	    int thr = 0;
-
-	    if( chip0 == -550 ) {
-	      if( ix < 264 ) // lin
-		//thr = 2; // hard enough: linnrowvsym
-		thr = 3; // uniform 1st cluster row
-	      else
-		//thr = 2; // not enough
-		//thr = 5; // better
-		thr = 7; // uniform 1st cluster row
-	    }
-
-	    if( chip0 == 563 )
-	      thr = 1; // no cut
-	    //thr = 2; // suppress cross talk
-	    //thr = 3; // suppress cross talk
-	    //thr = 8; // study
-
-	    if( chip0 == 578 ) // Zh card
-	      thr = 1; // no cut
-	    //thr = 2; // suppress cross talk
-
-	    if( px.tot < thr ) continue; // offline threshold
+	    if( px.tot < threshold ) continue; // offline threshold
 
 	    dutpxcol9Histo.Fill( ix + 0.5 );
 
@@ -4623,8 +4557,9 @@ int main( int argc, char* argv[] )
 	    }
 	  }
 
-	  linbcHisto.Fill( c->minf );
-	  linnbcHisto.Fill( c->maxf - c->minf + 1 );
+	  minbcHisto.Fill( c->minbc );
+	  maxbcHisto.Fill( c->maxbc );
+	  nbcHisto.Fill( c->maxbc - c->minbc + 1 );
 
 	  linqHisto.Fill( Q );
 	  linq0Histo.Fill( Q0 );
@@ -4646,7 +4581,7 @@ int main( int argc, char* argv[] )
 	      linnrow1eveHisto.Fill( c->nrow ); // twice more, similar shape
 	  }
 
-	  if( c->minf == c->maxf ) {
+	  if( c->minbc == c->maxbc ) {
 	    linnpxfHisto.Fill( npx );
 	    linncolfHisto.Fill( c->ncol );
 	    linnrowfHisto.Fill( c->nrow );
@@ -4739,7 +4674,7 @@ int main( int argc, char* argv[] )
 
 		dutpxrow11Histo.Fill( irow + 0.5 ); // 70% even
 
-		if( c->minf == c->maxf ) { // 1-frame clusters: pixels read out sequentially
+		if( c->minbc == c->maxbc ) { // 1-frame clusters: pixels read out sequentially
 
 		  dutpxrow111Histo.Fill( irow + 0.5 ); // 75% even
 
@@ -4860,14 +4795,14 @@ int main( int argc, char* argv[] )
 	  linpxqmaxHisto.Fill( totmax );
 	  if( c->size > 1 )
 	    linpxqmax2Histo.Fill( totmax );
-	  int maxf = pxmax->frm;
+	  int maxbc = pxmax->frm;
 
 	  for( vector<pixel>::iterator px = c->vpix.begin(); px != c->vpix.end(); ++px ) {
 	    if( px == pxmax ) continue;
 	    linpxq2ndHisto.Fill( px->tot );
-	    lintwvsq.Fill( px->tot, px->frm - maxf ); // timewalk
+	    lintwvsq.Fill( px->tot, px->frm - maxbc ); // timewalk
 	    if( pxmax->tot == 15 ) // overflow = fast
-	      lintwvsq15.Fill( px->tot, px->frm - maxf ); // timewalk
+	      lintwvsq15.Fill( px->tot, px->frm - maxbc ); // timewalk
 	  }
 
 	  for( int icol = colmin+1; icol < colmax; ++icol ) {
@@ -4953,7 +4888,7 @@ int main( int argc, char* argv[] )
 
 	// for eff: nearest pixel
 
-	if( c->minf >= minBC && c->maxf <= maxBC ) { // good timing
+	if( c->minbc >= minBC && c->maxbc <= maxBC ) { // good timing
 
 	  for( unsigned ipx = 0; ipx < c->vpix.size(); ++ipx ) {
 

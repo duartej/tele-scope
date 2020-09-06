@@ -16,7 +16,15 @@ geo geo_2018_06r.dat #  0 152  304  560  713  865  25x100
 
 chip 501
 
-# straight
+threshold 0  offline pixel threshold
+
+minBC  7  earliest BC for honest efficiency
+maxBC 12  look at linbc
+
+qL 10  cluster ToT cuts for best resolution: look at dutmadxvsq
+qR 22  varies with KRUM_CURR_LIN, thickness, irradiation
+
+# straight:
 rot90 0
 fifty 0
 modrun 0
@@ -155,6 +163,8 @@ turn -14.4
 run 33313  272  dxc
 
 # KRUM_CURR 10 = more smaller ToT
+qL 15
+qR 29
 run 33314 1700  dxc 5.83  nrow 2.104
 
 turn -13.9
@@ -230,6 +240,9 @@ run 33333 16431 dxc 5.67
 # Fri 29.6.2018
 
 chip 504 # FDB 50x50x150 bias dot wiggle, straight PCB
+
+qL 10
+qR 22 default
 
 # Lin section
 geo geo_2018_06t.dat #  0 152  304  435  588  740  50x50
@@ -334,6 +347,9 @@ run 33474  250  dxc 6.98  dutq  9.6
 
 # KRUM_CURR_LIN = 30
 
+qL 10
+qR 20
+
 turn -16.7
 run 33475  250  dxc 6.65  dutq 16.1  ncol 1.741
 
@@ -366,6 +382,9 @@ run 33483 20650 mod 16  dxc 6.91  dxcq 6.60  ncol 1.
 # RD43 stops 26'160 s  eff 99.96
 # scope53 -l 9000200 33483
 
+qL 10
+qR 22 default
+
 #-------------------------------------------------------------------------------
 # Sun 1.7.2018
 # continue RD53A 504 = 50x50x150 p-stop bias dot wiggle straight
@@ -376,7 +395,7 @@ turn -0.5
 modrun 18
 run 33485  9003 mod 18 eff 98.5 bias dot
 
-# KRUM_CURR_LIN = 50 for nice Landau
+# KRUM_CURR_LIN = 50 for nice Landau ?
 modrun 19
 run 33486 15999 mod 19  eff 98.4 bias dot
 
@@ -419,6 +438,9 @@ run 34053  440k copied
 
 # Vthreshold_LIN 334
 # Krum_Curr_Lin 32
+
+qL  7
+qR 20
 
 run 34059  360k copied
 
@@ -871,14 +893,20 @@ modrun 134
 run 35007  130  DUT & MOD corr  modlk 22%
 
 #KRUM_CURR_LIN 28
+qL 10
+qR 22
 modrun 136
 run 35009  138
 
 #KRUM_CURR_LIN 24
+qL 11
+qR 24
 modrun 137
 run 35010  130
 
 #KRUM_CURR_LIN 20
+qL 12
+qR 25
 modrun 138
 run 35012  1.2M
 
@@ -1300,6 +1328,9 @@ run 35181  3000.909  96.80
 
 chip 1470 = FBK planar 50x50 default 100 um active thickness 5E15 neq/cm2 at Ka
 
+qL  3
+qR 10
+
 fifty 1
 
 # straight, Lin section
@@ -1605,6 +1636,9 @@ geo geo_2019_02e.dat = 0  153  305  573  720  874
 
 chip 512 = FTH150P RD53A 100x25 P2 = p-stop bias dot  5.6E15 n/cm2 CERN PS on Lin
 
+qL  4
+qR 13
+
 # Lin section
 
 fifty 0
@@ -1873,6 +1907,9 @@ chip 511 = FDB150P RD53A 50x50 P3 p-stop bias dot with 7E15 CERN PS p/cm2 on Lin
 
 # Lin section, thr 1.4 ke
 
+qL  7
+qR 20
+
 # bias dot grounded
 
 fifty 1
@@ -2027,7 +2064,7 @@ run 35661  520  94.57 mask  linncol 1.100  linq 8.25
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # search for resolution: finer ToT
 # KRUM_CURR_LIN : 29 to 25
-
+# adjust qL qR?
 # move x to +6 mm
 turn -18
 modrun 442 empty
@@ -2086,6 +2123,9 @@ run 35677  500
 # Mon 18.3.2019
 
 chip 182 = UZh fresh HLL 100x25x150 Lin section
+
+qL  6  thin
+qR 15
 
 geo geo_2019_03d.dat = 0  153  305  426  578  731 # 100x25
 
@@ -2328,6 +2368,9 @@ run 35801  703  91.0
 #
 chip 511 = FDB150P RD53A 50x50 P3 p-stop bias dot with 7E15 CERN PS p/cm2 Lin
 
+qL 10
+qR 22
+
 fifty 1
 
 geo geo_2019_03f.dat = 0  153  305  553  705  858 # 50x50
@@ -2414,6 +2457,8 @@ run 35867  250  tridy 4.106
 # Sat 23.3.2019
 
 chip 521 = FTH150P RD53A 50x50 P4 = p-stop bias dot wiggle with 5.3E15 KIT
+
+# adjust qL, qR?
 
 geo geo_2019_03j.dat  0  153  305  575 726  880 mm for 50x50
 
@@ -4934,6 +4979,8 @@ run 37556
 # Mon 4.11.2019: FBK 3D
 
 chip 793350 50x50
+qL  9
+qR 20
 fifty 1
 GeV 5.2
 geo geo_2019_11a.dat = 0  122  244  329  481  635
@@ -5018,7 +5065,8 @@ run 37682  1015
 # Thu 7.11.2019: RD53A HPK fresh planar Zh card
 
 chip 534 100x25 (was 563)
-
+qL 10
+qR 20
 # PA_IN_BIAS_LIN   : 350
 # FC_BIAS_LIN      : 20
 # KRUM_CURR_LIN    : 29
@@ -5100,6 +5148,8 @@ run 37760  504  99.98
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 turn 9.6 (online -8)
 # KRUM_CURR_LIN : 20
+qL 12
+qR 25
 modrun 1261
 run 37764  605
 
@@ -5212,6 +5262,8 @@ geo geo_2019_11l.dat = 0  122  244  344  496  649
 # COMP_LIN         : 110
 # REF_KRUM_LIN     : 300
 # Vthreshold_LIN   : 345  581 e +- 77
+qL 11
+qR 25
 
 # Vbias -120 V, 3.5 uA -> it's sunny
 
@@ -5526,7 +5578,8 @@ modrun 1454
 run 38029   90k  ntri 21  Modlk 50%
 
 chip 542 FDB150P RD53A100x25 P1 default KaZ 7.4E15 neq/cm^2
-
+qL  6
+qR 16
 # Vthreshold_LIN   : 352 ~ 1316 e
 # noise: 127 e
 
@@ -5935,6 +5988,8 @@ run 38166  502
 # HPK 577 on UZh card
 
 chip 577 FDB150P RD53A 100x25 P1 default on UZh card fresh
+qL 10
+qR 22
 
 geo geo_2019_12g.dat = 0  120  240  311  420  531  for 100x25
 
@@ -6679,7 +6734,8 @@ geo geo_2020_02b.dat #  0  120  240  403  524  647
 run 38342
 
 chip 563 FTH150P RD53A 100x25 P1 default design, Birmingham 1E16 n_eq/cm2
-
+qL  5
+qR 14
 #  PA_IN_BIAS_LIN   : 350
 #  FC_BIAS_LIN      : 20
 #  KRUM_CURR_LIN    : 29
@@ -7458,6 +7514,9 @@ chip 586 unirradiated 100x25  Bias dot  Zh card
 # Vb 50 V, Ib 300 nA
 # KRUM_CURR_LIN    : 24
 # Vthreshold_LIN = 333 --> 832 +- 62 e
+qL 10
+qR 23
+
 modrun 1894
 run 38608  500  eff 98.9817%  nrow 1.702
 
@@ -7839,7 +7898,8 @@ run 38914  500
 # Sun 7.6.2020
 
 chip 589 100x25 default, KIT 2.14E16
-
+qL  3
+qR 15
 # cold box
 
 rot90 0
@@ -9054,7 +9114,8 @@ chip 583 = FTH150P RD53A 50x50 P1 fresh
 # LDAC_LIN : 135
 # COMP_LIN : 110
 # REF_KRUM_LIN : 300
-
+qL 12
+qR 25
 geo_2020_07f:  0  120  240  395  515  635 for 50x50
 
 fifty 1
@@ -9078,6 +9139,18 @@ run 39415  507  99.96
 # 2020 HPK production
 
 chip 605 = FDB150P RD53A S50x50 P1
+
+# PA_IN_BIAS_LIN   : 350
+# FC_BIAS_LIN      : 20
+# KRUM_CURR_LIN    : 29
+# LDAC_LIN         : 130 #cold: 185 #warm: 130
+# COMP_LIN         : 110
+# REF_KRUM_LIN     : 300
+# Vthreshold_LIN   : 349 ~815 e-
+# 20 noisy pixels, 7 failed fits
+
+qL 10
+qR 22
 
 geo geo_2020_09a.dat  0  120  239  369  521  673 for 50x50
 
@@ -9273,7 +9346,9 @@ run 39573  500
 # REF MOD 4294
 # studies at optimal turn: -9 deg
 geo geo_2020_09c.dat  0  120  239  331  483  635  for 100x25
-
+# KRUM_CURR_LIN : 20
+qL 12
+qR 25
 modrun 2755
 run 39595  1445
 # sixdxc 7.7 mu => tele = 3.85
@@ -9283,6 +9358,18 @@ run 39595  1445
 # Fri 4.9.2020
 
 chip 606 = FDB150P RD53A S25x100 P3 bricked
+# PA_IN_BIAS_LIN   : 350
+# FC_BIAS_LIN      : 20
+# KRUM_CURR_LIN    : 29
+# LDAC_LIN         : 130 #cold: 185 #warm: 130
+# COMP_LIN         : 110
+# REF_KRUM_LIN     : 300
+# Vthreshold_LIN   : 351 ~ 859 e-
+# 19 failed fits, 20 noisy pixels
+
+qL 10
+qR 22
+
 geo geo_2020_09b.dat  0  120  239  369  521  673 for 100x25
 
 rot90 1
