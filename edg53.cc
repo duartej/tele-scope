@@ -478,6 +478,12 @@ int main( int argc, char* argv[] )
 	tokenizer >> ipl;
 	continue;
       }
+      
+      if( ipl < 0 || ipl > 6 ) {
+        cout << "event " << iev << " wrong plane number " << ipl << endl;
+        continue;
+      }
+
 
       if( ipl < 0 || ipl > 8 ) {
 	cout << "geo wrong plane number " << ipl << endl;
@@ -1500,6 +1506,11 @@ int main( int argc, char* argv[] )
 	  ;
 
       int ipl = plane.ID(); // 0 = DUT, 1..6 = Mimosa
+      // RD53A plane from converter, EUDAQ assigned id in [30 ,40)
+      if(ipl >= 30 and ipl < 40)
+      {
+         ipl = 0;
+      }
 
       if( ipl < 0 || ipl > 6 ) {
 	cout << "event " << iev << " wrong plane number " << ipl << endl;
