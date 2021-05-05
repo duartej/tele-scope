@@ -1301,8 +1301,12 @@ int main( int argc, char* argv[] )
 		    240, -6, 6 );
 
   TH1I pixdyHisto( "pixdy",
-		   "pixel - Telescope dy;pixel - triplet #Deltaxy [mm];pixels",
+		   "pixel - Telescope dy;pixel - triplet #Deltay [mm];pixels",
 		   200, -0.5, 0.5 );
+  
+  TH1I pixdxHisto( "pixdx",
+		   "pixel - Telescope dx;pixel - triplet #Deltax [mm];pixels",
+		   200, -1.5, 1.5 );
 
   TH1I pixdxcHisto( "pixdxc",
 		    "pixel - Telescope dx;pixel - triplet #Deltaxx [mm];pixels",
@@ -2271,6 +2275,7 @@ int main( int argc, char* argv[] )
 	  double dy = yA - y3 - DUTaligny;
 
 	  pixdyHisto.Fill( dy );
+	  pixdxHisto.Fill( dx );
 	  pixqvsdxdy->Fill( dy, dx, tot );
 
 	  if( fabs( dy ) < 0.07 ) { // track road
