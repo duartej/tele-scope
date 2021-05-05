@@ -94,7 +94,7 @@ vector <cluster> getClusn( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
           for( unsigned int p = 0; p < c.vpix.size(); ++p ) { // vpix in cluster so far
             int dr = c.vpix.at(p).row - pb[i].row;
             int dc = c.vpix.at(p).col - pb[i].col;
-            if( (   dr>=-fCluCut) && (dr<=fCluCut) 
+            if( (   dr>=-fCluCut) && (dr<=fCluCut)
 		&& (dc>=-fCluCut) && (dc<=fCluCut) ) {
               c.vpix.push_back(pb[i]);
 	      gone[i] = 1;
@@ -205,7 +205,7 @@ vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
           for( unsigned int p = 0; p < c.vpix.size(); ++p ) { // vpix in cluster so far
             int dr = c.vpix.at(p).row - pb[i].row;
             int dc = c.vpix.at(p).col - pb[i].col;
-            if( (   dr>=-fCluCut) && (dr<=fCluCut) 
+            if( (   dr>=-fCluCut) && (dr<=fCluCut)
 		&& (dc>=-fCluCut) && (dc<=fCluCut) ) {
               c.vpix.push_back(pb[i]);
 	      gone[i] = 1;
@@ -400,7 +400,7 @@ int main( int argc, char* argv[] )
     } // while getline
 
     if( found )
-      cout 
+      cout
 	<< "  beam " << pbeam << " GeV" << endl
 	<< "  geo file " << geoFileName << endl
 	<< "  DUT chip " << chip0 << endl
@@ -597,7 +597,7 @@ int main( int argc, char* argv[] )
       if( tag.substr(0,1) == hash ) // comments start with #
 	continue;
 
-      if( tag == iteration ) 
+      if( tag == iteration )
 	tokenizer >> aligniteration;
 
       if( tag == plane )
@@ -760,7 +760,7 @@ int main( int argc, char* argv[] )
       if( tag.substr(0,1) == hash ) // comments start with #
 	continue;
 
-      if( tag == iteration ) 
+      if( tag == iteration )
 	tokenizer >> DUTaligniteration;
 
       double val;
@@ -852,6 +852,8 @@ int main( int argc, char* argv[] )
   // MOD:
 
   string modfileA = "mod/run" + to_string(modrun) + "A.out"; // C++11
+  if( run >= 38027 )
+    modfileA = "mod/run" + to_string(modrun) + "_ch0.out"; // C++11
   cout << "try to open  " << modfileA;
   ifstream Astream( modfileA.c_str() );
   if( !Astream ) {
@@ -862,6 +864,8 @@ int main( int argc, char* argv[] )
     cout << " : succeed " << endl;
 
   string modfileB = "mod/run" + to_string(modrun) + "B.out";
+  if( run >= 38027 )
+    modfileB = "mod/run" + to_string(modrun) + "_ch1.out"; // C++11
   cout << "try to open  " << modfileB;
   ifstream Bstream( modfileB.c_str() );
   if( !Bstream ) {
@@ -928,7 +932,7 @@ int main( int argc, char* argv[] )
       if( tag.substr(0,1) == hash ) // comments start with #
 	continue;
 
-      if( tag == iteration ) 
+      if( tag == iteration )
 	tokenizer >> MODaligniteration;
 
       double val;
@@ -1041,7 +1045,7 @@ int main( int argc, char* argv[] )
 			  51, -0.5, 50.5 );
 
     hcol[ipl] = TH1I( Form( "col%i", ipl ),
-		      Form( "%i col;col;plane %i pixels", ipl, ipl ), 
+		      Form( "%i col;col;plane %i pixels", ipl, ipl ),
 		      nbx, 0, mx );
     hrow[ipl] = TH1I( Form( "row%i", ipl ),
 		      Form( "%i row;row;plane %i pixels", ipl, ipl ),
@@ -1056,7 +1060,7 @@ int main( int argc, char* argv[] )
     hsiz[ipl] = TH1I( Form( "clsz%i", ipl ),
 		      Form( "%i cluster size;pixels/cluster;plane %i clusters", ipl, ipl ),
 		      51, -0.5, 50.5 );
-    hncol[ipl] = TH1I( Form( "ncol%i", ipl ), 
+    hncol[ipl] = TH1I( Form( "ncol%i", ipl ),
 		       Form( "%i cluster size x;columns/cluster;plane %i clusters", ipl, ipl ),
 		       21, -0.5, 20.5 );
     hnrow[ipl] = TH1I( Form( "nrow%i", ipl ),
@@ -1358,8 +1362,12 @@ int main( int argc, char* argv[] )
 		  "in-time triplet depth;depth [mm];in-time triplet hits",
 		  80, -0.2, 0.2 );
   TProfile pixqvsd( "pixqvsd",
-		    "PIX column signal vs depth [mm];depth [mm];<column signal> [ToT]",
-		    80, -0.2, 0.2 );
+		    "PIX column signal vs depth [mm];depth [#mum];<column signal> [ToT]",
+		    80, -200, 200 );
+  TProfile2D * pixqvsyd = new
+    TProfile2D( "pixqvsyd",
+		"PIX column signal vs ymod and depth;depth [#mum];y_{track} mod 50 #mum;<column signal [ToT]>",
+		80, -0.2, 0.2, 25, 0, 50 );
 
   TH1I triymHisto( "triym",
 		   "in-time in-depth triplet y;y [mm];in-time in-depth triplets",
@@ -1422,7 +1430,7 @@ int main( int argc, char* argv[] )
   int nevB = 0;
 
   do {
-  
+
     evt = reader->GetDetectorEvent();
 
     uint64_t evTLU = evt.GetTimestamp(); // 384 MHz = 2.6 ns
@@ -1457,13 +1465,13 @@ int main( int argc, char* argv[] )
       ldbg = 1;
 
     if( iev < 10 || ldbg )
-      cout << "edg53 processing  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "edg53  " << run << "." << iev << "  taken " << evsec << endl;
     else if( iev < 100 && iev%10 == 0 )
-      cout << "edg53 processing  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "edg53  " << run << "." << iev << "  taken " << evsec << endl;
     else if( iev < 1000 && iev%100 == 0 )
-      cout << "edg53 processing  " << run << "." << iev << "  taken " << evsec << endl;
+      cout << "edg53  " << run << "." << iev << "  taken " << evsec << endl;
     else if( iev%1000 == 0 ) {
-      cout << "edg53 processing  " << run << "." << iev
+      cout << "edg53  " << run << "." << iev
 	   << "  taken " << evsec
 	   << endl;
     }
@@ -1508,11 +1516,11 @@ int main( int argc, char* argv[] )
 
       // loop over frames, then pixels per frame
 
-      for( unsigned frm = 0; frm < plane.NumFrames(); ++frm ) 
+      for( unsigned frm = 0; frm < plane.NumFrames(); ++frm )
 
 	for( size_t ipix = 0; ipix < plane.HitPixels( frm ); ++ipix ) {
 
-	  if( ldbg ) 
+	  if( ldbg )
 	    std::cout << ": " << plane.GetX(ipix,frm)
 		      << "." << plane.GetY(ipix,frm)
 		      << "." << plane.GetPixel(ipix,frm) << " ";
@@ -1543,17 +1551,19 @@ int main( int argc, char* argv[] )
 
 	    if( !fifty ) { // 100x25 from ROC to sensor:
 	      px.col = ix/2; // 100 um
-	      if( ix%2 ) 
+	      if( ix%2 )
 		px.row = 2*iy + 0; // different from R4S
 	      else
 		px.row = 2*iy + 1; // see ed53 for shallow angle
 	      if( chip0 == 182 || chip0 == 211 || chip0 == 512 ) { // HLL
-		if( ix%2 ) 
+		if( ix%2 )
 		  px.row = 2*iy + 1;
 		else
 		  px.row = 2*iy + 0;
 	      }
-	    }
+
+	    } // not fifty
+
 	  } // DUT
 
 	  pb.push_back(px);
@@ -1928,7 +1938,7 @@ int main( int argc, char* argv[] )
 	double avx = 0.5 * ( xA + xC ); // mid
 	double avy = 0.5 * ( yA + yC );
 	double avz = 0.5 * ( zA + zC ); // mid z
- 
+
 	double slpx = ( xC - xA ) / dzCA; // slope x
 	double slpy = ( yC - yA ) / dzCA; // slope y
 
@@ -2104,9 +2114,9 @@ int main( int argc, char* argv[] )
 	// residuals for pre-alignment:
 
 	modsxaHisto.Fill( modx + x3m ); // peak
-	moddxaHisto.Fill( modx - x3m ); // 
+	moddxaHisto.Fill( modx - x3m ); //
 
-	modsyaHisto.Fill( mody + y3m ); // 
+	modsyaHisto.Fill( mody + y3m ); //
 	moddyaHisto.Fill( mody - y3m ); // peak
 
 	double moddx = modx - x4m;
@@ -2316,6 +2326,7 @@ int main( int argc, char* argv[] )
 	  bool in = 0;
 	  double ym = yAc; // track y at DUTz
 	  double dymin = 999;
+	  double ymod = 0;
 
 	  for( int row = 0; row < 384/(2-fifty); ++row ) {
 
@@ -2340,7 +2351,9 @@ int main( int argc, char* argv[] )
 
 	    double dz = z3 + DUTz - zmA; // z of pixel from mid of triplet A
 	    double xA = xmA + sxA * dz; // triplet impact point on DUT
-	    double yA = ymA + syA * dz; // track A at pixel
+	    double yA = ymA + syA * dz; // track A at z(pixel)
+
+	    ymod = fmod( 8.000 + yA, 0.050 );
 
 	    double dx = xA - x3 - DUTalignx;
 	    double dy = yA - y3 - DUTaligny;
@@ -2363,13 +2376,14 @@ int main( int argc, char* argv[] )
 
 	  if( nd ) { // track in depth
 
-	    depth /= nd;
+	    depth /= nd; // average of rows in this column
 
 	    tridHisto.Fill( depth );
 	    if( roadcol[col] )
 	      tridlkHisto.Fill( depth );
 
-	    pixqvsd.Fill( depth, colq[col] );
+	    pixqvsd.Fill( depth*1e3, colq[col] );
+	    pixqvsyd->Fill( depth*1e3, ymod*1e3, colq[col] );
 
 	  }
 
