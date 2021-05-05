@@ -479,12 +479,6 @@ int main( int argc, char* argv[] )
 	continue;
       }
       
-      if( ipl < 0 || ipl > 6 ) {
-        cout << "event " << iev << " wrong plane number " << ipl << endl;
-        continue;
-      }
-
-
       if( ipl < 0 || ipl > 8 ) {
 	cout << "geo wrong plane number " << ipl << endl;
 	continue;
