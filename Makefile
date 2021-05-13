@@ -10,6 +10,11 @@ ROOTGLIBS   = $(shell $(ROOTSYS)/bin/root-config --glibs)
 
 CXXFLAGS = -O2 -Wall -Wextra $(ROOTCFLAGS) -I/eudaq/eudaq/include/
 
+librd53a_cal.so: rd53a_calibration.cc
+	g++ $(CXXFLAGS) -shared -fPIC \
+        rd53a_calibration.cc -o librd53a_cal.so 
+	@echo 'done: rd53a_cal'
+
 scope53m: scope53m.cc
 	g++ $(CXXFLAGS) scope53m.cc -o scope53m \
 	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ
@@ -44,10 +49,11 @@ edg53Diode: edg53Diode.cc
 	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ
 	@echo 'done: edg53Diode'
 
-edg53: edg53.cc
+edg53: edg53.cc librd53a_cal.so
 	g++ $(CXXFLAGS) edg53.cc -o edg53 \
-	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ
+	$(ROOTLIBS) -L/eudaq/eudaq/lib -lEUDAQ -L. -lrd53a_cal
 	@echo 'done: edg53'
+	@echo 'IMPORTANT: export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:/eudaq/tele-scopes'
 
 scope53: scope53.cc
 	g++ $(CXXFLAGS) scope53.cc -o scope53 \
