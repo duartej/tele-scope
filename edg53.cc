@@ -12,11 +12,13 @@
 // uses alignDUT_36094.dat
 // uses alignMOD_36094.dat
 
+#include "rd53a_calibration.cc"
+
 #include "eudaq/FileReader.hh"
 #include "eudaq/PluginManager.hh"
-#include "../main/lib/plugins/BDAQ53ConverterPlugin.cc"
 
 #include <TFile.h>
+#include <TTree.h>
 #include <TH1I.h> // counting
 #include <TH1D.h> // weighted counts
 #include <TH2I.h>
@@ -59,6 +61,15 @@ struct triplet {
   unsigned iA;
   unsigned iB;
   unsigned iC;
+};
+
+// Clean up 
+void clean_vectors(std::vector<std::vector<float>* > & vv)
+{
+  for(auto & v: vv)
+  {
+    v->clear();
+  }
 };
 
 //------------------------------------------------------------------------------
@@ -303,6 +314,7 @@ int main( int argc, char* argv[] )
 
   int fev = 0; // 1st event
   int lev = 999222111; // last event
+  bool use_dut_calibration = true;
 
   for( int i = 1; i < argc; ++i ) {
 
@@ -311,6 +323,9 @@ int main( int argc, char* argv[] )
 
     if( !strcmp( argv[i], "-l" ) )
       lev = atoi( argv[++i] ); // last event
+    
+    if( !strcmp( argv[i], "-n" ) )
+      use_dut_calibration = false; // no use calibration for DUT
 
   } // argc
 
@@ -324,6 +339,7 @@ int main( int argc, char* argv[] )
   int chip0 = 501;
   int fifty = 0; // default is 100x25
   int modrun = 0;
+  std::string gain_filename_dut;
 
   ifstream runsFile( "runs.dat" );
 
@@ -337,15 +353,16 @@ int main( int argc, char* argv[] )
 
     cout << "read runs.dat:" << endl;
 
-    string hash( "#" );
-    string RUN( "run" );
-    string MODRUN( "modrun" );
-    string GEO( "geo" );
-    string GeV( "GeV" );
-    string CHIP( "chip" );
-    string TURN( "turn" );
-    string TILT( "tilt" );
-    string FIFTY( "fifty" );
+    std::string hash( "#" );
+    std::string RUN( "run" );
+    std::string MODRUN( "modrun" );
+    std::string GEO( "geo" );
+    std::string GeV( "GeV" );
+    std::string CHIP( "chip" );
+    std::string TURN( "turn" );
+    std::string TILT( "tilt" );
+    std::string FIFTY( "fifty" );
+    std::string GAIN_DUT("gain_dut");
     bool found = 0;
 
     while( ! runsFile.eof() ) {
@@ -394,6 +411,11 @@ int main( int argc, char* argv[] )
 	tokenizer >> fifty;
 	continue;
       }
+      
+      if( tag == GAIN_DUT ) {
+	tokenizer >> gain_filename_dut;
+	continue;
+      }
 
       // anything else on the line and in the file gets ignored
 
@@ -404,6 +426,7 @@ int main( int argc, char* argv[] )
 	<< "  beam " << pbeam << " GeV" << endl
 	<< "  geo file " << geoFileName << endl
 	<< "  DUT chip " << chip0 << endl
+        << "  DUT gain file " << gain_filename_dut << std::endl
 	<< "  fifty " << fifty << endl
 	<< "  modrun " << modrun << endl
 	;
@@ -703,6 +726,8 @@ int main( int argc, char* argv[] )
   } // hotFile
 
   ihotFile.close();
+  
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   for( int ipl = 0; ipl <= 6; ++ipl )
     cout << "  plane " << ipl << ": hot " << hotset[ipl].size() << endl;
@@ -847,6 +872,19 @@ int main( int argc, char* argv[] )
   cout << "DUT hot " << hotset[iDUT].size() << endl;
 
   cout << endl;
+  
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // DUT gain:
+  int nrows_in_dut = ny[iDUT];
+  if( !fifty ) 
+  {
+     //nrows_in_dut = 2*ny[iDUT];
+     nrows_in_dut = 384;
+  }
+  auto calibration_curves = calibration(gain_filename_dut,nrows_in_dut);
+  std::cout << "Loaded calibration curves for DUT. Active pixels: "
+          << calibration_curves.size() << std::endl;
+  histoFile->cd();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // MOD:
@@ -978,7 +1016,45 @@ int main( int argc, char* argv[] )
   const double normm = cos( MODturn*wt ) * cos( MODtilt*wt ); // length of Nz
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // book histos:
+  // book histos and tree [JDC]: 
+  TTree * tree  = new TTree("dut","MOD linked tracks at DUT and pixel");
+ 
+  int iev = 0;
+  // pixels DUT
+  std::vector<float> p_col;
+  std::vector<float> p_row;
+  std::vector<float> p_tot;
+  std::vector<float> p_bc;
+  std::vector<float> p_x;
+  std::vector<float> p_y;
+  std::vector<float> p_z;
+  std::vector<float> p_ylocal;
+  std::vector<float> p_zlocal;
+  // tracks
+  std::vector<float> t_x;
+  std::vector<float> t_y;
+  std::vector<float> t_z;
+  std::vector<float> t_tx;
+  std::vector<float> t_ty;
+  tree->Branch("event_number",&iev);
+  tree->Branch("col",&p_col);
+  tree->Branch("row",&p_row);
+  tree->Branch("tot",&p_tot);
+  tree->Branch("bc",&p_bc);
+  tree->Branch("pix_x",&p_x);
+  tree->Branch("pix_y",&p_y);
+  tree->Branch("pix_z",&p_z);
+  tree->Branch("pix_ylocal",&p_ylocal);
+  tree->Branch("pix_zlocal",&p_zlocal);
+  tree->Branch("trk_x",&t_x);
+  tree->Branch("trk_y",&t_y);
+  tree->Branch("trk_z",&t_z);
+  tree->Branch("trk_tx",&t_x);
+  tree->Branch("trk_ty",&t_y);
+
+  std::vector<std::vector<float>* > v_floats = { &p_col, &p_row, &p_tot, &p_bc, &p_x, &p_y, &p_z,
+						 &p_ylocal, &p_zlocal,
+						 &t_x, &t_y, &t_z, &t_tx, &t_ty };
 
   double f = 5.2 / pbeam;
 
@@ -1072,6 +1148,14 @@ int main( int argc, char* argv[] )
 
   } // planes
 
+  std::string qdut_unit("[x 10^{3} e^{-}]");
+  float qfactor = 1e3;
+  if( ! use_dut_calibration )
+  {
+     qdut_unit = "[ToT]";
+     qfactor = 1;
+  }
+
   TProfile dutnpxvsev( "dutnpxvsev",
 		       "DUT pixels vs events;events;DUT pixels / 1000",
 		       500, 0, 500E3 );
@@ -1090,20 +1174,20 @@ int main( int argc, char* argv[] )
   TH1I dutpxrowHisto( "dutpxrow",
 		      "DUT pixel row;DUT pixel row;DUT pixels",
 		      ny[iDUT], 0, ny[iDUT] );
-  TH1I dutpxqHisto( "dutpxq",
-		    "DUT pixel signal;DUT pixel signal [ToT];DUT pixels",
-		    16, 0, 16 );
+  TH1F dutpxqHisto( "dutpxq",
+		    ("DUT pixel signal;DUT pixel signal "+qdut_unit+";DUT pixels").c_str(),
+		    16*qfactor, 0, 16*qfactor );
   TH1I dutpxbcHisto( "dutpxbc",
 		    "DUT pixel BC;DUT pixel BC;DUT pixels",
 		    32, 0, 32 );
 
   TProfile dutpxqvsx( "dutpxqvsx",
-		      "DUT pixel signal vs x;column;<pixel signal> [ToT]",
-		      400, 0, 400, 0, 16 );
+		      ("DUT pixel signal vs x;column;<pixel signal> "+qdut_unit).c_str(),
+		      400/(2-fifty), 0, 400/(2-fifty), 0, 16*qfactor );
   TProfile2D * dutpxqvsxy = new
     TProfile2D( "dutpxqvsxy",
-		"DUT pixel signal map;column;row;<pixel signal> [ToT]",
-		400, 0, 400, 192, 0, 192, 0, 16 );
+		("DUT pixel signal map;column;row;<pixel signal> "+qdut_unit).c_str(),
+		400/(2-fifty), 0, 400/(2-fifty), 192*(2-fifty), 0, 192*(2-fifty), 0, 16*qfactor );
 
   // triplets:
 
@@ -1322,7 +1406,27 @@ int main( int argc, char* argv[] )
 
   TH2I * hroadmap = new TH2I( "roadmap",
 			      "road map;col;row;active pixels",
-			      400, 0, 400, 192, 0, 192 );
+			      400/(2-fifty), 0, 400/(2-fifty), 192*(2-fifty), 0, 192*(2-fifty) );
+
+  TH2I roadbreakage("roadbreakage","Cluster breaking;#Delta_{cols};N_{cols}",70,0,70,70,0,70);
+  TH2F roadbreakage_dist_frequency("roadbreakage_dist_freq",
+                  "Cluster breaking: Frequency of consecutives columns;#Delta_{cols};N_{cols}/#Delta_{cols}",
+                  70,0,70,80,0,1.2);
+  TH2F roadbreakage_col0_frequency("roadbreakage_col0_freq",
+                  "Cluster breaking: Frequency of consecutives columns;First column;N_{cols}/#Delta_{cols}",
+                  400/(2-fifty),0,400/(2-fifty),80,0,1.2);
+  TH2F roadbreakage_col9_frequency("roadbreakage_col9_freq",
+                  "Cluster breaking: Frequency of consecutives columns;First column;N_{cols}/#Delta_{cols}",
+                  400/(2-fifty),0,400/(2-fifty),80,0,1.2);
+  TH2F roadq_distance("roadq_distance",("Column distance vs. total charge;#Delta_{cols};#Sigma q_{col}"+qdut_unit).c_str(),
+                  70,0,70,300*qfactor,0,300*qfactor);
+  TH2F roadq_colsize("roadq_colsize",("Column size vs. total charge;N_{cols};#Sigma q_{col} "+qdut_unit).c_str(),
+                  70,0,70,300*qfactor,0,300*qfactor);
+  TH2F roadq_col0("roadq_col0",("Column size vs. total charge;First column;#Sigma q_{col}"+qdut_unit).c_str(),
+                  400/(2-fifty),0,400/(2-fifty),300*qfactor,0,300*qfactor);
+  TH2F roadq_col9("roadq_col9",("Column size vs. total charge;First column;#Sigma q_{col}"+qdut_unit).c_str(),
+                  400/(2-fifty),0,400/(2-fifty),300*qfactor,0,300*qfactor);
+
   TH1I pixbclkHisto( "pixbclk",
 		     "DUT linked pixel BC;DUT pixel BC;DUT pixels on tracks",
 		     32, 0, 32 );
@@ -1331,7 +1435,7 @@ int main( int argc, char* argv[] )
 		     80, -0.2, 0.2 );
   TProfile2D * pixqvsdxdy = new
     TProfile2D( "pixqvsdxdy",
-		"DUT pixel signal map;height [mm];depth [mm];<pixel signal> [ToT]",
+		("DUT pixel signal map;height [mm];depth [mm];<pixel signal>"+qdut_unit).c_str(),
 		80, -0.200, 0.200, 60, -0.150, 0.150 );
 
   TH1I pixdycHisto( "pixdyc",
@@ -1355,9 +1459,14 @@ int main( int argc, char* argv[] )
   TH1I roadncolHisto( "roadncol",
 		      "filled columns in track road;filled columns;tracks",
 		      150, 0.5, 150.5 );
+
   TProfile roadncolvscol0( "roadncolvscol0",
-			   "filled columns in track road;first column;filled columns;tracks",
-			   400, 0, 400 );
+			   "filled columns in track road (tracks enter from low-cols);first column;filled columns;tracks",
+			   400/(2-fifty), 0, 400/(2-fifty) );
+  
+  TProfile roadncolvscol9( "roadncolvscol9",
+			   "filled columns in track road (tracks enter from high-cols);first column;filled columns;tracks",
+			   400/(2-fifty), 0, 400/(2-fifty) );
 
   TH1I tridHisto( "trid",
 		  "in-time triplet depth;depth [mm];in-time triplets",
@@ -1366,11 +1475,11 @@ int main( int argc, char* argv[] )
 		  "in-time triplet depth;depth [mm];in-time triplet hits",
 		  80, -0.2, 0.2 );
   TProfile pixqvsd( "pixqvsd",
-		    "PIX column signal vs depth [mm];depth [#mum];<column signal> [ToT]",
+		    ("PIX column signal vs depth [mm];depth [#mum];<column signal> "+qdut_unit).c_str(),
 		    80, -200, 200 );
   TProfile2D * pixqvsyd = new
     TProfile2D( "pixqvsyd",
-		"PIX column signal vs ymod and depth;depth [#mum];y_{track} mod 50 #mum;<column signal [ToT]>",
+		("PIX column signal vs ymod and depth;depth [#mum];y_{track} mod 50 #mum;<column signal> "+qdut_unit).c_str(),
 		80, -0.2, 0.2, 25, 0, 50 );
 
   TH1I triymHisto( "triym",
@@ -1422,7 +1531,7 @@ int main( int argc, char* argv[] )
   }
   uint64_t prevTLU = evTLU0;
 
-  int iev = 0;
+  //int iev = 0;
 
   if( fev ) cout << "EU skip " << fev << endl;
   while( iev < fev ) {
@@ -1486,6 +1595,9 @@ int main( int argc, char* argv[] )
 
     vector <pixel> pbDUT;
     vector < cluster > cl[9];
+    
+    // Start new event
+    clean_vectors(v_floats);
 
     for( size_t iplane = 0; iplane < sevt.NumPlanes(); ++iplane ) {
 
@@ -1556,7 +1668,7 @@ int main( int argc, char* argv[] )
 
 	  if( ipl == iDUT ) {
 
-	    px.tot += 1; // shift from zero
+	    //px.tot += 1; // shift from zero
 
 	    if( !fifty ) { // 100x25 from ROC to sensor:
 	      px.col = ix/2; // 100 um
@@ -1573,6 +1685,19 @@ int main( int argc, char* argv[] )
 
 	    } // not fifty
 
+            if( use_dut_calibration ) 
+            {
+               int thechan = px.col*nrows_in_dut+px.row;
+               if(calibration_curves.find(thechan) == calibration_curves.end())
+               { 
+                 continue;
+               }
+               px.tot = calibration_curves[thechan](tot);
+            }
+            else
+            {
+	       px.tot += 1; // shift from zero
+            } 
 	  } // DUT
 
 	  pb.push_back(px);
@@ -1638,7 +1763,6 @@ int main( int argc, char* argv[] )
 
       dutpxqvsx.Fill( col + 0.5, tot + 0.5 );
       dutpxqvsxy->Fill( col + 0.5, row + 0.5, tot + 0.5 );
-
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2223,7 +2347,7 @@ int main( int argc, char* argv[] )
 
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       // triplet vs DUT:
-
+      
       if( ltrimod ) { // in-time
 
 	trixcHisto.Fill( xAc );
@@ -2263,8 +2387,25 @@ int main( int argc, char* argv[] )
 	  // track at z3:
 
 	  double dz = z3 + DUTz - zmA; // z of pixel from mid of triplet A
-	  double xA = xmA + sxA * dz; // triplet impact point on DUT
-	  double yA = ymA + syA * dz; // track A at pixel
+	  double xA = xmA + sxA * dz; // triplet propagation: impact point on DUT
+	  double yA = ymA + syA * dz; // at pixel 
+      	   
+          // -- Track at z-position where pixel is (pz/col en local, z3 in telescope)
+          t_x.push_back(xA);
+          t_y.push_back(yA);
+          t_z.push_back(dz);
+	  t_tx.push_back(sxA);
+          t_ty.push_back(syA);
+          // pixel positions
+          p_col.push_back(col);
+          p_row.push_back(row);
+          p_tot.push_back(tot);
+          p_bc.push_back(frm);
+          p_zlocal.push_back(pz);
+          p_ylocal.push_back(py);
+          p_x.push_back(x3 + DUTalignx);
+          p_y.push_back(y3 + DUTaligny);
+          p_z.push_back(z3);
 
 	  pixdxaHisto.Fill( xA - x3 );
 	  pixsxaHisto.Fill( xA + x3 );
@@ -2313,19 +2454,42 @@ int main( int argc, char* argv[] )
 
 	roadnpxHisto.Fill( nroad );
 
+	float roadq_total = 0;
 	int ncol = 0;
 	int col0 = nx[iDUT];
 	int col9 = 0;
 	for( int icol = 0; icol < nx[iDUT]; ++icol ) {
 	  if( roadcol[icol] ) {
+            roadq_total += colq[icol];
 	    ++ncol;
 	    if( icol < col0 ) col0 = icol;
 	    if( icol > col9 ) col9 = icol;
 	  }
 	}
+  
+	const int col_distance = col9-col0+1;
+
+	// XXX -- FIXME: HOW TO REMOVE DELTA-RAYS?
+	
+        // Any missing column (breaking cluster)?
+        // Column distance vs. number of clusters
+        roadbreakage.Fill(col_distance,ncol);
+        float nonbreakage_freq = 0.0;
+        if( col_distance != 0) {
+          nonbreakage_freq = float(ncol)/float(col_distance);
+        }
+        roadbreakage_dist_frequency.Fill(col_distance,nonbreakage_freq);
+        roadbreakage_col0_frequency.Fill(col0,nonbreakage_freq);
+        roadbreakage_col9_frequency.Fill(col9,nonbreakage_freq);
+	// sum-up  the total charge for the road
+        roadq_distance.Fill(col_distance,roadq_total);
+        roadq_colsize.Fill(ncol,roadq_total);
+        roadq_col0.Fill(col0,roadq_total);
+        roadq_col9.Fill(col9,roadq_total);
 
 	roadncolHisto.Fill( ncol );
 	roadncolvscol0.Fill( col0+0.5, ncol ); // overflows have weight zero
+	roadncolvscol9.Fill( col9+0.5, ncol ); // overflows have weight zero
 
 	// get mean depth per column:
 
@@ -2416,6 +2580,9 @@ int main( int argc, char* argv[] )
     modlkvst5.Fill( evsec, nmdm );
     modlkvsev.Fill( iev, nmdm );
     ntrimodHisto.Fill( ntrimod );
+
+    // Fill tree
+    tree->Fill();
 
     ++iev;
 
