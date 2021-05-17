@@ -820,6 +820,12 @@ int main( int argc, char* argv[] )
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // DUT hot pixels:
+  int nrows_in_dut = ny[iDUT];
+  if( !fifty ) 
+  {
+     //nrows_in_dut = 2*ny[iDUT];
+     nrows_in_dut = 384;
+  }
 
   cout << endl;
 
@@ -860,7 +866,6 @@ int main( int argc, char* argv[] )
 	tokenizer >> iy; // ROC row
 	int ipx = ix * ny[iDUT] + iy;
 	hotset[iDUT].insert(ipx);
-
       }
 
     } // while getline
@@ -875,12 +880,6 @@ int main( int argc, char* argv[] )
   
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // DUT gain:
-  int nrows_in_dut = ny[iDUT];
-  if( !fifty ) 
-  {
-     //nrows_in_dut = 2*ny[iDUT];
-     nrows_in_dut = 384;
-  }
   auto calibration_curves = calibration(gain_filename_dut,nrows_in_dut);
   std::cout << "Loaded calibration curves for DUT. Active pixels: "
           << calibration_curves.size() << std::endl;
@@ -1034,6 +1033,9 @@ int main( int argc, char* argv[] )
   std::vector<float> t_x;
   std::vector<float> t_y;
   std::vector<float> t_z;
+  std::vector<float> t_xmA;
+  std::vector<float> t_ymA;
+  std::vector<float> t_zmA;
   std::vector<float> t_tx;
   std::vector<float> t_ty;
   tree->Branch("event_number",&iev);
@@ -1049,11 +1051,15 @@ int main( int argc, char* argv[] )
   tree->Branch("trk_x",&t_x);
   tree->Branch("trk_y",&t_y);
   tree->Branch("trk_z",&t_z);
-  tree->Branch("trk_tx",&t_x);
-  tree->Branch("trk_ty",&t_y);
+  tree->Branch("trk_xmA",&t_xmA);
+  tree->Branch("trk_ymA",&t_ymA);
+  tree->Branch("trk_zmA",&t_zmA);
+  tree->Branch("trk_tx",&t_tx);
+  tree->Branch("trk_ty",&t_ty);
 
   std::vector<std::vector<float>* > v_floats = { &p_col, &p_row, &p_tot, &p_bc, &p_x, &p_y, &p_z,
 						 &p_ylocal, &p_zlocal,
+						 &t_xmA, &t_ymA, &t_zmA,
 						 &t_x, &t_y, &t_z, &t_tx, &t_ty };
 
   double f = 5.2 / pbeam;
@@ -1655,10 +1661,11 @@ int main( int argc, char* argv[] )
 	    hmap[8]->Fill( ix+0.5, iy+0.5 ); // before masking
 	  }
 
-	  // skip hot pixels:
-
-	  int ipx = ix*ny[ipl] + iy;
-	  if( hotset[ipl].count(ipx) ) continue;
+	  // skip hot pixels (not DUT, careful as could need to map ROC to pixels):
+          if( ipl != 0 ) {
+	    int ipx = ix*ny[ipl] + iy;
+	    if( hotset[ipl].count(ipx) ) continue; 
+          }
 
 	  pixel px;
 	  px.col = ix; // ROC col
@@ -1684,7 +1691,13 @@ int main( int argc, char* argv[] )
 	      }
 
 	    } // not fifty
-
+            
+            // hot pixels
+	    int ipx = px.col*ny[ipl] + px.row;
+	    if( hotset[ipl].count(ipx) ) { 
+               continue; 
+            }
+	   
             if( use_dut_calibration ) 
             {
                int thechan = px.col*nrows_in_dut+px.row;
@@ -2394,6 +2407,9 @@ int main( int argc, char* argv[] )
           t_x.push_back(xA);
           t_y.push_back(yA);
           t_z.push_back(dz);
+          t_xmA.push_back(xmA);
+          t_ymA.push_back(ymA);
+          t_zmA.push_back(zmA);
 	  t_tx.push_back(sxA);
           t_ty.push_back(syA);
           // pixel positions
