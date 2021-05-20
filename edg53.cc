@@ -1182,7 +1182,7 @@ int main( int argc, char* argv[] )
 		      ny[iDUT], 0, ny[iDUT] );
   TH1F dutpxqHisto( "dutpxq",
 		    ("DUT pixel signal;DUT pixel signal "+qdut_unit+";DUT pixels").c_str(),
-		    16*qfactor, 0, 16*qfactor );
+		    16, 0, 16*qfactor );
   TH1I dutpxbcHisto( "dutpxbc",
 		    "DUT pixel BC;DUT pixel BC;DUT pixels",
 		    32, 0, 32 );
@@ -1418,6 +1418,10 @@ int main( int argc, char* argv[] )
   TH2F roadbreakage_dist_frequency("roadbreakage_dist_freq",
                   "Cluster breaking: Frequency of consecutives columns;#Delta_{cols};N_{cols}/#Delta_{cols}",
                   70,0,70,80,0,1.2);
+  // XXX - profile and TH2 -> profile is not exactly the same (see ROOT-7770)
+  TProfile roadbreakage_dist_frequency_prof("roadbreakage_dist_freq_prof",
+                  "Cluster breaking: Frequency of consecutives columns;#Delta_{cols};N_{cols}/#Delta_{cols}",
+                  70,0,70,0,1.2);
   TH2F roadbreakage_col0_frequency("roadbreakage_col0_freq",
                   "Cluster breaking: Frequency of consecutives columns;First column;N_{cols}/#Delta_{cols}",
                   400/(2-fifty),0,400/(2-fifty),80,0,1.2);
@@ -1425,13 +1429,13 @@ int main( int argc, char* argv[] )
                   "Cluster breaking: Frequency of consecutives columns;First column;N_{cols}/#Delta_{cols}",
                   400/(2-fifty),0,400/(2-fifty),80,0,1.2);
   TH2F roadq_distance("roadq_distance",("Column distance vs. total charge;#Delta_{cols};#Sigma q_{col}"+qdut_unit).c_str(),
-                  70,0,70,300*qfactor,0,300*qfactor);
+                  70,0,70,300,0,300*qfactor);
   TH2F roadq_colsize("roadq_colsize",("Column size vs. total charge;N_{cols};#Sigma q_{col} "+qdut_unit).c_str(),
-                  70,0,70,300*qfactor,0,300*qfactor);
+                  70,0,70,300,0,300*qfactor);
   TH2F roadq_col0("roadq_col0",("Column size vs. total charge;First column;#Sigma q_{col}"+qdut_unit).c_str(),
-                  400/(2-fifty),0,400/(2-fifty),300*qfactor,0,300*qfactor);
+                  400/(2-fifty),0,400/(2-fifty),300,0,300*qfactor);
   TH2F roadq_col9("roadq_col9",("Column size vs. total charge;First column;#Sigma q_{col}"+qdut_unit).c_str(),
-                  400/(2-fifty),0,400/(2-fifty),300*qfactor,0,300*qfactor);
+                  400/(2-fifty),0,400/(2-fifty),300,0,300*qfactor);
 
   TH1I pixbclkHisto( "pixbclk",
 		     "DUT linked pixel BC;DUT pixel BC;DUT pixels on tracks",
@@ -2495,6 +2499,7 @@ int main( int argc, char* argv[] )
           nonbreakage_freq = float(ncol)/float(col_distance);
         }
         roadbreakage_dist_frequency.Fill(col_distance,nonbreakage_freq);
+        roadbreakage_dist_frequency_prof.Fill(col_distance,nonbreakage_freq);
         roadbreakage_col0_frequency.Fill(col0,nonbreakage_freq);
         roadbreakage_col9_frequency.Fill(col9,nonbreakage_freq);
 	// sum-up  the total charge for the road
