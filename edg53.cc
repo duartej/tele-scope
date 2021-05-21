@@ -1447,6 +1447,10 @@ int main( int argc, char* argv[] )
     TProfile2D( "pixqvsdxdy",
 		("DUT pixel signal map;height [mm];depth [mm];<pixel signal>"+qdut_unit).c_str(),
 		80, -0.200, 0.200, 60, -0.150, 0.150 );
+  TProfile2D * pixqvsdxdy_centered = new
+    TProfile2D( "pixqvsdxdy_centered",
+		("PIXEL signal vs height and depth;height [#mum];depth [#mum];<pixel signal> "+qdut_unit).c_str(),
+		120*(2-fifty), -60.*(2-fifty), 60.*(2-fifty), 100, -120., 120. );
   
   TH1I pixdycHisto( "pixdyc",
 		    "pixel - Telescope dy;pixel - triplet #Deltaxy [mm];pixels",
@@ -1481,6 +1485,7 @@ int main( int argc, char* argv[] )
   TH1I tridHisto( "trid",
 		  "in-time triplet depth;depth [mm];in-time triplets",
 		  80, -0.2, 0.2 );
+  
   TH1I tridlkHisto( "tridlk",
 		  "in-time triplet depth;depth [mm];in-time triplet hits",
 		  80, -0.2, 0.2 );
@@ -1489,12 +1494,9 @@ int main( int argc, char* argv[] )
 		    80, -200, 200 );
   TProfile2D * pixqvsyd = new
     TProfile2D( "pixqvsyd",
-		("PIX column signal vs ymod and depth;y_{track} mod 50 #mum;depth [#mum];<column signal> "+qdut_unit).c_str(),
-		40*(2-fifty), 0.0, 50.*(2-fifty), 100, -80., 80.0 );
-  TProfile2D * pixqvsyd2 = new
-    TProfile2D( "pixqvsyd2",
-		("PIX column signal vs ymod and depth;y_{track} mod 50 #mum;depth [#mum];<column signal> "+qdut_unit).c_str(),
-		40*(2-fifty), 0.0, 2*50.*(2-fifty), 100, -100., 100.0 );
+               ("PIX column signal vs ymod and depth;y_{track} mod 50 #mum;depth [#mum];<column signal> "+qdut_unit).c_str(),
+               40*(2-fifty), 0.0, 50.*(2-fifty), 100, -80., 80.0 );
+
 
   TH1I triymHisto( "triym",
 		   "in-time in-depth triplet y;y [mm];in-time in-depth triplets",
@@ -2442,6 +2444,7 @@ int main( int argc, char* argv[] )
 	  pixdyHisto.Fill( dy );
 	  pixdxHisto.Fill( dx );
 	  pixqvsdxdy->Fill( dy, dx, tot );
+	  pixqvsdxdy_centered->Fill( dy*1E3, dx*1E3, tot );
 	  // mod for
 
 	  if( fabs( dy ) < 0.07 ) { // track road
@@ -2527,7 +2530,6 @@ int main( int argc, char* argv[] )
 	  double ym = yAc; // track y at DUTz
 	  double dymin = 999;
 	  double ymod = 0;
-	  double ymod2 = 0;
 
 	  for( int row = 0; row < 384/(2-fifty); ++row ) {
 
@@ -2555,7 +2557,6 @@ int main( int argc, char* argv[] )
 	    double yA = ymA + syA * dz; // track A at z(pixel)
 
 	    ymod  = fmod( 8.000 + yA, 0.050*(2.-fifty) );
-	    ymod2 = fmod( 8.000 + yA, 2*0.050*(2.-fifty) );
 
 	    double dx = xA - x3 - DUTalignx;
 	    double dy = yA - y3 - DUTaligny;
@@ -2586,7 +2587,6 @@ int main( int argc, char* argv[] )
 
 	    pixqvsd.Fill( depth*1e3, colq[col] );
 	    pixqvsyd->Fill( ymod*1e3, depth*1E3, colq[col] );
-	    pixqvsyd2->Fill( ymod2*1e3, depth*1E3, colq[col] );
 	  }
 
 	  if( in ) { // track in depth: fiducial
