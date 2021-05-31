@@ -1436,6 +1436,10 @@ int main( int argc, char* argv[] )
                   400/(2-fifty),0,400/(2-fifty),300,0,300*qfactor);
   TH2F roadq_col9("roadq_col9",("Column size vs. total charge;First column;#Sigma q_{col}"+qdut_unit).c_str(),
                   400/(2-fifty),0,400/(2-fifty),300,0,300*qfactor);
+  
+  TH2F roadbreakage_missing_col("roadbreakage_missing",
+		  "Missing columns on a Track road;#Delta_{cols};Missing Pixel Position;# Missing Pixels",
+		   50,0.5,50.5,50,0.5,50.5);
 
   TH1I pixbclkHisto( "pixbclk",
 		     "DUT linked pixel BC;DUT pixel BC;DUT pixels on tracks",
@@ -2486,6 +2490,7 @@ int main( int argc, char* argv[] )
 	int ncol = 0;
 	int col0 = nx[iDUT];
 	int col9 = 0;
+	std::vector<int> missing_col;
 	for( int icol = 0; icol < nx[iDUT]; ++icol ) {
 	  if( roadcol[icol] ) {
             roadq_total += colq[icol];
@@ -2494,8 +2499,19 @@ int main( int argc, char* argv[] )
 	    if( icol > col9 ) col9 = icol;
 	  }
 	}
-  
 	const int col_distance = col9-col0+1;
+        
+	// Cheeck missing pixels between col0 and col9 (only if there
+        // were missing cols)
+        if( col_distance != ncol ) {
+          for(int icol = col0+1; icol < col9; ++icol) {
+            if( ! roadcol[icol] )
+            { 
+              missing_col.push_back(icol);
+            }
+          }
+        }
+
 
 	// XXX -- FIXME: HOW TO REMOVE DELTA-RAYS?
 	
@@ -2519,6 +2535,12 @@ int main( int argc, char* argv[] )
 	roadncolHisto.Fill( ncol );
 	roadncolvscol0.Fill( col0+0.5, ncol ); // overflows have weight zero
 	roadncolvscol9.Fill( col9+0.5, ncol ); // overflows have weight zero
+
+	// Missing columns position
+        for(const auto & imiss: missing_col)
+        {
+          roadbreakage_missing_col.Fill(col_distance,imiss-col0);
+        }
 
 	// get mean depth per column:
 
