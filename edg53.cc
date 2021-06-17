@@ -18,7 +18,6 @@
 #include "eudaq/PluginManager.hh"
 
 #include <TFile.h>
-#include <TTree.h>
 #include <TH1I.h> // counting
 #include <TH1D.h> // weighted counts
 #include <TH2I.h>
@@ -61,15 +60,6 @@ struct triplet {
   unsigned iA;
   unsigned iB;
   unsigned iC;
-};
-
-// Clean up 
-void clean_vectors(std::vector<std::vector<float>* > & vv)
-{
-  for(auto & v: vv)
-  {
-    v->clear();
-  }
 };
 
 //------------------------------------------------------------------------------
@@ -1015,53 +1005,7 @@ int main( int argc, char* argv[] )
   const double normm = cos( MODturn*wt ) * cos( MODtilt*wt ); // length of Nz
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  // book histos and tree [JDC]: 
-  TTree * tree  = new TTree("dut","MOD linked tracks at DUT and pixel");
- 
   int iev = 0;
-  // pixels DUT
-  std::vector<float> p_col;
-  std::vector<float> p_row;
-  std::vector<float> p_tot;
-  std::vector<float> p_bc;
-  std::vector<float> p_x;
-  std::vector<float> p_y;
-  std::vector<float> p_z;
-  std::vector<float> p_ylocal;
-  std::vector<float> p_zlocal;
-  // tracks
-  std::vector<float> t_x;
-  std::vector<float> t_y;
-  std::vector<float> t_z;
-  std::vector<float> t_xmA;
-  std::vector<float> t_ymA;
-  std::vector<float> t_zmA;
-  std::vector<float> t_tx;
-  std::vector<float> t_ty;
-  tree->Branch("event_number",&iev);
-  tree->Branch("col",&p_col);
-  tree->Branch("row",&p_row);
-  tree->Branch("tot",&p_tot);
-  tree->Branch("bc",&p_bc);
-  tree->Branch("pix_x",&p_x);
-  tree->Branch("pix_y",&p_y);
-  tree->Branch("pix_z",&p_z);
-  tree->Branch("pix_ylocal",&p_ylocal);
-  tree->Branch("pix_zlocal",&p_zlocal);
-  tree->Branch("trk_x",&t_x);
-  tree->Branch("trk_y",&t_y);
-  tree->Branch("trk_z",&t_z);
-  tree->Branch("trk_xmA",&t_xmA);
-  tree->Branch("trk_ymA",&t_ymA);
-  tree->Branch("trk_zmA",&t_zmA);
-  tree->Branch("trk_tx",&t_tx);
-  tree->Branch("trk_ty",&t_ty);
-
-  std::vector<std::vector<float>* > v_floats = { &p_col, &p_row, &p_tot, &p_bc, &p_x, &p_y, &p_z,
-						 &p_ylocal, &p_zlocal,
-						 &t_xmA, &t_ymA, &t_zmA,
-						 &t_x, &t_y, &t_z, &t_tx, &t_ty };
-
   double f = 5.2 / pbeam;
 
   TH1I t1Histo( "t1", "event time;event time [s];events / 10 ms", 100, 0, 1 );
@@ -1616,9 +1560,6 @@ int main( int argc, char* argv[] )
     vector <pixel> pbDUT;
     vector < cluster > cl[9];
     
-    // Start new event
-    clean_vectors(v_floats);
-
     for( size_t iplane = 0; iplane < sevt.NumPlanes(); ++iplane ) {
 
       const eudaq::StandardPlane &plane = sevt.GetPlane(iplane);
@@ -2386,7 +2327,7 @@ int main( int argc, char* argv[] )
 	vector <int> colq(nx[iDUT]);
 
 	for( unsigned ipx = 0; ipx < pbDUT.size(); ++ipx ) { // pixels
-
+          
 	  int col = pbDUT[ipx].col; // sensor
 	  int row = pbDUT[ipx].row; // sensor
 	  int tot = pbDUT[ipx].tot;
@@ -2417,26 +2358,6 @@ int main( int argc, char* argv[] )
 	  double xA = xmA + sxA * dz; // triplet propagation: impact point on DUT
 	  double yA = ymA + syA * dz; // at pixel 
       	   
-          // -- Track at z-position where pixel is (pz/col en local, z3 in telescope)
-          t_x.push_back(xA);
-          t_y.push_back(yA);
-          t_z.push_back(dz);
-          t_xmA.push_back(xmA);
-          t_ymA.push_back(ymA);
-          t_zmA.push_back(zmA);
-	  t_tx.push_back(sxA);
-          t_ty.push_back(syA);
-          // pixel positions
-          p_col.push_back(col);
-          p_row.push_back(row);
-          p_tot.push_back(tot);
-          p_bc.push_back(frm);
-          p_zlocal.push_back(pz);
-          p_ylocal.push_back(py);
-          p_x.push_back(x3 + DUTalignx);
-          p_y.push_back(y3 + DUTaligny);
-          p_z.push_back(z3);
-
 	  pixdxaHisto.Fill( xA - x3 );
 	  pixsxaHisto.Fill( xA + x3 );
 	  pixdyaHisto.Fill( yA - y3 );
@@ -2630,9 +2551,6 @@ int main( int argc, char* argv[] )
     modlkvst5.Fill( evsec, nmdm );
     modlkvsev.Fill( iev, nmdm );
     ntrimodHisto.Fill( ntrimod );
-
-    // Fill tree
-    tree->Fill();
 
     ++iev;
 
