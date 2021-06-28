@@ -2021,6 +2021,9 @@ int main( int argc, char* argv[] )
   TH1I dutdxcHisto( "dutdxc",
 		    "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
 		    500, -2.5, 2.5 );
+  TH1I dutresxHisto( "dutresx",
+		    "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
+		    500, -0.1, 0.1 );
   TH1I dutdxccHisto( "dutdxcc",
 		    "DUT - track dx crack;DUT cluster - track #Deltax [mm];DUT crack clusters",
 		    500, -0.25, 0.25 );
@@ -2100,6 +2103,9 @@ int main( int argc, char* argv[] )
   TH1I dutdycHisto( "dutdyc",
 		    "DUT - track dy;DUT cluster - track #Deltay [mm];DUT clusters",
 		    500, -0.5, 0.5 );
+  TH1F dutresyHisto( "dutresy",
+		    "DUT - track dy;DUT cluster - track #Deltay [mm];DUT clusters",
+		    500, -0.1, 0.1 );
   TProfile dutmadyvsq( "dutmadyvsq",
 		       "DUT MAD(#Deltay) vs Q;cluster signal [ToT];MAD(#Deltay) [mm]",
 		       80, 0, 80, 0, 0.1 );
@@ -4711,6 +4717,7 @@ int main( int argc, char* argv[] )
 	if( fabs( dutdy ) < ycutDUT ) {
 
 	  dutdxcHisto.Fill( dutdx );
+	  dutresxHisto.Fill( dutdx );
 
 	  if( xmod25*1e3 < 6.25 || xmod25 > 18.75 )
 	    dutdxccHisto.Fill( dutdx ); // crack
@@ -4751,6 +4758,7 @@ int main( int argc, char* argv[] )
 
 	  dutdy0Histo.Fill( dutdy );
 	  dutdycHisto.Fill( dutdy );
+	  dutresyHisto.Fill( dutdy );
 
 	  dutmadyvsq.Fill( Q0, fabs(dutdy) );
 	  if( Q0 > qL && Q0 < qR )
