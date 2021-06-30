@@ -450,6 +450,7 @@ int main( int argc, char* argv[] )
   int fev = 0; // 1st event
   int lev = 999222111; // last event
   bool ldbmod = 0;
+  bool use_dut_calibration = true;
 
   for( int i = 1; i < argc; ++i ) {
 
@@ -461,6 +462,9 @@ int main( int argc, char* argv[] )
 
     if( !strcmp( argv[i], "-m" ) )
       ldbmod = 1; // debug for ref module sync
+    
+    if( !strcmp( argv[i], "-n" ) )
+      use_dut_calibration = false; // no use calibration for DUT
 
   } // argc
 
@@ -1373,19 +1377,22 @@ int main( int argc, char* argv[] )
   
   // FIXME: if vcal or electrons or ToT --> from runs.dat (or calibration)  
   std::string charge_units("elec");
-  if( charge_units == "elec" )
+  if( use_dut_calibration)
   {
-     qnbins  = 1000;
-     qvalmax = 80000;
-     qscale  = 1500;
-     qunit = "Electrons";
-  }
-  else if( charge_units == "vcal" )
-  { 
-     qnbins  = 1000;
-     qvalmax = 8000;
-     qscale  = 150;
-     qunit = "V_{cal}";
+    if( charge_units == "elec" )
+    {
+       qnbins  = 1000;
+       qvalmax = 80000;
+       qscale  = 1500;
+       qunit = "Electrons";
+    }
+    else if( charge_units == "vcal" )
+    { 
+       qnbins  = 1000;
+       qvalmax = 8000;
+       qscale  = 150;
+       qunit = "V_{cal}";
+    }
   }
 
 
@@ -2021,7 +2028,7 @@ int main( int argc, char* argv[] )
   TH1I dutdxcHisto( "dutdxc",
 		    "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
 		    500, -2.5, 2.5 );
-  TH1I dutresxHisto( "dutresx",
+  TH1F dutresxHisto( "dutresx",
 		    "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
 		    500, -0.1, 0.1 );
   TH1I dutdxccHisto( "dutdxcc",
@@ -2971,11 +2978,14 @@ int main( int argc, char* argv[] )
                 }
              }
              int thechan = pcol*nbr+prow;
-             if(calibration_curves.find(thechan) == calibration_curves.end())
-             { 
-                continue;
+             if( use_dut_calibration )
+             {
+               if(calibration_curves.find(thechan) == calibration_curves.end())
+               { 
+                  continue;
+               }
+               px.tot = calibration_curves[thechan](tot);
              }
-             px.tot = calibration_curves[thechan](tot);
           }
           else
           {
